@@ -523,10 +523,7 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
     <div class="cta-group">
       <button class="cta-main" onclick="goPage('melden-rat')">🚨 Ratte melden</button>
       <button class="cta-sec" onclick="goPage('melden-action')">🟢 Maßnahme vor Ort melden</button>
-      <button class="cta-third" onclick="openAdmin()">📧 Behörde / Verwaltung informieren</button>
     </div>
-
-    <div class="workflow-note">Behördenmails und Updates werden nicht automatisch verschickt. Ein eingeloggter Verwalter prüft die Meldung, öffnet eine vorbereitete E-Mail oder WhatsApp-Nachricht und sendet sie bewusst selbst ab.</div>
 
     <div class="stats-row workflow-stats">
       <div class="stat-card" role="button" title="Alle Sichtungen anzeigen" onclick="openStatList('rat')"><span class="stat-num" id="s-rat">0</span><div class="stat-lbl">Sichtungen</div></div>
@@ -885,22 +882,26 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
 
 <div class="cookie-layer" id="privacy-consent">
   <div class="cookie-card">
-    <div class="cookie-title">🔒 Datenschutz & lokale Speicherung</div>
-    <div class="cookie-text">Diese Seite speichert Meldungen, Status und Abonnements im Browser und kann Standortdaten, Fotos und Kontaktdaten verarbeiten. Bitte keine Personen, Kennzeichen oder sensiblen Daten eintragen. Behördenmails und WhatsApp Updates werden nur manuell durch Verwalter vorbereitet und versendet.</div>
-    <div class="cookie-btns"><button class="cookie-btn ok" onclick="acceptPrivacy()">Einverstanden</button><button class="cookie-btn no" onclick="declinePrivacy()">Nur ansehen</button></div>
+    <div class="cookie-title">🔒 Datenschutz & Datenspeicherung</div>
+    <div class="cookie-text">Diese Anwendung speichert Meldungen, Status, Fotos, Standortdaten und optionale Kontaktdaten zur Bearbeitung von Rattenmeldungen in Hamburg. Die Daten werden über Supabase in der EU verarbeitet. Bitte keine Personen, Kennzeichen oder sensiblen Daten fotografieren oder eintragen. Behördenmails und WhatsApp Updates werden nur manuell durch eingeloggte Verwalter vorbereitet und versendet.</div>
+    <div class="cookie-btns"><button class="cookie-btn ok" onclick="acceptPrivacy()">Einverstanden</button><button class="cookie-btn no" onclick="goPage('datenschutz')">Datenschutzerklärung ansehen</button></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
-const ADMIN_EMAIL = 'Saschakitschke@gmx.net';
-const ADMIN_HASH  = '61b7e976eddc704c57cfb195cd0c27e6ad553bc4b3b803d1b56e5b275e9339f7';
+const ADMIN_EMAIL = 'saschakitschke@gmx.net';
+const SUPABASE_URL = 'https://fholanhyuwapgrnhlsqq.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_iA3ucEytqulGO5MtRnaDTw_Kg--b6P6';
+const PHOTO_BUCKET = 'report-photos';
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY) : null;
 
-let entries    = JSON.parse(localStorage.getItem('rattenEntries')    || '[]'); // alles: rats + actions
-let verwalter  = JSON.parse(localStorage.getItem('rattenVerwalter')  || '[]');
-let abonnenten = JSON.parse(localStorage.getItem('rattenAbonnenten') || '[]');
+let entries    = []; // zentrale Datenquelle: Supabase reports
+let verwalter  = []; // zentrale Datenquelle: Supabase admin_users
+let abonnenten = []; // zentrale Datenquelle: Supabase subscriptions
 
 let selTypeRat    = '';
 let selTypeAction = '';
@@ -944,7 +945,7 @@ function rememberPage(name){
 }
 
 // ── INIT ──
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
   const ts = now.toISOString().slice(0,16);
   document.getElementById('fr-time').value = ts;
@@ -952,7 +953,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', e => {
     if (!e.target.closest('.ac-wrap')) { closeAC('fr-ac'); closeAC('fa-ac'); }
   });
-  updateStats(); checkAboStatus(); showPrivacyConsentIfNeeded();
+  await loadSupabaseData(); updateStats(); checkAboStatus(); showPrivacyConsentIfNeeded();
   const initialPage = pageFromHash();
   if(initialPage !== 'home') goPage(initialPage);
   window.addEventListener('hashchange', () => {
@@ -969,6 +970,56 @@ function showPrivacyConsentIfNeeded(){
 function acceptPrivacy(){privacyAccepted=true;localStorage.setItem('rattenPrivacyAccepted','yes');localStorage.removeItem('rattenPrivacyDeclined');const l=document.getElementById('privacy-consent');if(l)l.classList.remove('open');toast('✅ Datenschutzhinweis bestätigt');}
 function declinePrivacy(){privacyAccepted=false;localStorage.setItem('rattenPrivacyDeclined','yes');const l=document.getElementById('privacy-consent');if(l)l.classList.remove('open');toast('ℹ️ Du kannst die Seite ansehen. Für Meldungen bitte Datenschutz bestätigen.');}
 function ensurePrivacyOk(){if(privacyAccepted)return true;showPrivacyConsentIfNeeded();toast('🔒 Bitte Datenschutzhinweis bestätigen');return false;}
+
+function hasSupabase(){return !!supabaseClient;}
+function dbStatusToUi(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'bearbeitung',resolved:'erledigt',rejected:'neu'})[s]||s||'neu';}
+function uiStatusToDb(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',bearbeitung:'in_progress',erledigt:'resolved'})[s]||'new';}
+function dbReportToEntry(r){return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.address||'',type:r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:!!(r.photo_urls&&r.photo_urls.length),photoUrls:r.photo_urls||[],status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};}
+function entryToDb(e){return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',status:uiStatusToDb(e.status||'neu'),title:e.type||'',description:e.desc||'',address:e.street||'',latitude:e.lat||null,longitude:e.lon||null,accuracy:e.accuracy||null,gps_source:e.gpsSource||null,gps_exact:!!e.gpsExact,photo_urls:e.photoUrls||[],reporter_name:e.name||'Anonym',event_time:e.time||new Date().toISOString(),admin_note:e.stadtAntwort||null,history:e.history||[],authority_notified:!!e.authorityNotifiedAt,authority_notified_at:e.authorityNotifiedAt||null,authority_email:e.authorityRecipient||null,authority_by:e.authorityBy||null};}
+async function loadSupabaseData(){
+  if(!hasSupabase()){toast('⚠️ Supabase konnte nicht geladen werden');return;}
+  try{
+    const {data,error}=await supabaseClient.from('reports').select('*').order('created_at',{ascending:false});
+    if(error) throw error;
+    entries=(data||[]).map(dbReportToEntry);
+  }catch(e){console.error(e);toast('⚠️ Meldungen konnten nicht geladen werden');}
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(session){currentAdminEmail=session.user.email||''; await loadAdminDataIfAllowed();}
+  }catch(e){}
+}
+async function loadAdminDataIfAllowed(){
+  if(!hasSupabase()||!currentAdminEmail)return false;
+  const {data,error}=await supabaseClient.from('admin_users').select('email').limit(200);
+  if(error){return false;}
+  verwalter=(data||[]).map(x=>({email:x.email,hash:''}));
+  isHaupt=verwalter.some(v=>(v.email||'').toLowerCase()===currentAdminEmail.toLowerCase());
+  try{const {data:subs}=await supabaseClient.from('subscriptions').select('*').order('created_at',{ascending:false});abonnenten=(subs||[]).map(s=>({id:s.id,name:s.name||'Anonym',email:s.email||'',phone:s.phone||'',kanale:s.channel||'email',seit:s.created_at,consentAt:s.consent_at}));}catch(e){}
+  return isHaupt;
+}
+async function uploadPhotoDataUrls(reportId,arr){
+  if(!hasSupabase()||!arr||!arr.length)return [];
+  const urls=[];
+  for(let i=0;i<arr.length;i++){
+    try{
+      const dataUrl=arr[i];
+      const mime=(dataUrl.match(/^data:(.*?);/)||[])[1]||'image/jpeg';
+      const ext=mime.includes('png')?'png':(mime.includes('webp')?'webp':'jpg');
+      const bin=atob(dataUrl.split(',')[1]);
+      const bytes=new Uint8Array(bin.length); for(let j=0;j<bin.length;j++)bytes[j]=bin.charCodeAt(j);
+      const path=`${reportId}/${Date.now()}_${i}.${ext}`;
+      const {error}=await supabaseClient.storage.from(PHOTO_BUCKET).upload(path,new Blob([bytes],{type:mime}),{upsert:false,contentType:mime});
+      if(error) throw error;
+      const {data}=supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path);
+      urls.push(data.publicUrl);
+    }catch(e){console.error('Foto Upload fehlgeschlagen',e);}
+  }
+  return urls;
+}
+async function writeAudit(action,recordId,details){
+  if(!hasSupabase()||!currentAdminEmail)return;
+  try{await supabaseClient.from('audit_log').insert({actor_email:currentAdminEmail,action,table_name:'reports',record_id:recordId,new_data:details||{}});}catch(e){}
+}
 function isAuthorityEntry(e){return e.kind==='authority'||(e.kind==='action'&&/(meldung|stadt|bezirksamt|behörde|verwaltung|vermieter|hausverwaltung|gesundheitsamt)/i.test(e.type||''));}
 function isDoneEntry(e){return (e.status||'').toLowerCase()==='erledigt';}
 function adminLabel(){return currentAdminName || currentAdminEmail || 'Verwalter';}
@@ -1000,7 +1051,7 @@ function rememberAuthoritySent(e,recipient){
 // ── INDEXEDDB ──
 function openDB(){return new Promise((res,rej)=>{if(db){res(db);return;}const r=indexedDB.open('rattenDB',1);r.onupgradeneeded=e=>e.target.result.createObjectStore('photos',{keyPath:'id'});r.onsuccess=e=>{db=e.target.result;res(db);};r.onerror=()=>rej();});}
 async function savePhotoDB(id,arr){if(!arr.length)return;const d=await openDB();const tx=d.transaction('photos','readwrite');tx.objectStore('photos').put({id,photos:arr});}
-async function loadPhotosDB(id){try{const d=await openDB();return new Promise(res=>{const tx=d.transaction('photos','readonly');const r=tx.objectStore('photos').get(id);r.onsuccess=()=>res(r.result?.photos||[]);r.onerror=()=>res([]);});}catch(e){return[];}}
+async function loadPhotosDB(id){const entry=entries.find(e=>String(e.id)===String(id));if(entry&&entry.photoUrls&&entry.photoUrls.length)return entry.photoUrls;try{const d=await openDB();return new Promise(res=>{const tx=d.transaction('photos','readonly');const r=tx.objectStore('photos').get(id);r.onsuccess=()=>res(r.result?.photos||[]);r.onerror=()=>res([]);});}catch(e){return[];}}
 async function delPhotosDB(id){try{const d=await openDB();const tx=d.transaction('photos','readwrite');tx.objectStore('photos').delete(id);}catch(e){}}
 
 // ── PAGES ──
@@ -1191,7 +1242,7 @@ function renderPhotos(rowId,arr,kind){document.getElementById(rowId).innerHTML=a
 function removePhoto(i,kind){if(kind==='rat'){photosRat.splice(i,1);renderPhotos('fr-photo-row',photosRat,'rat');}else{photosAction.splice(i,1);renderPhotos('fa-photo-row',photosAction,'action');}}
 
 // ── SUBMIT ──
-function submitReport(kind){
+async function submitReport(kind){
   if(!ensurePrivacyOk())return;
   const isRat = kind==='rat';
   const street = document.getElementById(isRat?'fr-street':'fa-street').value.trim();
@@ -1202,12 +1253,20 @@ function submitReport(kind){
   if(!desc){flashInp(isRat?'fr-desc':'fa-desc');toast('✏️ Bitte kurz beschreiben');return;}
   const consentId=isRat?'fr-consent':'fa-consent';
   if(document.getElementById(consentId)&&!document.getElementById(consentId).checked){toast('🔒 Bitte Datenschutzbestätigung anhaken');return;}
-  const id=Date.now();
+  const id=(crypto&&crypto.randomUUID)?crypto.randomUUID():('r_'+Date.now());
   const coords = isRat?coordsRat:coordsAction;
   const photoArr = isRat?photosRat:photosAction;
-  const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoArr.length>0,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null,accuracy:coords?coords.accuracy:null,gpsSource:coords?coords.source:null,gpsExact:coords?!!coords.exact:false};
-  entries.unshift(entry); saveEntries(); updateStats(); applyDateFilter(); syncSheets(entry);
-  if(photoArr.length) savePhotoDB(id,[...photoArr]);
+  toast('⏳ Meldung wird gespeichert...');
+  const photoUrls = await uploadPhotoDataUrls(id,photoArr);
+  const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoUrls.length>0,photoUrls,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null,accuracy:coords?coords.accuracy:null,gpsSource:coords?coords.source:null,gpsExact:coords?!!coords.exact:false,history:[]};
+  if(hasSupabase()){
+    const {data,error}=await supabaseClient.from('reports').insert(entryToDb(entry)).select('*').single();
+    if(error){console.error(error);toast('❌ Speichern in Supabase fehlgeschlagen');return;}
+    entries.unshift(dbReportToEntry(data));
+  }else{
+    entries.unshift(entry); await saveEntries(); if(photoArr.length) savePhotoDB(id,[...photoArr]);
+  }
+  updateStats(); applyDateFilter(); syncSheets(entry);
   toast(isRat?'✅ Meldung gespeichert!':'✅ Maßnahme gespeichert!');
   resetForm(kind); goPage('home');
 }
@@ -1222,9 +1281,9 @@ function resetForm(kind){
 }
 
 // ── STORAGE ──
-function saveEntries(){try{localStorage.setItem('rattenEntries',JSON.stringify(entries));}catch(e){}}
-function saveVerwalter(){try{localStorage.setItem('rattenVerwalter',JSON.stringify(verwalter));}catch(e){}}
-function saveAbonnenten(){try{localStorage.setItem('rattenAbonnenten',JSON.stringify(abonnenten));}catch(e){}}
+async function saveEntries(){if(hasSupabase()){try{await supabaseClient.from('reports').upsert(entries.map(entryToDb));}catch(e){console.error(e);}}else{try{localStorage.setItem('rattenEntries',JSON.stringify(entries));}catch(e){}}}
+async function saveVerwalter(){/* Admins werden produktiv über Supabase Auth + admin_users verwaltet. */}
+async function saveAbonnenten(){if(hasSupabase()){try{await supabaseClient.from('subscriptions').upsert(abonnenten.map(a=>({id:String(a.id),name:a.name||'Anonym',email:a.email||'',phone:a.phone||'',channel:a.kanale||'email',consent_at:a.consentAt||new Date().toISOString()})));}catch(e){console.error(e);}}else{try{localStorage.setItem('rattenAbonnenten',JSON.stringify(abonnenten));}catch(e){}}}
 async function syncSheets(r){const url=window._sheetsUrl||localStorage.getItem('rattenSheetsUrl')||'';if(!url)return;try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({...r,photos:r.hasPhotos?['Ja']:[]})});}catch(e){}}
 
 // ── STATS ──
@@ -1605,9 +1664,21 @@ ${adminLabel()}`;window.location.href=`mailto:${encodeURIComponent(recipient)}?s
 function openAdmin(){document.getElementById('admin-page').classList.add('open');}
 function closeAdmin(){document.getElementById('admin-page').classList.remove('open');}
 async function hashPw(pw){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
-async function adminLogin(){const email=document.getElementById('a-email').value.trim().toLowerCase();const pw=document.getElementById('a-pw').value;const err=document.getElementById('a-err');const hash=await hashPw(pw);if(email===ADMIN_EMAIL.toLowerCase()&&hash===ADMIN_HASH){isHaupt=true;currentAdminEmail=email;currentAdminName=email.split('@')[0];showPanel();return;}if(verwalter.some(v=>v.email.toLowerCase()===email&&v.hash===hash)){isHaupt=false;currentAdminEmail=email;currentAdminName=email.split('@')[0];showPanel();return;}const known=email===ADMIN_EMAIL.toLowerCase()||verwalter.some(v=>v.email.toLowerCase()===email);err.textContent=!known?'❌ E-Mail nicht autorisiert':'❌ Falsches Passwort';['a-email','a-pw'].forEach(id=>document.getElementById(id).style.borderColor='var(--red)');document.getElementById('a-pw').value='';setTimeout(()=>{err.textContent='';['a-email','a-pw'].forEach(id=>document.getElementById(id).style.borderColor='');},2500);}
+async function adminLogin(){
+  const email=document.getElementById('a-email').value.trim().toLowerCase();
+  const pw=document.getElementById('a-pw').value;
+  const err=document.getElementById('a-err');
+  if(!hasSupabase()){err.textContent='❌ Supabase ist nicht geladen';return;}
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password:pw});
+  if(error){err.textContent='❌ Login fehlgeschlagen. Bitte E-Mail und Passwort prüfen.';document.getElementById('a-pw').value='';return;}
+  currentAdminEmail=data.user.email||email;
+  currentAdminName=currentAdminEmail.split('@')[0];
+  const ok=await loadAdminDataIfAllowed();
+  if(!ok){await supabaseClient.auth.signOut();currentAdminEmail='';err.textContent='❌ Dieser Benutzer ist nicht als Verwalter freigegeben.';return;}
+  showPanel();
+}
 function showPanel(){document.getElementById('a-login').style.display='none';document.getElementById('a-panel').style.display='block';document.getElementById('v-section').style.display=isHaupt?'block':'none';renderAdminList();renderAboList();if(isHaupt){renderVerwalterList();checkSheetsBar();}}
-function adminLogout(){isHaupt=false;currentAdminEmail='';currentAdminName='';document.getElementById('a-login').style.display='flex';document.getElementById('a-panel').style.display='none';['a-email','a-pw'].forEach(id=>document.getElementById(id).value='');}
+async function adminLogout(){if(hasSupabase())await supabaseClient.auth.signOut();isHaupt=false;currentAdminEmail='';currentAdminName='';document.getElementById('a-login').style.display='flex';document.getElementById('a-panel').style.display='none';['a-email','a-pw'].forEach(id=>document.getElementById(id).value='');}
 function pwReset(e){e.preventDefault();window.location.href=`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Ratten-App: Passwort vergessen')}&body=${encodeURIComponent('Hallo,\n\nPasswort bitte zurücksetzen.\n\nDanke!')}`;}
 
 function renderAdminList(){
@@ -1663,12 +1734,12 @@ function saveReply(id){
   if(curPage==='liste')renderList();
   toast(val?'✅ Antwort gespeichert!':'🗑️ Antwort gelöscht');
 }
-function delEntry(id){if(!confirm('Löschen?'))return;entries=entries.filter(e=>e.id!==id);delPhotosDB(id);saveEntries();updateStats();const c=document.getElementById('ac'+id);if(c){c.style.opacity='0';c.style.transition='opacity .2s';setTimeout(()=>{c.remove();renderAdminList();},200);}if(map)refreshMarkers();}
-function clearAll(){if(!confirm(`Alle ${entries.length} Einträge löschen?`))return;entries.forEach(e=>delPhotosDB(e.id));entries=[];localStorage.removeItem('rattenEntries');updateStats();renderAdminList();if(map)refreshMarkers();}
+async function delEntry(id){if(!confirm('Löschen?'))return;if(hasSupabase())await supabaseClient.from('reports').delete().eq('id',String(id));entries=entries.filter(e=>String(e.id)!==String(id));delPhotosDB(id);updateStats();const c=document.getElementById('ac'+id);if(c){c.style.opacity='0';c.style.transition='opacity .2s';setTimeout(()=>{c.remove();renderAdminList();},200);}if(map)refreshMarkers();}
+async function clearAll(){if(!confirm(`Alle ${entries.length} Einträge löschen?`))return;if(hasSupabase())for(const e of entries){await supabaseClient.from('reports').delete().eq('id',String(e.id));}entries.forEach(e=>delPhotosDB(e.id));entries=[];localStorage.removeItem('rattenEntries');updateStats();renderAdminList();if(map)refreshMarkers();}
 
 function renderVerwalterList(){const el=document.getElementById('a-v-list');el.innerHTML=`<div class="a-v-card"><span class="a-v-email">${esc(ADMIN_EMAIL)}</span><span class="a-v-badge">Haupt-Admin</span></div>`+verwalter.map((v,i)=>`<div class="a-v-card"><span class="a-v-email">${esc(v.email)}</span><button class="a-v-rm" onclick="rmVerwalter(${i})">Entfernen</button></div>`).join('');}
-async function addVerwalter(){const email=document.getElementById('nv-email').value.trim();const pw=document.getElementById('nv-pw').value.trim();if(!email||!email.includes('@')){toast('📧 E-Mail eingeben');return;}if(!pw||pw.length<6){toast('🔑 Mind. 6 Zeichen');return;}if(email.toLowerCase()===ADMIN_EMAIL.toLowerCase()||verwalter.some(v=>v.email.toLowerCase()===email.toLowerCase())){toast('⚠️ Bereits eingetragen');return;}verwalter.push({email,hash:await hashPw(pw)});saveVerwalter();document.getElementById('nv-email').value='';document.getElementById('nv-pw').value='';renderVerwalterList();toast('✅ Verwalter hinzugefügt!');}
-function rmVerwalter(i){if(!confirm(`${verwalter[i].email} entfernen?`))return;verwalter.splice(i,1);saveVerwalter();renderVerwalterList();}
+async function addVerwalter(){const email=document.getElementById('nv-email').value.trim().toLowerCase();if(!email||!email.includes('@')){toast('📧 E-Mail eingeben');return;}if(!hasSupabase()){toast('❌ Supabase nicht geladen');return;}const {error}=await supabaseClient.from('admin_users').insert({email});if(error){toast('⚠️ Verwalter konnte nicht eingetragen werden. Auth Nutzer muss zusätzlich in Supabase angelegt sein.');return;}verwalter.push({email,hash:''});document.getElementById('nv-email').value='';document.getElementById('nv-pw').value='';renderVerwalterList();toast('✅ Verwalter freigegeben. Bitte Supabase Auth Nutzer separat anlegen.');}
+async function rmVerwalter(i){if(!confirm(`${verwalter[i].email} entfernen?`))return;const email=verwalter[i].email;if(hasSupabase())await supabaseClient.from('admin_users').delete().eq('email',email);verwalter.splice(i,1);renderVerwalterList();}
 function renderAboList(){const el=document.getElementById('a-abo-list');if(!abonnenten.length){el.innerHTML='<div class="empty-state" style="padding:15px 0"><div class="ei" style="font-size:26px">🔔</div><div class="et" style="font-size:13px">Noch keine Abonnenten</div></div>';return;}const kl={email:'📧 E-Mail',whatsapp:'💬 WhatsApp',beides:'📧 + 💬'};el.innerHTML=abonnenten.map((a,i)=>`<div class="a-abo-card"><div><div class="aac-email">${esc(a.email)}</div><div class="aac-meta">👤 ${esc(a.name)} · <span class="kanal-tag">${kl[a.kanale]||a.kanale}</span></div></div><button class="a-v-rm" onclick="rmAbo(${i})">Entfernen</button></div>`).join('');}
 function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(localStorage.getItem('rattenMeinAboId')===abonnenten[i].id)localStorage.removeItem('rattenMeinAboId');abonnenten.splice(i,1);saveAbonnenten();renderAboList();}
 </script>
