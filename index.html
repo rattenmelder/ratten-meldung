@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- BUILD: FINAL_RATTENMELDER_WORKFLOW_2026-06-07_1648 -->
+<!-- BUILD: FINAL_RATTENMELDER_MOBILE_PHOTO_KEYBOARD_2026-06-07_2115 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_WORKFLOW_2026-06-07_1648</title>
+<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_MOBILE_PHOTO_KEYBOARD_2026-06-07_2115</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FINAL_RATTENMELDER_WORKFLOW_2026-06-07_1648');
+console.log('Rattenmelder Version: FINAL_RATTENMELDER_MOBILE_PHOTO_KEYBOARD_2026-06-07_2115');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -507,6 +507,109 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
   body{max-width:980px;margin:0 auto;}
 }
 
+
+/* === PATCH: Mobile Skalierung, Tastatur-Schutz und Fotoanzeige 2026-06-07 === */
+:root{
+  --app-height: 100dvh;
+  --keyboard-height: 0px;
+}
+
+/* Stabilere mobile Höhe bei Safari und Chrome */
+html, body{
+  min-height: var(--app-height);
+  height: var(--app-height);
+}
+
+.page{
+  height: var(--app-height) !important;
+  max-height: var(--app-height) !important;
+}
+
+/* Formulare bekommen genug Luft, damit Submit, Checkbox und Fotozone nicht verdeckt werden */
+#page-melden-rat .scroll-body,
+#page-melden-action .scroll-body,
+#page-abo .scroll-body{
+  padding-bottom: calc(var(--bottom-nav-height, 92px) + var(--keyboard-height, 0px) + env(safe-area-inset-bottom, 0px) + 110px) !important;
+  scroll-padding-bottom: calc(var(--keyboard-height, 0px) + 170px);
+}
+
+/* Wenn die Tastatur offen ist, wird die untere Navigation ausgeblendet, damit nichts verdeckt */
+body.keyboard-open .tab-bar{
+  transform: translateY(120%) !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  transition: transform .18s ease, opacity .18s ease;
+}
+
+/* Aktive Eingabefelder bleiben sichtbar und gut bedienbar */
+body.keyboard-open input,
+body.keyboard-open textarea,
+body.keyboard-open select{
+  scroll-margin-bottom: calc(var(--keyboard-height, 0px) + 160px);
+  scroll-margin-top: 90px;
+}
+
+/* Submit Button und Datenschutzbox dürfen nicht hinter Keyboard oder Browserleiste verschwinden */
+.form-check{
+  scroll-margin-bottom: calc(var(--keyboard-height, 0px) + 150px);
+}
+.submit-btn{
+  scroll-margin-bottom: calc(var(--keyboard-height, 0px) + 160px);
+}
+
+/* Fotos in Listen und Popups wieder sichtbar und gut antippbar */
+.r-photos{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill, minmax(72px, 1fr));
+  gap:8px !important;
+  margin:10px 0 10px !important;
+}
+.r-photo{
+  width:100% !important;
+  height:86px !important;
+  border-radius:12px !important;
+  object-fit:cover !important;
+  display:block !important;
+  background:var(--surface2);
+}
+.photo-count-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  font-size:10px;
+  font-weight:800;
+  color:var(--orange);
+  background:rgba(255,149,0,.10);
+  border:1px solid rgba(255,149,0,.25);
+  border-radius:999px;
+  padding:3px 8px;
+}
+.pu-photo{
+  display:block !important;
+  width:100% !important;
+  max-width:260px !important;
+  height:145px !important;
+  object-fit:cover !important;
+  cursor:pointer;
+}
+
+/* Kleinere Geräte: kompaktere Startseite, damit nichts abgeschnitten wirkt */
+@media (max-width: 390px){
+  #page-home .scroll-body{padding-top:34px !important;}
+  .rat-ani{font-size:58px;margin-bottom:10px;}
+  .home-title{font-size:32px;}
+  .home-sub{font-size:14px;margin-bottom:20px;}
+  .cta-main{padding:16px;font-size:17px;}
+  .cta-sec{padding:14px;font-size:15px;}
+}
+
+/* Querformat und sehr kurze Viewports: mehr Scroll, weniger starre Höhe */
+@media (max-height: 680px){
+  #page-home .scroll-body{justify-content:flex-start !important;padding-top:24px !important;}
+  .rat-ani{font-size:50px;margin-bottom:8px;}
+  .home-title{font-size:30px;}
+}
+
 </style>
 <!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
 </head>
@@ -974,8 +1077,22 @@ function ensurePrivacyOk(){if(privacyAccepted)return true;showPrivacyConsentIfNe
 function hasSupabase(){return !!supabaseClient;}
 function dbStatusToUi(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'bearbeitung',resolved:'erledigt',rejected:'neu'})[s]||s||'neu';}
 function uiStatusToDb(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',bearbeitung:'in_progress',erledigt:'resolved'})[s]||'new';}
-function dbReportToEntry(r){const photos=Array.isArray(r.photo_urls)?r.photo_urls:(r.image_url?[r.image_url]:[]);return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};}
-function entryToDb(e){return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,image_url:(e.photoUrls&&e.photoUrls.length)?e.photoUrls[0]:null,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};}
+function dbReportToEntry(r){
+  const photos = Array.isArray(r.photo_urls) ? r.photo_urls.filter(Boolean) : (r.image_url ? [r.image_url] : []);
+  return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};
+}
+function getEntryPhotos(e){
+  if(!e) return [];
+  if(Array.isArray(e.photoUrls) && e.photoUrls.length) return e.photoUrls.filter(Boolean);
+  if(Array.isArray(e.photo_urls) && e.photo_urls.length) return e.photo_urls.filter(Boolean);
+  if(e.image_url) return [e.image_url];
+  if(e.imageUrl) return [e.imageUrl];
+  return [];
+}
+function entryToDb(e){
+  const photos = getEntryPhotos(e);
+  return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,image_url:photos.length?photos[0]:null,photo_urls:photos,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};
+}
 async function loadSupabaseData(){
   if(!hasSupabase()){toast('⚠️ Supabase konnte nicht geladen werden');return;}
   try{
@@ -1396,8 +1513,9 @@ async function renderList(){
     const isAuth=isAuthorityEntry(r);
     const typeBadgeCls=r.kind==='rat'?'rat-badge':'action-badge';
     const cardCls=(r.kind==='action'||isAuth)?'r-card action-card':'r-card';
-    const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
-    const photoHtml=photoArr.length?`<div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${u}" onclick="openLightbox(${r.id},${i})" />`).join('')}</div>`:'';
+    const photoArr=getEntryPhotos(r);
+    const safeId=JSON.stringify(String(r.id));
+    const photoHtml=photoArr.length?`<div class="r-badges"><span class="photo-count-badge">📷 ${photoArr.length} Foto${photoArr.length>1?'s':''}</span></div><div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${escAttr(u)}" loading="lazy" onclick="openLightbox(${safeId},${i})" />`).join('')}</div>`:'';
     const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
     const hist=formatHistory(r);
     html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${hist}</div>`;
@@ -1405,6 +1523,7 @@ async function renderList(){
   el.innerHTML=html;
 }
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 // ── MAP ──
 function initMap(){
@@ -1492,11 +1611,12 @@ async function refreshMarkers(){
     const d=new Date(r.time||r.createdAt);
     const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
     const typeCls=isRat?'pu-rat':'pu-action';
-    const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
-    const photoHtml=photoArr.length?`<img class="pu-photo" src="${photoArr[0]}" onclick="openLightbox(${r.id},0)" />`:'';
+    const photoArr=getEntryPhotos(r);
+    const safeId=JSON.stringify(String(r.id));
+    const photoHtml=photoArr.length?`<img class="pu-photo" src="${escAttr(photoArr[0])}" loading="lazy" onclick="openLightbox(${safeId},0)" />`:'';
     const gpsLine=r.lat?`<div class="pu-coords">${r.gpsExact?'Exakt gesetzter Kartenpunkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}</div>`:'';
     const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
-    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap(${r.id})">Meldung öffnen</button>`);
+    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap(${safeId})">Meldung öffnen</button>`);
     mapMarkers.push(m);
   }
   if(filtered.length) map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3));
@@ -1511,10 +1631,13 @@ function openEntryFromMap(id){
 }
 
 // ── LIGHTBOX ──
-async function openLightbox(id,idx){
-  const arr=await loadPhotosDB(id); if(!arr.length)return;
-  document.getElementById('lb-img').src=arr[idx];
-  document.getElementById('lb-cap').textContent=`Foto ${idx+1} von ${arr.length}`;
+function openLightbox(id,idx){
+  const entry=entries.find(e=>String(e.id)===String(id));
+  const arr=getEntryPhotos(entry);
+  if(!arr.length)return;
+  const safeIdx=Math.max(0,Math.min(idx||0,arr.length-1));
+  document.getElementById('lb-img').src=arr[safeIdx];
+  document.getElementById('lb-cap').textContent=`Foto ${safeIdx+1} von ${arr.length}`;
   document.getElementById('lightbox').classList.add('open');
 }
 function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
@@ -1745,26 +1868,69 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 </script>
 
 <script>
-/* Dynamische Browserleisten-Korrektur für Safari/Chrome mobil.
-   Nutzt VisualViewport, damit die Navigation direkt über der URL-Leiste bleibt. */
+/* Dynamische Browserleisten und Tastatur-Korrektur für Safari/Chrome mobil.
+   Sorgt dafür, dass Eingabefelder, Foto-Upload, Checkbox und Absenden-Button nicht verdeckt werden. */
 (function(){
-  function updateBottomNavigationSpace(){
+  var lastKeyboardOpen = false;
+
+  function updateViewportSpace(){
     var vv = window.visualViewport;
-    var bottom = 0;
-    if(vv){
-      bottom = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop));
-    }
-    // Ein kleiner Mindestabstand hält die Leiste optisch sauber, ohne mitten im Bild zu stehen.
+    var layoutHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    var visibleHeight = vv ? vv.height : layoutHeight;
+    var offsetTop = vv ? vv.offsetTop : 0;
+    var bottom = vv ? Math.max(0, layoutHeight - (visibleHeight + offsetTop)) : 0;
+    var keyboard = vv ? Math.max(0, layoutHeight - visibleHeight - offsetTop) : 0;
+    var keyboardOpen = keyboard > 120;
+
     var gap = window.innerWidth >= 1024 ? 18 : (window.innerWidth >= 700 ? 12 : 6);
+    document.documentElement.style.setProperty('--app-height', Math.round(visibleHeight) + 'px');
     document.documentElement.style.setProperty('--browser-bottom', Math.round(bottom) + 'px');
+    document.documentElement.style.setProperty('--keyboard-height', Math.round(keyboardOpen ? keyboard : 0) + 'px');
     document.documentElement.style.setProperty('--tabbar-gap', gap + 'px');
+    document.body.classList.toggle('keyboard-open', keyboardOpen);
+
+    if(keyboardOpen && !lastKeyboardOpen){
+      setTimeout(scrollActiveFieldIntoView, 80);
+    }
+    lastKeyboardOpen = keyboardOpen;
   }
-  updateBottomNavigationSpace();
-  window.addEventListener('resize', updateBottomNavigationSpace, {passive:true});
-  window.addEventListener('orientationchange', function(){setTimeout(updateBottomNavigationSpace, 250);}, {passive:true});
+
+  function scrollActiveFieldIntoView(){
+    var el = document.activeElement;
+    if(!el) return;
+    var tag = (el.tagName || '').toLowerCase();
+    if(!['input','textarea','select'].includes(tag)) return;
+    try{
+      el.scrollIntoView({block:'center', inline:'nearest', behavior:'smooth'});
+    }catch(e){
+      el.scrollIntoView(false);
+    }
+  }
+
+  document.addEventListener('focusin', function(e){
+    if(e.target && e.target.matches && e.target.matches('input, textarea, select')){
+      setTimeout(updateViewportSpace, 60);
+      setTimeout(scrollActiveFieldIntoView, 180);
+      setTimeout(scrollActiveFieldIntoView, 420);
+    }
+  });
+
+  document.addEventListener('input', function(e){
+    if(e.target && e.target.matches && e.target.matches('input, textarea')){
+      setTimeout(scrollActiveFieldIntoView, 60);
+    }
+  });
+
+  document.addEventListener('focusout', function(){
+    setTimeout(updateViewportSpace, 160);
+  });
+
+  updateViewportSpace();
+  window.addEventListener('resize', updateViewportSpace, {passive:true});
+  window.addEventListener('orientationchange', function(){setTimeout(updateViewportSpace, 250);}, {passive:true});
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', updateBottomNavigationSpace, {passive:true});
-    window.visualViewport.addEventListener('scroll', updateBottomNavigationSpace, {passive:true});
+    window.visualViewport.addEventListener('resize', updateViewportSpace, {passive:true});
+    window.visualViewport.addEventListener('scroll', updateViewportSpace, {passive:true});
   }
 })();
 </script>
