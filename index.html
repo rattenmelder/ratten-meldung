@@ -316,6 +316,11 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
 .pu-btn{width:100%;margin-top:9px;padding:9px 11px;border:none;border-radius:10px;background:var(--blue);color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
 .pu-coords{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.35;}
 .gps-exact{font-size:11px;color:var(--green);margin-top:5px;line-height:1.4;}
+.leaflet-control-layers{border-radius:12px!important;box-shadow:0 6px 20px rgba(0,0,0,.25)!important;border:1px solid #d1d5db!important;overflow:hidden;font-family:'Inter',sans-serif!important;}
+.leaflet-control-layers-toggle{width:42px!important;height:42px!important;background-size:22px 22px!important;}
+.leaflet-control-layers-expanded{background:#fff!important;color:#111827!important;padding:10px 12px!important;font-size:13px!important;line-height:1.6!important;}
+.leaflet-control-layers label{margin:3px 0!important;}
+.leaflet-control-layers-separator{border-top:1px solid #e5e7eb!important;margin:6px 0!important;}
 
 </style>
 </head>
@@ -859,11 +864,46 @@ function initMap(){
   // Karte Container muss sichtbar sein
   const container = document.getElementById('map');
   container.style.height = '100%';
-  map = L.map('map', { zoomControl: true, attributionControl: false })
-    .setView([53.55, 10.0], 13);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 19, attribution: '© OpenStreetMap © CARTO'
-  }).addTo(map);
+
+  const strassenkarte = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  });
+
+  const helleKarte = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20,
+    attribution: '© OpenStreetMap © CARTO'
+  });
+
+  const luftbild = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    attribution: 'Luftbild © Esri'
+  });
+
+  const beschriftung = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20,
+    pane: 'shadowPane',
+    attribution: 'Beschriftung © OpenStreetMap © CARTO'
+  });
+
+  map = L.map('map', {
+    zoomControl: true,
+    attributionControl: false,
+    layers: [strassenkarte]
+  }).setView([53.55, 10.0], 13);
+
+  L.control.layers(
+    {
+      'Straßenkarte mit Namen': strassenkarte,
+      'Helle Übersichtskarte': helleKarte,
+      'Luftbild / Häuseransicht': luftbild
+    },
+    {
+      'Straßennamen über Luftbild': beschriftung
+    },
+    { collapsed: false, position: 'topright' }
+  ).addTo(map);
+
   L.control.attribution({prefix: false}).addTo(map);
   setTimeout(() => { map.invalidateSize(); refreshMarkers(); }, 200);
 }
