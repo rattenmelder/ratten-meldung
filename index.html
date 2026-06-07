@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- BUILD: FINAL_RATTENMELDER_MOBILE_PHOTO_KEYBOARD_2026-06-07_2115 -->
+<!-- BUILD: FINAL_RATTENMELDER_FIX4_FOTOS_KEYBOARD_2026-06-07 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_MOBILE_PHOTO_KEYBOARD_2026-06-07_2115</title>
+<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX4_FOTOS_KEYBOARD_2026-06-07</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FINAL_RATTENMELDER_MOBILE_PHOTO_KEYBOARD_2026-06-07_2115');
+console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX4_FOTOS_KEYBOARD_2026-06-07');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -508,179 +508,25 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
 }
 
 
-/* === PATCH: Mobile Skalierung, Tastatur-Schutz und Fotoanzeige 2026-06-07 === */
-:root{
-  --app-height: 100dvh;
-  --keyboard-height: 0px;
-}
 
-/* Stabilere mobile Höhe bei Safari und Chrome */
-html, body{
-  min-height: var(--app-height);
-  height: var(--app-height);
-}
-
-.page{
-  height: var(--app-height) !important;
-  max-height: var(--app-height) !important;
-}
-
-/* Formulare bekommen genug Luft, damit Submit, Checkbox und Fotozone nicht verdeckt werden */
-#page-melden-rat .scroll-body,
-#page-melden-action .scroll-body,
-#page-abo .scroll-body{
-  padding-bottom: calc(var(--bottom-nav-height, 92px) + var(--keyboard-height, 0px) + env(safe-area-inset-bottom, 0px) + 110px) !important;
-  scroll-padding-bottom: calc(var(--keyboard-height, 0px) + 170px);
-}
-
-/* Wenn die Tastatur offen ist, wird die untere Navigation ausgeblendet, damit nichts verdeckt */
-body.keyboard-open .tab-bar{
-  transform: translateY(120%) !important;
-  pointer-events: none !important;
-  opacity: 0 !important;
-  transition: transform .18s ease, opacity .18s ease;
-}
-
-/* Aktive Eingabefelder bleiben sichtbar und gut bedienbar */
-body.keyboard-open input,
-body.keyboard-open textarea,
-body.keyboard-open select{
-  scroll-margin-bottom: calc(var(--keyboard-height, 0px) + 160px);
-  scroll-margin-top: 90px;
-}
-
-/* Submit Button und Datenschutzbox dürfen nicht hinter Keyboard oder Browserleiste verschwinden */
-.form-check{
-  scroll-margin-bottom: calc(var(--keyboard-height, 0px) + 150px);
-}
-.submit-btn{
-  scroll-margin-bottom: calc(var(--keyboard-height, 0px) + 160px);
-}
-
-/* Fotos in Listen und Popups wieder sichtbar und gut antippbar */
-.r-photos{
-  display:grid !important;
-  grid-template-columns:repeat(auto-fill, minmax(72px, 1fr));
-  gap:8px !important;
-  margin:10px 0 10px !important;
-}
-.r-photo{
-  width:100% !important;
-  height:86px !important;
-  border-radius:12px !important;
-  object-fit:cover !important;
-  display:block !important;
-  background:var(--surface2);
-}
-.photo-count-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  font-size:10px;
-  font-weight:800;
-  color:var(--orange);
-  background:rgba(255,149,0,.10);
-  border:1px solid rgba(255,149,0,.25);
-  border-radius:999px;
-  padding:3px 8px;
-}
-.pu-photo{
-  display:block !important;
-  width:100% !important;
-  max-width:260px !important;
-  height:145px !important;
-  object-fit:cover !important;
-  cursor:pointer;
-}
-
-/* Kleinere Geräte: kompaktere Startseite, damit nichts abgeschnitten wirkt */
-@media (max-width: 390px){
-  #page-home .scroll-body{padding-top:34px !important;}
-  .rat-ani{font-size:58px;margin-bottom:10px;}
-  .home-title{font-size:32px;}
-  .home-sub{font-size:14px;margin-bottom:20px;}
-  .cta-main{padding:16px;font-size:17px;}
-  .cta-sec{padding:14px;font-size:15px;}
-}
-
-/* Querformat und sehr kurze Viewports: mehr Scroll, weniger starre Höhe */
-@media (max-height: 680px){
-  #page-home .scroll-body{justify-content:flex-start !important;padding-top:24px !important;}
-  .rat-ani{font-size:50px;margin-bottom:8px;}
-  .home-title{font-size:30px;}
-}
-
-
-/* === PATCH 2: Fotos, Karte öffnen, Tastatur ohne Springen 2026-06-07 === */
-/* Weniger aggressives Keyboard Verhalten: kein automatisches Springen zum Button. */
-#page-melden-rat .scroll-body,
-#page-melden-action .scroll-body,
-#page-abo .scroll-body{
-  overscroll-behavior: contain;
-  scroll-behavior: auto;
-  padding-bottom: calc(var(--bottom-nav-height, 92px) + var(--keyboard-height, 0px) + env(safe-area-inset-bottom, 0px) + 160px) !important;
-  scroll-padding-top: 90px;
-  scroll-padding-bottom: calc(var(--keyboard-height, 0px) + 120px);
-}
-body.keyboard-open .submit-btn,
-body.keyboard-open .form-check,
-body.keyboard-open .photo-zone{
-  scroll-margin-bottom: calc(var(--keyboard-height, 0px) + 90px);
-}
-body.keyboard-open input,
-body.keyboard-open textarea,
-body.keyboard-open select{
-  scroll-margin-top: 78px;
-  scroll-margin-bottom: calc(var(--keyboard-height, 0px) + 80px);
-}
-/* Fotoanzeige in Liste, Karte und Detail stabil erzwingen */
-.r-photos{display:flex !important;flex-wrap:wrap !important;gap:8px !important;margin:10px 0 12px !important;}
-.r-photo{width:88px !important;height:88px !important;flex:0 0 88px !important;border-radius:12px !important;object-fit:cover !important;border:1px solid var(--border) !important;background:var(--surface2) !important;display:block !important;}
-.r-photo-broken{display:flex;align-items:center;justify-content:center;width:88px;height:88px;border-radius:12px;border:1px dashed var(--border);color:var(--text3);font-size:11px;text-align:center;padding:6px;background:var(--surface2);}
-.pu-photo{display:block !important;width:100% !important;max-width:260px !important;height:145px !important;object-fit:cover !important;border-radius:12px !important;margin:8px 0 !important;}
-.pu-photo-broken{width:100%;max-width:260px;min-height:64px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--border);border-radius:12px;color:var(--text2);font-size:12px;margin:8px 0;background:rgba(255,255,255,.03);}
-.pu-btn{position:relative;z-index:10;touch-action:manipulation;}
-/* Der Button darf bei offener Tastatur nicht zwangsweise in den Mittelpunkt scrollen. */
-body.keyboard-open .submit-btn{margin-bottom:18px;}
-
-
-
-/* === PATCH 3: Kartenhöhe, kein Seiten-Blitz beim Aktualisieren, ruhiger Keyboard-Scroll === */
-body.preinit .page{display:none !important;}
-
-/* Karte bekommt eine feste sichtbare Höhe. Leaflet rendert sonst auf iPhone manchmal erst nach Zoom korrekt. */
-#page-karte{height:var(--app-height,100dvh) !important;}
-#page-karte .map-wrap{
-  flex:0 0 auto !important;
-  height:calc(var(--app-height,100dvh) - 300px - var(--bottom-nav-height,92px) - env(safe-area-inset-bottom,0px)) !important;
-  min-height:360px !important;
-  padding-bottom:0 !important;
-  margin-bottom:0 !important;
-  background:#e9eef3;
-}
-#page-karte #map{
-  width:100% !important;
-  height:100% !important;
-  min-height:360px !important;
-  display:block !important;
-}
-@media (max-height:720px){
-  #page-karte .map-wrap{height:calc(var(--app-height,100dvh) - 270px - var(--bottom-nav-height,92px)) !important;min-height:300px !important;}
-  #page-karte #map{min-height:300px !important;}
-}
-
-/* Bei offener Tastatur nur das aktive Feld sichtbar halten, nicht automatisch zum Meldebutton springen. */
-body.keyboard-open .submit-btn,
-body.keyboard-open .form-check,
-body.keyboard-open .photo-zone{scroll-margin-bottom:40px !important;}
-body.keyboard-open input,
-body.keyboard-open textarea,
-body.keyboard-open select{scroll-margin-top:74px !important;scroll-margin-bottom:42px !important;}
+/* === FIX 4: Fotos, Karte, Tastatur und Formularsprung === */
+.r-photos{display:flex!important;gap:8px!important;flex-wrap:wrap!important;margin:10px 0!important;}
+.r-photo{width:86px!important;height:86px!important;border-radius:12px!important;object-fit:cover!important;border:1px solid var(--border)!important;background:var(--surface2)!important;display:block!important;}
+.photo-count-badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:rgba(10,132,255,.10);border:1px solid rgba(10,132,255,.25);color:var(--blue);}
+.r-photo-broken,.pu-photo-broken{display:flex;align-items:center;justify-content:center;text-align:center;background:var(--surface2);border:1px dashed var(--border);color:var(--text2);font-size:11px;border-radius:10px;}
+.r-photo-broken{width:86px;height:86px;}
+.pu-photo-broken{width:100%;max-width:230px;height:120px;margin:8px 0 2px;}
+#page-karte .map-wrap{height:calc(100dvh - 315px)!important;min-height:360px!important;padding-bottom:0!important;margin-bottom:calc(var(--bottom-nav-height,92px) + env(safe-area-inset-bottom,0px))!important;}
+#map{height:100%!important;min-height:360px!important;}
+body.keyboard-open .tab-bar{display:none!important;}
+body.keyboard-open .scroll-body{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 42px)!important;}
+body.keyboard-open .type-grid .tc{min-height:120px;}
+@media (max-height:740px){#page-karte .map-wrap{height:calc(100dvh - 285px)!important;min-height:300px!important}.r-photo{width:76px!important;height:76px!important}}
 
 </style>
 <!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
 </head>
-<body class="preinit">
+<body>
 
 <!-- ═══════════ STARTSEITE ═══════════ -->
 <div class="page active" id="page-home">
@@ -1123,20 +969,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('click', e => {
     if (!e.target.closest('.ac-wrap')) { closeAC('fr-ac'); closeAC('fa-ac'); }
   });
-
-  // Wichtig: Zuerst die per Hash gewünschte Seite anzeigen, dann Daten laden.
-  // Dadurch sieht man beim Aktualisieren nicht kurz die Startseite.
+  await loadSupabaseData(); updateStats(); checkAboStatus(); showPrivacyConsentIfNeeded();
   const initialPage = pageFromHash();
-  goPage(initialPage);
-  document.body.classList.remove('preinit');
-
-  await loadSupabaseData();
-  updateStats();
-  checkAboStatus();
-  showPrivacyConsentIfNeeded();
-  if(curPage==='liste') renderList();
-  if(curPage==='karte') stableMapResize(true);
-
+  if(initialPage !== 'home') goPage(initialPage);
   window.addEventListener('hashchange', () => {
     const targetPage = pageFromHash();
     if(targetPage !== curPage) goPage(targetPage);
@@ -1155,22 +990,31 @@ function ensurePrivacyOk(){if(privacyAccepted)return true;showPrivacyConsentIfNe
 function hasSupabase(){return !!supabaseClient;}
 function dbStatusToUi(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'bearbeitung',resolved:'erledigt',rejected:'neu'})[s]||s||'neu';}
 function uiStatusToDb(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',bearbeitung:'in_progress',erledigt:'resolved'})[s]||'new';}
-function dbReportToEntry(r){
-  const photos = Array.isArray(r.photo_urls) ? r.photo_urls.filter(Boolean) : (r.image_url ? [r.image_url] : []);
-  return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};
+function normalizePhotoList(v){
+  if(!v) return [];
+  if(Array.isArray(v)) return v.filter(Boolean);
+  if(typeof v==='string'){
+    const s=v.trim();
+    if(!s) return [];
+    if(s.startsWith('data:image/') || s.startsWith('http')) return [s];
+    try{const parsed=JSON.parse(s); if(Array.isArray(parsed)) return parsed.filter(Boolean);}catch(e){}
+    if(s.startsWith('{') && s.endsWith('}')) return s.slice(1,-1).split(',').map(x=>x.replace(/^"|"$/g,'').trim()).filter(Boolean);
+  }
+  return [];
 }
 function getEntryPhotos(e){
   if(!e) return [];
-  if(Array.isArray(e.photoUrls) && e.photoUrls.length) return e.photoUrls.filter(Boolean);
-  if(Array.isArray(e.photo_urls) && e.photo_urls.length) return e.photo_urls.filter(Boolean);
-  if(e.image_url) return [e.image_url];
-  if(e.imageUrl) return [e.imageUrl];
-  return [];
+  return [...normalizePhotoList(e.photoUrls), ...normalizePhotoList(e.photo_urls), ...normalizePhotoList(e.image_url), ...normalizePhotoList(e.imageUrl)]
+    .filter((v,i,a)=>v && a.indexOf(v)===i);
+}
+function dbReportToEntry(r){
+  const photos=[...normalizePhotoList(r.photo_urls), ...normalizePhotoList(r.image_url)].filter((v,i,a)=>v&&a.indexOf(v)===i);
+  return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};
 }
 function entryToDb(e){
-  const photos = getEntryPhotos(e);
-  return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,image_url:photos.length?photos[0]:null,photo_urls:photos,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};
-}
+  const photos=getEntryPhotos(e);
+  return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,image_url:photos[0]||null,photo_urls:photos,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};
+};}
 async function loadSupabaseData(){
   if(!hasSupabase()){toast('⚠️ Supabase konnte nicht geladen werden');return;}
   try{
@@ -1193,12 +1037,12 @@ async function loadAdminDataIfAllowed(){
   return isHaupt;
 }
 async function uploadPhotoDataUrls(reportId,arr){
-  window._lastPhotoUploadError='';
-  if(!hasSupabase()||!arr||!arr.length)return [];
+  if(!arr||!arr.length)return [];
   const urls=[];
   for(let i=0;i<arr.length;i++){
+    const dataUrl=arr[i];
     try{
-      const dataUrl=arr[i];
+      if(!hasSupabase()) throw new Error('Supabase nicht geladen');
       const mime=(dataUrl.match(/^data:(.*?);/)||[])[1]||'image/jpeg';
       const ext=mime.includes('png')?'png':(mime.includes('webp')?'webp':'jpg');
       const bin=atob(dataUrl.split(',')[1]);
@@ -1207,8 +1051,12 @@ async function uploadPhotoDataUrls(reportId,arr){
       const {error}=await supabaseClient.storage.from(PHOTO_BUCKET).upload(path,new Blob([bytes],{type:mime}),{upsert:false,contentType:mime});
       if(error) throw error;
       const {data}=supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path);
-      urls.push(data.publicUrl);
-    }catch(e){console.error('Foto Upload fehlgeschlagen',e);window._lastPhotoUploadError=(e&&e.message)?e.message:String(e||'Foto Upload fehlgeschlagen');}
+      if(data&&data.publicUrl) urls.push(data.publicUrl);
+      else urls.push(dataUrl);
+    }catch(e){
+      console.error('Foto Upload fehlgeschlagen, speichere Fallback in photo_urls',e);
+      urls.push(dataUrl);
+    }
   }
   return urls;
 }
@@ -1273,6 +1121,7 @@ function goPage(name){
 
 // ── TYPE / KANAL ──
 function pickType(el, kind){
+  if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
   const grid = kind==='rat' ? document.getElementById('rat-type-grid') : document.getElementById('action-type-grid');
   grid.querySelectorAll('.tc').forEach(t=>{t.classList.remove('sel','sel-green');});
   el.classList.add(kind==='rat'?'sel':'sel-green');
@@ -1387,6 +1236,7 @@ async function closeLocationPicker(save){
       hint.innerHTML=`✅ Genauer Kartenpunkt und nächste Adresse gespeichert<br><span class="gps-exact">${finalLabel}<br>Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}${locPickerCoord.accuracy?` · Genauigkeit ca. ${Math.round(locPickerCoord.accuracy)} m`:''}</span>`;
       hint.className='hint ok';
     }
+    if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
     toast('✅ Punkt und Adresse übernommen');
   }
   if(bg) bg.classList.remove('open');
@@ -1414,6 +1264,7 @@ async function fetchAC(val,inputId,listId){
   }catch(e){list.innerHTML='<div class="ac-msg">⚠️ Keine Verbindung – manuell eingeben</div>';}
 }
 function pickAC(i,inputId,listId){
+  if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
   const item=acDataMap[listId]?.[i]; if(!item) return;
   const a=item.address||{};const s=[a.road,a.house_number].filter(Boolean).join(' ')||item.display_name.split(',')[0];const c=[a.postcode,a.city||a.town||a.village||a.suburb].filter(Boolean).join(' ');
   document.getElementById(inputId).value=[s,c].filter(Boolean).join(', ');
@@ -1433,7 +1284,35 @@ function acKey(e,listId){
 function closeAC(listId){const l=document.getElementById(listId);if(l){l.classList.remove('open');l.innerHTML='';acDataMap[listId]=[];acIdxMap[listId]=-1;}}
 
 // ── FOTOS ──
-function handleFiles(e,kind){Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{if(kind==='rat'){photosRat.push(ev.target.result);renderPhotos('fr-photo-row',photosRat,'rat');}else{photosAction.push(ev.target.result);renderPhotos('fa-photo-row',photosAction,'action');}};r.readAsDataURL(f);});}
+function resizeImageFile(file,maxSide=1280,quality=.78){
+  return new Promise((resolve)=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const img=new Image();
+      img.onload=()=>{
+        let w=img.width,h=img.height;
+        const scale=Math.min(1,maxSide/Math.max(w,h));
+        w=Math.round(w*scale); h=Math.round(h*scale);
+        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality));
+      };
+      img.onerror=()=>resolve(ev.target.result);
+      img.src=ev.target.result;
+    };
+    reader.onerror=()=>resolve('');
+    reader.readAsDataURL(file);
+  });
+}
+async function handleFiles(e,kind){
+  const files=Array.from(e.target.files||[]).slice(0,4);
+  for(const f of files){
+    const dataUrl=await resizeImageFile(f);
+    if(!dataUrl) continue;
+    if(kind==='rat'){photosRat.push(dataUrl);renderPhotos('fr-photo-row',photosRat,'rat');}
+    else{photosAction.push(dataUrl);renderPhotos('fa-photo-row',photosAction,'action');}
+  }
+}
 function renderPhotos(rowId,arr,kind){document.getElementById(rowId).innerHTML=arr.map((u,i)=>`<div class="photo-item"><img class="photo-thumb" src="${u}"/><button class="photo-del" onclick="removePhoto(${i},'${kind}')">×</button></div>`).join('');}
 function removePhoto(i,kind){if(kind==='rat'){photosRat.splice(i,1);renderPhotos('fr-photo-row',photosRat,'rat');}else{photosAction.splice(i,1);renderPhotos('fa-photo-row',photosAction,'action');}}
 
@@ -1454,10 +1333,6 @@ async function submitReport(kind){
   const photoArr = isRat?photosRat:photosAction;
   toast('⏳ Meldung wird gespeichert...');
   const photoUrls = await uploadPhotoDataUrls(id,photoArr);
-  if(photoArr.length && !photoUrls.length){
-    toast('⚠️ Foto konnte nicht gespeichert werden. Meldung wird ohne Foto gespeichert.');
-    console.warn('Foto Upload fehlgeschlagen:', window._lastPhotoUploadError||'unbekannt');
-  }
   const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoUrls.length>0,photoUrls,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null,accuracy:coords?coords.accuracy:null,gpsSource:coords?coords.source:null,gpsExact:coords?!!coords.exact:false,history:[]};
   if(hasSupabase()){
     const {data,error}=await supabaseClient.from('reports').insert(entryToDb(entry)).select('*').single();
@@ -1598,16 +1473,15 @@ async function renderList(){
     const cardCls=(r.kind==='action'||isAuth)?'r-card action-card':'r-card';
     const photoArr=getEntryPhotos(r);
     const safeId=JSON.stringify(String(r.id));
-    const photoHtml=photoArr.length?`<div class="r-badges"><span class="photo-count-badge">📷 ${photoArr.length} Foto${photoArr.length>1?'s':''}</span></div><div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${escAttr(u)}" loading="lazy" title="Foto öffnen" onclick="openLightbox(${safeId},${i})" onerror="imgFallback(this,'Foto nicht ladbar')" />`).join('')}</div>`:'';
+    const photoHtml=photoArr.length?`<div class="r-badges"><span class="photo-count-badge">📷 ${photoArr.length} Foto${photoArr.length>1?'s':''}</span></div><div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${escAttr(u)}" loading="lazy" title="Foto öffnen" onclick='openLightbox(${safeId},${i})' onerror="imgFallback(this,'Foto nicht ladbar')" />`).join('')}</div>`:'';
     const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
     const hist=formatHistory(r);
-    html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${hist}</div>`;
+    html+=`<div class="${cardCls}" id="entry-${escAttr(String(r.id))}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${hist}</div>`;
   }
   el.innerHTML=html;
 }
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
 function imgFallback(img,label){
   if(!img)return;
   const div=document.createElement('div');
@@ -1618,7 +1492,7 @@ function imgFallback(img,label){
 
 // ── MAP ──
 function initMap(){
-  if(map) { stableMapResize(true); return; }
+  if(map) { setTimeout(()=>{ map.invalidateSize(); refreshMarkers(); }, 100); return; }
   // Karte Container muss sichtbar sein
   const container = document.getElementById('map');
   container.style.height = '100%';
@@ -1656,8 +1530,7 @@ function initMap(){
   ).addTo(map);
 
   L.control.attribution({prefix: false}).addTo(map);
-  setTimeout(() => { map.invalidateSize({pan:false}); refreshMarkers(false); fitMapToCurrentMarkers(); }, 120);
-  setTimeout(() => { map.invalidateSize({pan:false}); refreshMarkers(false); fitMapToCurrentMarkers(); }, 500);
+  setTimeout(() => { map.invalidateSize(); refreshMarkers(); }, 200);
 }
 function setMapFilter(f){
   mapFilter=f;
@@ -1690,7 +1563,7 @@ function markerClass(r){
   if(r.kind==='action') return 'action';
   return (r.type||'').toLowerCase().includes('tote') ? 'dead' : 'rat';
 }
-async function refreshMarkers(shouldFit=true){
+async function refreshMarkers(){
   if(!map)return;
   mapMarkers.forEach(m=>map.removeLayer(m));mapMarkers=[];
   const filtered=entries.filter(e=>e.lat&&e.lon&&entryInDateRange(e)&&((mapFilter==='all')||(mapFilter==='rat'&&e.kind==='rat')||(mapFilter==='action'&&e.kind==='action'&&!isAuthorityEntry(e))||(mapFilter==='authority'&&isAuthorityEntry(e))||(mapFilter==='done'&&isDoneEntry(e))));
@@ -1705,35 +1578,28 @@ async function refreshMarkers(shouldFit=true){
     const typeCls=isRat?'pu-rat':'pu-action';
     const photoArr=getEntryPhotos(r);
     const safeId=JSON.stringify(String(r.id));
-    const photoHtml=photoArr.length?`<img class="pu-photo" src="${escAttr(photoArr[0])}" loading="lazy" title="Foto öffnen" onclick="openLightbox(${safeId},0)" onerror="imgFallback(this,'Foto nicht ladbar')" />`:'';
+    const photoHtml=photoArr.length?`<img class="pu-photo" src="${escAttr(photoArr[0])}" loading="lazy" title="Foto öffnen" onclick='openLightbox(${safeId},0)' onerror="imgFallback(this,'Foto nicht ladbar')" />`:'';
     const gpsLine=r.lat?`<div class="pu-coords">${r.gpsExact?'Exakt gesetzter Kartenpunkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}</div>`:'';
     const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
-    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap(${safeId})">Meldung öffnen</button>`);
+    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick='openEntryFromMap(${safeId})'>Meldung öffnen</button>`);
     mapMarkers.push(m);
   }
-  if(filtered.length && shouldFit) fitMapToCurrentMarkers();
+  if(filtered.length){
+    setTimeout(()=>{try{map.invalidateSize({pan:false});map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.35));}catch(e){}},80);
+  }
 }
 function openEntryFromMap(id){
   if(map){map.closePopup();}
-  // Sicherstellen, dass die Meldung in der Liste sichtbar ist, egal welcher Filter vorher aktiv war.
   listFilter='all';
-  ['all','rat','action','authority','done'].forEach(x=>{const b=document.getElementById('lf-'+x); if(b)b.className='lf-btn';});
-  const allBtn=document.getElementById('lf-all'); if(allBtn)allBtn.className='lf-btn act';
   goPage('liste');
   setTimeout(()=>{
     renderList();
     requestAnimationFrame(()=>{
       const el=document.getElementById('entry-'+String(id));
-      if(el){
-        el.scrollIntoView({behavior:'smooth',block:'start'});
-        el.style.outline='2px solid var(--blue)';
-        el.style.boxShadow='0 0 0 4px rgba(10,132,255,.18)';
-        setTimeout(()=>{el.style.outline='';el.style.boxShadow='';},2200);
-      }else{
-        toast('ℹ️ Meldung ist gespeichert, konnte aber in der Liste nicht fokussiert werden.');
-      }
+      if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.style.outline='2px solid var(--blue)';setTimeout(()=>el.style.outline='',1800);}
+      else toast('ℹ️ Meldung ist gespeichert, konnte aber nicht fokussiert werden.');
     });
-  },180);
+  },160);
 }
 
 // ── LIGHTBOX ──
@@ -1974,71 +1840,29 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 </script>
 
 <script>
-/* Dynamische Browserleisten und Tastatur-Korrektur für Safari/Chrome mobil.
-   Wichtig: Kein aggressives Springen mehr zum Absenden-Button. Nur das aktive Feld wird bei Bedarf sichtbar gehalten. */
+/* FIX 4: Tastatur stabilisieren. Keine automatische Sprungbewegung im Formular. */
 (function(){
-  var lastKeyboardOpen=false;
-  var focusTimer=null;
-
-  function activeScrollContainer(el){
-    var p=el;
-    while(p && p!==document.body){
-      if(p.classList && p.classList.contains('scroll-body')) return p;
-      p=p.parentElement;
-    }
-    return document.scrollingElement || document.documentElement;
-  }
-
-  function updateViewportSpace(){
+  function updateMobileViewport(){
     var vv=window.visualViewport;
-    var layoutHeight=window.innerHeight || document.documentElement.clientHeight || 0;
-    var visibleHeight=vv ? vv.height : layoutHeight;
-    var offsetTop=vv ? vv.offsetTop : 0;
-    var keyboard=Math.max(0, layoutHeight - visibleHeight - offsetTop);
-    var keyboardOpen=keyboard>120;
-    var bottom=vv ? Math.max(0, layoutHeight - (visibleHeight + offsetTop)) : 0;
+    var bottom=0;
+    var keyboardOpen=false;
+    if(vv){
+      bottom=Math.max(0, window.innerHeight - (vv.height + vv.offsetTop));
+      keyboardOpen=(window.innerHeight - vv.height) > 140;
+    }
     var gap=window.innerWidth>=1024 ? 18 : (window.innerWidth>=700 ? 12 : 6);
-    document.documentElement.style.setProperty('--app-height', Math.round(visibleHeight) + 'px');
-    document.documentElement.style.setProperty('--browser-bottom', Math.round(bottom) + 'px');
-    document.documentElement.style.setProperty('--keyboard-height', Math.round(keyboardOpen ? keyboard : 0) + 'px');
-    document.documentElement.style.setProperty('--tabbar-gap', gap + 'px');
+    document.documentElement.style.setProperty('--browser-bottom', Math.round(bottom)+'px');
+    document.documentElement.style.setProperty('--tabbar-gap', gap+'px');
     document.body.classList.toggle('keyboard-open', keyboardOpen);
-    lastKeyboardOpen=keyboardOpen;
   }
-
-  function keepFocusedFieldVisible(){
-    if(!document.body.classList.contains('keyboard-open')) return;
-    var el=document.activeElement;
-    if(!el || !el.matches || !el.matches('input, textarea, select')) return;
-    var vv=window.visualViewport;
-    var visibleTop=vv ? vv.offsetTop : 0;
-    var visibleBottom=vv ? (vv.offsetTop + vv.height) : window.innerHeight;
-    var rect=el.getBoundingClientRect();
-    var marginTop=82;
-    var marginBottom=34;
-    var container=activeScrollContainer(el);
-
-    // Nur korrigieren, wenn das Feld wirklich verdeckt ist. Kein Springen zum Submit-Button.
-    if(rect.bottom > visibleBottom - marginBottom){
-      container.scrollBy({top: rect.bottom - (visibleBottom - marginBottom), behavior:'smooth'});
-    }else if(rect.top < visibleTop + marginTop){
-      container.scrollBy({top: rect.top - (visibleTop + marginTop), behavior:'smooth'});
-    }
-  }
-
-  document.addEventListener('focusin', function(e){
-    if(e.target && e.target.matches && e.target.matches('input, textarea, select')){
-      clearTimeout(focusTimer);
-      focusTimer=setTimeout(function(){updateViewportSpace();keepFocusedFieldVisible();},220);
-    }
-  }, true);
-
-  updateViewportSpace();
-  window.addEventListener('resize', updateViewportSpace, {passive:true});
-  window.addEventListener('orientationchange', function(){setTimeout(updateViewportSpace,250);}, {passive:true});
+  function blurActive(){ if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); }
+  document.addEventListener('touchstart',function(e){ if(e.target.closest && (e.target.closest('.tc')||e.target.closest('.tab-item')||e.target.closest('.nav-back')||e.target.closest('.gps-btn'))) blurActive(); },{passive:true});
+  updateMobileViewport();
+  window.addEventListener('resize', updateMobileViewport, {passive:true});
+  window.addEventListener('orientationchange', function(){setTimeout(updateMobileViewport,250);}, {passive:true});
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', function(){updateViewportSpace();}, {passive:true});
-    window.visualViewport.addEventListener('scroll', updateViewportSpace, {passive:true});
+    window.visualViewport.addEventListener('resize', updateMobileViewport, {passive:true});
+    window.visualViewport.addEventListener('scroll', updateMobileViewport, {passive:true});
   }
 })();
 </script>
