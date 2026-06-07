@@ -56,6 +56,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 /* Stats */
 .stats-row{width:100%;max-width:340px;display:flex;gap:8px;margin-bottom:18px;}
 .stat-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;}
+.stat-card{cursor:pointer;transition:transform .15s,border-color .15s;}
+.stat-card:active{transform:scale(.97);border-color:var(--orange);}
+.date-filter{flex-shrink:0;display:flex;gap:7px;align-items:center;padding:9px 16px;border-bottom:1px solid var(--border);background:var(--bg);overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.date-filter::-webkit-scrollbar{display:none;}
+.df-inp{min-width:122px;background:var(--surface);border:1.5px solid var(--border);color:var(--text);border-radius:10px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;-webkit-appearance:none;}
+.df-btn{flex-shrink:0;background:var(--surface2);border:1.5px solid var(--border);color:var(--text2);border-radius:10px;padding:8px 12px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+.df-btn.active{border-color:var(--orange);color:var(--orange);background:rgba(255,149,0,.1);}
+.df-lbl{font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+
 .stat-num{font-size:22px;font-weight:800;color:var(--orange);letter-spacing:-1px;display:block;line-height:1;margin-bottom:2px;}
 .stat-lbl{font-size:10px;color:var(--text2);font-weight:600;}
 
@@ -322,6 +331,23 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
 .leaflet-control-layers label{margin:3px 0!important;}
 .leaflet-control-layers-separator{border-top:1px solid #e5e7eb!important;margin:6px 0!important;}
 
+
+/* ── Standort genau auf Karte setzen ── */
+.loc-picker-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:4500;display:none;align-items:flex-end;}
+.loc-picker-bg.open{display:flex;}
+.loc-picker{width:100%;height:86vh;background:#fff;color:#111827;border-radius:24px 24px 0 0;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 -12px 40px rgba(0,0,0,.55);}
+.loc-picker-head{flex-shrink:0;padding:14px 16px 10px;border-bottom:1px solid #e5e7eb;background:#fff;}
+.loc-picker-title{font-size:17px;font-weight:900;letter-spacing:-.3px;margin-bottom:4px;}
+.loc-picker-sub{font-size:12px;color:#4b5563;line-height:1.4;}
+.loc-map{flex:1;min-height:280px;background:#e5e7eb;}
+.loc-picker-actions{flex-shrink:0;display:flex;gap:8px;padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid #e5e7eb;background:#fff;}
+.loc-btn{flex:1;border:none;border-radius:13px;padding:13px 10px;font-family:'Inter',sans-serif;font-size:14px;font-weight:850;cursor:pointer;}
+.loc-btn.cancel{background:#f3f4f6;color:#374151;}
+.loc-btn.save{background:#0a84ff;color:#fff;}
+.loc-btn.gps{background:#ecfff1;color:#047857;border:1px solid #a7f3d0;}
+.loc-crosshair{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#0a84ff;color:#fff;border:3px solid #fff;box-shadow:0 4px 18px rgba(0,0,0,.45);font-size:22px;transform:translate(-50%,-50%);}
+.loc-note{font-size:11px;color:#6b7280;padding:7px 14px 0;background:#fff;line-height:1.35;}
+
 </style>
 </head>
 <body>
@@ -340,9 +366,9 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
     </div>
 
     <div class="stats-row">
-      <div class="stat-card"><span class="stat-num" id="s-rat">0</span><div class="stat-lbl">Sichtungen</div></div>
-      <div class="stat-card"><span class="stat-num" id="s-action">0</span><div class="stat-lbl">Maßnahmen</div></div>
-      <div class="stat-card"><span class="stat-num" id="s-today">0</span><div class="stat-lbl">Heute</div></div>
+      <div class="stat-card" onclick="openStatList('rat')"><span class="stat-num" id="s-rat">0</span><div class="stat-lbl">Sichtungen</div></div>
+      <div class="stat-card" onclick="openStatList('action')"><span class="stat-num" id="s-action">0</span><div class="stat-lbl">Maßnahmen</div></div>
+      <div class="stat-card" onclick="openStatList('today')"><span class="stat-num" id="s-today">0</span><div class="stat-lbl">Heute</div></div>
     </div>
 
     <div class="info-card">
@@ -469,6 +495,14 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
     <button class="mf-btn" id="mf-rat" onclick="setMapFilter('rat')">🔴 Sichtungen</button>
     <button class="mf-btn" id="mf-action" onclick="setMapFilter('action')">🟢 Maßnahmen</button>
   </div>
+  <div class="date-filter">
+    <span class="df-lbl">Datum</span>
+    <input class="df-inp" type="date" id="map-date-from" onchange="setDateRangeFromInputs('map')" />
+    <span class="df-lbl">bis</span>
+    <input class="df-inp" type="date" id="map-date-to" onchange="setDateRangeFromInputs('map')" />
+    <button class="df-btn" id="map-today-btn" onclick="setTodayDateFilter()">Heute</button>
+    <button class="df-btn" onclick="clearDateFilter()">Alle</button>
+  </div>
   <div class="map-wrap">
     <div id="map"></div>
     <div class="map-empty-overlay" id="map-empty"><span style="font-size:34px">🗺️</span><span>Noch keine Einträge auf der Karte</span></div>
@@ -495,6 +529,14 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
     <button class="lf-btn act" id="lf-all" onclick="setListFilter('all')">Alle</button>
     <button class="lf-btn" id="lf-rat" onclick="setListFilter('rat')">🔴 Sichtungen</button>
     <button class="lf-btn" id="lf-action" onclick="setListFilter('action')">🟢 Maßnahmen</button>
+  </div>
+  <div class="date-filter">
+    <span class="df-lbl">Meldedatum</span>
+    <input class="df-inp" type="date" id="list-date-from" onchange="setDateRangeFromInputs('list')" />
+    <span class="df-lbl">bis</span>
+    <input class="df-inp" type="date" id="list-date-to" onchange="setDateRangeFromInputs('list')" />
+    <button class="df-btn" id="list-today-btn" onclick="setTodayDateFilter()">Heute</button>
+    <button class="df-btn" onclick="clearDateFilter()">Alle</button>
   </div>
   <div class="scroll-body" style="padding-top:10px" id="list-body"></div>
   <nav class="tab-bar">
@@ -628,6 +670,23 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
   <div class="lb-cap" id="lb-cap"></div>
 </div>
 
+<!-- Standort genau setzen -->
+<div class="loc-picker-bg" id="loc-picker-bg">
+  <div class="loc-picker">
+    <div class="loc-picker-head">
+      <div class="loc-picker-title">📍 Genauen Fundort setzen</div>
+      <div class="loc-picker-sub">Tippe auf die Karte, um den Punkt exakt dort zu setzen, wo du die Ratte oder Maßnahme gesehen hast.</div>
+    </div>
+    <div id="loc-map" class="loc-map"></div>
+    <div class="loc-note" id="loc-note">Der GPS-Standort ist vorgewählt. Du kannst ihn per Fingertipp korrigieren.</div>
+    <div class="loc-picker-actions">
+      <button class="loc-btn cancel" onclick="closeLocationPicker(false)">Abbrechen</button>
+      <button class="loc-btn gps" onclick="centerPickerOnGPS()">GPS neu</button>
+      <button class="loc-btn save" onclick="closeLocationPicker(true)">Punkt übernehmen</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -654,9 +713,15 @@ let map           = null;
 let mapMarkers    = [];
 let mapFilter     = 'all';
 let listFilter    = 'all';
+let dateFilterFrom = '';
+let dateFilterTo   = '';
 let isHaupt       = false;
 let curPage       = 'home';
 let db            = null;
+let locPickerMap  = null;
+let locPickerMarker = null;
+let locPickerTarget = null;
+let locPickerCoord = null;
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -690,7 +755,8 @@ function goPage(name){
       });
     });
   }
-  if(name==='liste') renderList();
+  if(name==='liste') { syncDateInputs(); renderList(); }
+  if(name==='karte') syncDateInputs();
   if(name==='abo')   checkAboStatus();
   window.scrollTo(0,0);
 }
@@ -726,15 +792,66 @@ function getGPS(inputId, hintId){
         const near=[s,c].filter(Boolean).join(', ');
         if(near) label=near;
       }
-      document.getElementById(inputId).value=label;
-      hint.innerHTML=`✅ Exakter GPS-Punkt gespeichert<br><span class="gps-exact">Koordinaten: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · Genauigkeit ca. ${Math.round(accuracy)} m`:''}</span>`;
-      hint.className='hint ok';
-    }catch(e){
-      document.getElementById(inputId).value=label;
-      hint.innerHTML=`✅ Exakter GPS-Punkt gespeichert<br><span class="gps-exact">Koordinaten: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · Genauigkeit ca. ${Math.round(accuracy)} m`:''}</span>`;
+    }catch(e){}
+    document.getElementById(inputId).value=label;
+    hint.innerHTML=`✅ GPS-Punkt erkannt. Jetzt auf der Karte genau setzen.<br><span class="gps-exact">Koordinaten: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · Genauigkeit ca. ${Math.round(accuracy)} m`:''}</span>`;
+    hint.className='hint ok';
+    openLocationPicker(inputId, hintId, coordObj, label);
+  },err=>{hint.textContent=['','⚠️ GPS verweigert','⚠️ Nicht ermittelbar','⚠️ Zeitüberschreitung'][err.code]||'⚠️ GPS-Fehler';hint.className='hint err';},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+
+function openLocationPicker(inputId, hintId, coordObj, label){
+  locPickerTarget={inputId,hintId,label};
+  locPickerCoord={...coordObj, source:'map-gps', exact:true};
+  const bg=document.getElementById('loc-picker-bg');
+  if(!bg)return;
+  bg.classList.add('open');
+  setTimeout(()=>{
+    if(!locPickerMap){
+      const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,attribution:'© OpenStreetMap'});
+      const aerial=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Luftbild © Esri'});
+      const labels=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:20,pane:'shadowPane',attribution:'Beschriftung © OpenStreetMap © CARTO'});
+      locPickerMap=L.map('loc-map',{layers:[street],zoomControl:true,attributionControl:false}).setView([coordObj.lat,coordObj.lon],19);
+      L.control.layers({'Straßenkarte':street,'Luftbild / Häuser':aerial},{'Straßennamen über Luftbild':labels},{collapsed:true,position:'topright'}).addTo(locPickerMap);
+      locPickerMap.on('click',e=>setPickerPoint(e.latlng.lat,e.latlng.lng,null,'manual'));
+    }
+    locPickerMap.invalidateSize();
+    locPickerMap.setView([coordObj.lat,coordObj.lon],19);
+    setPickerPoint(coordObj.lat,coordObj.lon,coordObj.accuracy,'map-gps');
+  },200);
+}
+
+function setPickerPoint(lat,lon,accuracy,source){
+  locPickerCoord={lat,lon,accuracy:accuracy||null,source:source||'manual',exact:true};
+  const icon=L.divIcon({className:'',html:'<div class="loc-crosshair">📍</div>',iconSize:[42,42],iconAnchor:[21,21]});
+  if(!locPickerMarker){locPickerMarker=L.marker([lat,lon],{icon,draggable:true}).addTo(locPickerMap);locPickerMarker.on('dragend',e=>{const p=e.target.getLatLng();setPickerPoint(p.lat,p.lng,null,'manual');});}
+  else locPickerMarker.setLatLng([lat,lon]);
+  const note=document.getElementById('loc-note');
+  if(note) note.textContent=`Gewählter Punkt: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · GPS-Genauigkeit ca. ${Math.round(accuracy)} m`:''}. Du kannst den Marker auch ziehen.`;
+}
+
+function centerPickerOnGPS(){
+  if(!navigator.geolocation){toast('⚠️ GPS nicht verfügbar');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude:lat,longitude:lon,accuracy}=pos.coords;
+    if(locPickerMap) locPickerMap.setView([lat,lon],19);
+    setPickerPoint(lat,lon,accuracy,'map-gps');
+  },()=>toast('⚠️ GPS konnte nicht neu ermittelt werden'),{enableHighAccuracy:true,timeout:12000,maximumAge:0});
+}
+
+function closeLocationPicker(save){
+  const bg=document.getElementById('loc-picker-bg');
+  if(bg) bg.classList.remove('open');
+  if(save&&locPickerTarget&&locPickerCoord){
+    if(locPickerTarget.inputId==='fr-street') coordsRat=locPickerCoord;
+    else coordsAction=locPickerCoord;
+    const hint=document.getElementById(locPickerTarget.hintId);
+    if(hint){
+      hint.innerHTML=`✅ Genauer Kartenpunkt gespeichert<br><span class="gps-exact">Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}${locPickerCoord.accuracy?` · Genauigkeit ca. ${Math.round(locPickerCoord.accuracy)} m`:''}</span>`;
       hint.className='hint ok';
     }
-  },err=>{hint.textContent=['','⚠️ GPS verweigert','⚠️ Nicht ermittelbar','⚠️ Zeitüberschreitung'][err.code]||'⚠️ GPS-Fehler';hint.className='hint err';},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+    toast('✅ Genauer Punkt übernommen');
+  }
 }
 
 // ── AUTOCOMPLETE ──
@@ -795,7 +912,7 @@ function submitReport(kind){
   const coords = isRat?coordsRat:coordsAction;
   const photoArr = isRat?photosRat:photosAction;
   const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoArr.length>0,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null,accuracy:coords?coords.accuracy:null,gpsSource:coords?coords.source:null,gpsExact:coords?!!coords.exact:false};
-  entries.unshift(entry); saveEntries(); updateStats(); syncSheets(entry);
+  entries.unshift(entry); saveEntries(); updateStats(); applyDateFilter(); syncSheets(entry);
   if(photoArr.length) savePhotoDB(id,[...photoArr]);
   toast(isRat?'✅ Meldung gespeichert!':'✅ Maßnahme gespeichert!');
   resetForm(kind); goPage('home');
@@ -818,10 +935,79 @@ async function syncSheets(r){const url=window._sheetsUrl||localStorage.getItem('
 
 // ── STATS ──
 function updateStats(){
-  const today=new Date().toDateString();
+  const today=localDateValue(new Date());
   document.getElementById('s-rat').textContent=entries.filter(e=>e.kind==='rat').length;
   document.getElementById('s-action').textContent=entries.filter(e=>e.kind==='action').length;
-  document.getElementById('s-today').textContent=entries.filter(e=>new Date(e.createdAt).toDateString()===today).length;
+  document.getElementById('s-today').textContent=entries.filter(e=>entryDateValue(e)===today).length;
+}
+
+function localDateValue(d){
+  const x = d instanceof Date ? d : new Date(d || Date.now());
+  if(isNaN(x)) return '';
+  const y = x.getFullYear();
+  const m = String(x.getMonth()+1).padStart(2,'0');
+  const day = String(x.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function entryDateValue(e){
+  return localDateValue(e.createdAt || e.time || Date.now());
+}
+function entryInDateRange(e){
+  const v = entryDateValue(e);
+  if(dateFilterFrom && v < dateFilterFrom) return false;
+  if(dateFilterTo && v > dateFilterTo) return false;
+  return true;
+}
+function syncDateInputs(){
+  ['list','map'].forEach(prefix=>{
+    const from=document.getElementById(prefix+'-date-from');
+    const to=document.getElementById(prefix+'-date-to');
+    const btn=document.getElementById(prefix+'-today-btn');
+    if(from) from.value=dateFilterFrom;
+    if(to) to.value=dateFilterTo;
+    if(btn){
+      const today=localDateValue(new Date());
+      btn.classList.toggle('active', dateFilterFrom===today && dateFilterTo===today);
+    }
+  });
+}
+function applyDateFilter(){
+  syncDateInputs();
+  if(curPage==='liste') renderList();
+  if(curPage==='karte') refreshMarkers();
+}
+function setDateRangeFromInputs(prefix){
+  const from=document.getElementById(prefix+'-date-from');
+  const to=document.getElementById(prefix+'-date-to');
+  dateFilterFrom = from ? from.value : '';
+  dateFilterTo   = to ? to.value : '';
+  if(dateFilterFrom && dateFilterTo && dateFilterFrom > dateFilterTo){
+    const tmp=dateFilterFrom; dateFilterFrom=dateFilterTo; dateFilterTo=tmp;
+    toast('↔️ Datum wurde automatisch sortiert');
+  }
+  applyDateFilter();
+}
+function setTodayDateFilter(){
+  const today=localDateValue(new Date());
+  dateFilterFrom=today;
+  dateFilterTo=today;
+  applyDateFilter();
+}
+function clearDateFilter(){
+  dateFilterFrom='';
+  dateFilterTo='';
+  applyDateFilter();
+}
+function openStatList(kind){
+  if(kind==='today'){
+    listFilter='all';
+    setTodayDateFilter();
+  }else{
+    clearDateFilter();
+    listFilter=kind;
+  }
+  goPage('liste');
+  setTimeout(()=>{ setListFilter(listFilter); syncDateInputs(); }, 80);
 }
 
 // ── LIST ──
@@ -837,11 +1023,11 @@ function setListFilter(f){
 
 async function renderList(){
   const el=document.getElementById('list-body');
-  const filtered = listFilter==='all' ? entries : entries.filter(e=>e.kind===listFilter);
+  const filtered = (listFilter==='all' ? entries : entries.filter(e=>e.kind===listFilter)).filter(entryInDateRange);
   const rats = entries.filter(e=>e.kind==='rat');
   const neuRats = rats.filter(e=>!e.status||e.status==='neu');
-  document.getElementById('list-count').textContent=`${rats.length} Sichtungen · ${entries.filter(e=>e.kind==='action').length} Maßnahmen`;
-  if(!filtered.length){el.innerHTML=`<div class="empty-state"><div class="ei">🔍</div><div class="et">Noch keine Einträge</div></div>`;return;}
+  document.getElementById('list-count').textContent=`${filtered.length} angezeigt · ${rats.length} Sichtungen · ${entries.filter(e=>e.kind==='action').length} Maßnahmen`;
+  if(!filtered.length){el.innerHTML=`<div class="empty-state"><div class="ei">🔍</div><div class="et">Keine Einträge für diese Auswahl</div></div>`;return;}
   let html='';
   for(const r of filtered){
     const d=new Date(r.time||r.createdAt);
@@ -938,7 +1124,7 @@ function markerClass(r){
 async function refreshMarkers(){
   if(!map)return;
   mapMarkers.forEach(m=>map.removeLayer(m));mapMarkers=[];
-  const filtered=entries.filter(e=>e.lat&&e.lon&&(mapFilter==='all'||e.kind===mapFilter));
+  const filtered=entries.filter(e=>e.lat&&e.lon&&(mapFilter==='all'||e.kind===mapFilter)&&entryInDateRange(e));
   document.getElementById('map-empty').style.display=filtered.length?'none':'flex';
   for(const r of filtered){
     const isRat=r.kind==='rat';
@@ -950,7 +1136,7 @@ async function refreshMarkers(){
     const typeCls=isRat?'pu-rat':'pu-action';
     const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
     const photoHtml=photoArr.length?`<img class="pu-photo" src="${photoArr[0]}" onclick="openLightbox(${r.id},0)" />`:'';
-    const gpsLine=r.lat?`<div class="pu-coords">${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}</div>`:'';
+    const gpsLine=r.lat?`<div class="pu-coords">${r.gpsExact?'Exakt gesetzter Kartenpunkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}</div>`:'';
     const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
     m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap(${r.id})">Meldung öffnen</button>`);
     mapMarkers.push(m);
