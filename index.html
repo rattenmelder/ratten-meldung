@@ -24,10 +24,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .page.active{display:flex;}
 
 /* ── TAB BAR ── */
-.tab-bar{flex-shrink:0;display:flex;background:rgba(19,19,26,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom,0px);margin-bottom:72px;}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 6px;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:10px;font-weight:600;letter-spacing:.2px;transition:color .15s;}
+.tab-bar{flex-shrink:0;display:flex;background:rgba(19,19,26,.985);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--border);padding:8px 6px max(10px,env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.35);}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0 7px;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1px;transition:color .15s,transform .15s;}
 .tab-item.active{color:var(--red);}
-.ti{font-size:20px;line-height:1;}
+.tab-item:active{transform:scale(.96);}
+.ti{font-size:24px;line-height:1;}
 
 /* ── NAV HEADER ── */
 .nav-hdr{flex-shrink:0;display:flex;align-items:center;padding:14px 18px 12px;gap:12px;border-bottom:1px solid var(--border);background:var(--bg);}
@@ -35,7 +36,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .nav-title{font-size:17px;font-weight:700;letter-spacing:-.3px;flex:1;}
 
 /* ── SCROLL BODY ── */
-.scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 18px 20px;}
+.scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 18px 24px;}
 
 /* ── HOME ── */
 #page-home .scroll-body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:50px;}
@@ -309,7 +310,6 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
   .page[id="page-melden-rat"] .scroll-body,
   .page[id="page-melden-action"] .scroll-body,
   #page-abo .scroll-body{padding-bottom:120px!important;}
-  .tab-bar{margin-bottom:72px;}
 }
 
 
@@ -366,9 +366,9 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
     </div>
 
     <div class="stats-row">
-      <div class="stat-card" onclick="openStatList('rat')"><span class="stat-num" id="s-rat">0</span><div class="stat-lbl">Sichtungen</div></div>
-      <div class="stat-card" onclick="openStatList('action')"><span class="stat-num" id="s-action">0</span><div class="stat-lbl">Maßnahmen</div></div>
-      <div class="stat-card" onclick="openStatList('today')"><span class="stat-num" id="s-today">0</span><div class="stat-lbl">Heute</div></div>
+      <div class="stat-card" role="button" title="Alle Sichtungen anzeigen" onclick="openStatList('rat')"><span class="stat-num" id="s-rat">0</span><div class="stat-lbl">Sichtungen</div></div>
+      <div class="stat-card" role="button" title="Alle Maßnahmen anzeigen" onclick="openStatList('action')"><span class="stat-num" id="s-action">0</span><div class="stat-lbl">Maßnahmen</div></div>
+      <div class="stat-card" role="button" title="Heutige Meldungen anzeigen" onclick="openStatList('today')"><span class="stat-num" id="s-today">0</span><div class="stat-lbl">Heute</div></div>
     </div>
 
     <div class="info-card">
@@ -465,6 +465,8 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
         <div class="tc" data-val="Rattenbau verschlossen" onclick="pickType(this,'action')"><span class="tc-icon">🧱</span><span class="tc-label">Bau verschlossen</span></div>
         <div class="tc" data-val="Hinweisschild aufgestellt" onclick="pickType(this,'action')"><span class="tc-icon">⚠️</span><span class="tc-label">Hinweisschild</span></div>
         <div class="tc" data-val="Köderbox kontrolliert" onclick="pickType(this,'action')"><span class="tc-icon">🔍</span><span class="tc-label">Box kontrolliert</span></div>
+        <div class="tc" data-val="Meldung an Stadt Hamburg" onclick="pickType(this,'action')"><span class="tc-icon">📧</span><span class="tc-label">Stadt informiert</span></div>
+        <div class="tc" data-val="Meldung an Bezirksamt" onclick="pickType(this,'action')"><span class="tc-icon">🏛️</span><span class="tc-label">Bezirksamt informiert</span></div>
         <div class="tc" data-val="Sonstige Maßnahme" onclick="pickType(this,'action')"><span class="tc-icon">🔧</span><span class="tc-label">Sonstiges</span></div>
       </div>
     </div>
@@ -827,7 +829,7 @@ function setPickerPoint(lat,lon,accuracy,source){
   if(!locPickerMarker){locPickerMarker=L.marker([lat,lon],{icon,draggable:true}).addTo(locPickerMap);locPickerMarker.on('dragend',e=>{const p=e.target.getLatLng();setPickerPoint(p.lat,p.lng,null,'manual');});}
   else locPickerMarker.setLatLng([lat,lon]);
   const note=document.getElementById('loc-note');
-  if(note) note.textContent=`Gewählter Punkt: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · GPS-Genauigkeit ca. ${Math.round(accuracy)} m`:''}. Du kannst den Marker auch ziehen.`;
+  if(note) note.textContent=`Gewählter Punkt: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · GPS-Genauigkeit ca. ${Math.round(accuracy)} m`:''}. Beim Übernehmen werden GPS-Daten und nächste Adresse neu gespeichert.`;
 }
 
 function centerPickerOnGPS(){
@@ -839,19 +841,43 @@ function centerPickerOnGPS(){
   },()=>toast('⚠️ GPS konnte nicht neu ermittelt werden'),{enableHighAccuracy:true,timeout:12000,maximumAge:0});
 }
 
-function closeLocationPicker(save){
+async function reverseAddressFromCoords(lat,lon){
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=de&zoom=18&addressdetails=1`);
+    const d=await r.json();
+    const a=d?.address||{};
+    const street=[a.road,a.house_number].filter(Boolean).join(' ');
+    const place=[a.postcode,a.city||a.town||a.village||a.suburb].filter(Boolean).join(' ');
+    const label=[street,place].filter(Boolean).join(', ');
+    return label || d?.display_name?.split(',').slice(0,3).join(', ') || '';
+  }catch(e){
+    return '';
+  }
+}
+
+async function closeLocationPicker(save){
   const bg=document.getElementById('loc-picker-bg');
-  if(bg) bg.classList.remove('open');
   if(save&&locPickerTarget&&locPickerCoord){
-    if(locPickerTarget.inputId==='fr-street') coordsRat=locPickerCoord;
-    else coordsAction=locPickerCoord;
     const hint=document.getElementById(locPickerTarget.hintId);
     if(hint){
-      hint.innerHTML=`✅ Genauer Kartenpunkt gespeichert<br><span class="gps-exact">Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}${locPickerCoord.accuracy?` · Genauigkeit ca. ${Math.round(locPickerCoord.accuracy)} m`:''}</span>`;
+      hint.innerHTML=`🔄 Adresse zum gewählten Punkt wird aktualisiert…<br><span class="gps-exact">Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}</span>`;
+      hint.className='hint';
+    }
+    const newLabel=await reverseAddressFromCoords(locPickerCoord.lat,locPickerCoord.lon);
+    const finalLabel=newLabel || `GPS: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}`;
+    locPickerCoord.address=finalLabel;
+    locPickerCoord.label=finalLabel;
+    const input=document.getElementById(locPickerTarget.inputId);
+    if(input) input.value=finalLabel;
+    if(locPickerTarget.inputId==='fr-street') coordsRat=locPickerCoord;
+    else coordsAction=locPickerCoord;
+    if(hint){
+      hint.innerHTML=`✅ Genauer Kartenpunkt und nächste Adresse gespeichert<br><span class="gps-exact">${finalLabel}<br>Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}${locPickerCoord.accuracy?` · Genauigkeit ca. ${Math.round(locPickerCoord.accuracy)} m`:''}</span>`;
       hint.className='hint ok';
     }
-    toast('✅ Genauer Punkt übernommen');
+    toast('✅ Punkt und Adresse übernommen');
   }
+  if(bg) bg.classList.remove('open');
 }
 
 // ── AUTOCOMPLETE ──
@@ -999,15 +1025,34 @@ function clearDateFilter(){
   applyDateFilter();
 }
 function openStatList(kind){
+  // Startseiten-Kacheln öffnen direkt die passende Meldeliste.
+  // Sichtungen => nur Rattenmeldungen, Maßnahmen => nur Gegenmaßnahmen, Heute => alle heutigen Einträge.
   if(kind==='today'){
     listFilter='all';
-    setTodayDateFilter();
+    const today=localDateValue(new Date());
+    dateFilterFrom=today;
+    dateFilterTo=today;
+  }else if(kind==='rat'){
+    listFilter='rat';
+    dateFilterFrom='';
+    dateFilterTo='';
+  }else if(kind==='action'){
+    listFilter='action';
+    dateFilterFrom='';
+    dateFilterTo='';
   }else{
-    clearDateFilter();
-    listFilter=kind;
+    listFilter='all';
+    dateFilterFrom='';
+    dateFilterTo='';
   }
   goPage('liste');
-  setTimeout(()=>{ setListFilter(listFilter); syncDateInputs(); }, 80);
+  setTimeout(()=>{
+    setListFilter(listFilter);
+    syncDateInputs();
+    const body=document.getElementById('list-body');
+    if(body) body.scrollTop=0;
+    toast(kind==='today'?'📅 Heutige Meldungen':kind==='rat'?'🐀 Sichtungen':'🟢 Maßnahmen');
+  }, 80);
 }
 
 // ── LIST ──
@@ -1026,7 +1071,7 @@ async function renderList(){
   const filtered = (listFilter==='all' ? entries : entries.filter(e=>e.kind===listFilter)).filter(entryInDateRange);
   const rats = entries.filter(e=>e.kind==='rat');
   const neuRats = rats.filter(e=>!e.status||e.status==='neu');
-  document.getElementById('list-count').textContent=`${filtered.length} angezeigt · ${rats.length} Sichtungen · ${entries.filter(e=>e.kind==='action').length} Maßnahmen`;
+  document.getElementById('list-count').textContent=`${filtered.length} angezeigt · ${rats.length} Sichtungen · ${entries.filter(e=>e.kind==='action').length} Maßnahmen · ${entries.filter(e=>e.kind==='action'&&(e.type||'').toLowerCase().includes('meldung')).length} Behördenmeldungen`;
   if(!filtered.length){el.innerHTML=`<div class="empty-state"><div class="ei">🔍</div><div class="et">Keine Einträge für diese Auswahl</div></div>`;return;}
   let html='';
   for(const r of filtered){
@@ -1038,7 +1083,7 @@ async function renderList(){
     const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
     const photoHtml=photoArr.length?`<div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${u}" onclick="openLightbox(${r.id},${i})" />`).join('')}</div>`:'';
     const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort der Stadt Hamburg</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
-    html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${r.kind==='rat'?'🐀':'🟢'} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div></div>`;
+    html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div></div>`;
   }
   el.innerHTML=html;
 }
@@ -1103,11 +1148,13 @@ function setMapFilter(f){
 function markerEmoji(r){
   const t=(r.type||'').toLowerCase();
   if(r.kind==='action'){
+    if(t.includes('meldung')||t.includes('stadt')||t.includes('bezirksamt')||t.includes('behörde')) return '📧';
     if(t.includes('köderbox')) return '📦';
     if(t.includes('bekämpfer')) return '👷';
     if(t.includes('verschlossen')) return '🧱';
     if(t.includes('hinweisschild')) return '⚠️';
     if(t.includes('kontrolliert')) return '🔍';
+    if((r.status||'').toLowerCase().includes('erledigt')) return '✅';
     return '🟢';
   }
   if(t.includes('tote')) return '☠️🐀';
@@ -1172,20 +1219,79 @@ function aboAustragen(){if(!confirm('Abmelden?'))return;const myId=localStorage.
 // ── EMAIL ──
 function openEmailSheet(){
   const neu=entries.filter(e=>e.kind==='rat'&&(!e.status||e.status==='neu'));
-  if(!neu.length){toast('✅ Alle Sichtungen bereits gesendet');return;}
+  if(!neu.length){toast('✅ Alle Sichtungen wurden bereits an die Stadt vorbereitet oder gesendet');return;}
   const today=new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
   const streets=[...new Set(neu.map(r=>r.street))];
   let body=`Sehr geehrte Damen und Herren,\n\nim Rahmen unserer Nachbarschaft haben wir gehäuft Ratten in Hamburg beobachtet:\n\n━━━━━━━━━━━━━━━━━━━\nNEUE SICHTUNGEN: ${neu.length} · ${today}\nOrte: ${streets.join(', ')}\n━━━━━━━━━━━━━━━━━━━\n\n`;
-  neu.forEach((r,i)=>{const d=new Date(r.time||r.createdAt);const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});body+=`${i+1}. ${r.street}\n   Art: ${r.type}\n   Zeit: ${ts}\n   Beschreibung: ${r.desc}\n${r.hasPhotos?'   Fotos: vorhanden\n':''}\n`;});
-  body+=`Wir bitten um geeignete Maßnahmen.\n\nMit freundlichen Grüßen\n${GRUPPENNAME}`;
+  neu.forEach((r,i)=>{const d=new Date(r.time||r.createdAt);const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});body+=`${i+1}. ${r.street}\n   Art: ${r.type}\n   Zeit: ${ts}\n   Beschreibung: ${r.desc}\n${r.lat?`   GPS: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}\n`:''}${r.hasPhotos?'   Fotos: vorhanden\n':''}\n`;});
+  body+=`Wir bitten um geeignete Maßnahmen und eine kurze Rückmeldung zum weiteren Vorgehen.\n\nMit freundlichen Grüßen\n${GRUPPENNAME}`;
   const subject=`Ratten-Meldung Hamburg – ${neu.length} neue Sichtungen (${today})`;
   document.getElementById('email-pre').textContent=body;
-  document.getElementById('email-link').href=`mailto:schaedlingsbekaempfung@hu.hamburg.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const emailLink=document.getElementById('email-link');
+  emailLink.href=`mailto:schaedlingsbekaempfung@hu.hamburg.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  emailLink.setAttribute('onclick', "markGesendet(); closeSheet('email-sheet'); toast('📧 Als Meldung an die Stadt dokumentiert');");
+  emailLink.textContent='📧 Mail-App öffnen';
   document.getElementById('email-sheet').classList.add('open');
   window._pendingSend=neu.map(r=>r.id);
+  window._pendingSubject=subject;
+  window._pendingBody=body;
 }
-function copyEmail(){navigator.clipboard.writeText(document.getElementById('email-pre').textContent).then(()=>{markGesendet();toast('📋 Kopiert! Status auf Gesendet gesetzt.');});}
-function markGesendet(){if(!window._pendingSend)return;entries.forEach(e=>{if(window._pendingSend.includes(e.id)){e.gesendet=true;e.status='gesendet';}});saveEntries();window._pendingSend=null;if(curPage==='liste')renderList();}
+function copyEmail(){
+  navigator.clipboard.writeText(document.getElementById('email-pre').textContent).then(()=>{
+    markGesendet();
+    toast('📋 Kopiert und als Meldung an die Stadt dokumentiert.');
+  });
+}
+function markGesendet(){
+  if(!window._pendingSend||!window._pendingSend.length)return;
+  const sentAt=new Date().toISOString();
+  const pendingIds=[...window._pendingSend];
+  const subject=window._pendingSubject||'Ratten-Meldung Hamburg';
+  const body=window._pendingBody||'';
+  const existingLinks=new Set(entries.filter(e=>e.kind==='action'&&e.linkedRatId).map(e=>String(e.linkedRatId)));
+  const newActions=[];
+  pendingIds.forEach((id,idx)=>{
+    const rat=entries.find(e=>e.id===id);
+    if(!rat)return;
+    rat.gesendet=true;
+    rat.status='gesendet';
+    rat.sentToCityAt=sentAt;
+    rat.emailSubject=subject;
+    if(!existingLinks.has(String(id))){
+      newActions.push({
+        id:Date.now()+idx+1,
+        kind:'action',
+        street:rat.street,
+        type:'Meldung an Stadt Hamburg',
+        desc:`E-Mail an die Stadt Hamburg vorbereitet/gesendet. Bezug zur Sichtung: ${rat.type}. ${rat.desc}`,
+        time:sentAt,
+        name:'System',
+        hasPhotos:false,
+        status:'gesendet',
+        stadtAntwort:'',
+        createdAt:sentAt,
+        lat:rat.lat||null,
+        lon:rat.lon||null,
+        accuracy:rat.accuracy||null,
+        gpsSource:rat.gpsSource||'linked-rat',
+        gpsExact:!!rat.gpsExact,
+        linkedRatId:rat.id,
+        emailRecipient:'schaedlingsbekaempfung@hu.hamburg.de',
+        emailSubject:subject,
+        emailBody:body,
+        emailSentAt:sentAt
+      });
+    }
+  });
+  if(newActions.length){entries=[...newActions,...entries];}
+  saveEntries();
+  updateStats();
+  refreshMarkers();
+  window._pendingSend=null;
+  window._pendingSubject='';
+  window._pendingBody='';
+  if(curPage==='liste')renderList();
+}
 
 // ── SHEETS ──
 function openSheetBg(id){document.getElementById(id).classList.add('open');}
