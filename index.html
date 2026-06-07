@@ -643,10 +643,44 @@ body.keyboard-open select{
 /* Der Button darf bei offener Tastatur nicht zwangsweise in den Mittelpunkt scrollen. */
 body.keyboard-open .submit-btn{margin-bottom:18px;}
 
+
+
+/* === PATCH 3: Kartenhöhe, kein Seiten-Blitz beim Aktualisieren, ruhiger Keyboard-Scroll === */
+body.preinit .page{display:none !important;}
+
+/* Karte bekommt eine feste sichtbare Höhe. Leaflet rendert sonst auf iPhone manchmal erst nach Zoom korrekt. */
+#page-karte{height:var(--app-height,100dvh) !important;}
+#page-karte .map-wrap{
+  flex:0 0 auto !important;
+  height:calc(var(--app-height,100dvh) - 300px - var(--bottom-nav-height,92px) - env(safe-area-inset-bottom,0px)) !important;
+  min-height:360px !important;
+  padding-bottom:0 !important;
+  margin-bottom:0 !important;
+  background:#e9eef3;
+}
+#page-karte #map{
+  width:100% !important;
+  height:100% !important;
+  min-height:360px !important;
+  display:block !important;
+}
+@media (max-height:720px){
+  #page-karte .map-wrap{height:calc(var(--app-height,100dvh) - 270px - var(--bottom-nav-height,92px)) !important;min-height:300px !important;}
+  #page-karte #map{min-height:300px !important;}
+}
+
+/* Bei offener Tastatur nur das aktive Feld sichtbar halten, nicht automatisch zum Meldebutton springen. */
+body.keyboard-open .submit-btn,
+body.keyboard-open .form-check,
+body.keyboard-open .photo-zone{scroll-margin-bottom:40px !important;}
+body.keyboard-open input,
+body.keyboard-open textarea,
+body.keyboard-open select{scroll-margin-top:74px !important;scroll-margin-bottom:42px !important;}
+
 </style>
 <!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
 </head>
-<body>
+<body class="preinit">
 
 <!-- ═══════════ STARTSEITE ═══════════ -->
 <div class="page active" id="page-home">
@@ -1089,9 +1123,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('click', e => {
     if (!e.target.closest('.ac-wrap')) { closeAC('fr-ac'); closeAC('fa-ac'); }
   });
-  await loadSupabaseData(); updateStats(); checkAboStatus(); showPrivacyConsentIfNeeded();
+
+  // Wichtig: Zuerst die per Hash gewünschte Seite anzeigen, dann Daten laden.
+  // Dadurch sieht man beim Aktualisieren nicht kurz die Startseite.
   const initialPage = pageFromHash();
-  if(initialPage !== 'home') goPage(initialPage);
+  goPage(initialPage);
+  document.body.classList.remove('preinit');
+
+  await loadSupabaseData();
+  updateStats();
+  checkAboStatus();
+  showPrivacyConsentIfNeeded();
+  if(curPage==='liste') renderList();
+  if(curPage==='karte') stableMapResize(true);
+
   window.addEventListener('hashchange', () => {
     const targetPage = pageFromHash();
     if(targetPage !== curPage) goPage(targetPage);
@@ -1573,7 +1618,7 @@ function imgFallback(img,label){
 
 // ── MAP ──
 function initMap(){
-  if(map) { setTimeout(()=>{ map.invalidateSize(); refreshMarkers(); }, 100); return; }
+  if(map) { stableMapResize(true); return; }
   // Karte Container muss sichtbar sein
   const container = document.getElementById('map');
   container.style.height = '100%';
@@ -1611,7 +1656,8 @@ function initMap(){
   ).addTo(map);
 
   L.control.attribution({prefix: false}).addTo(map);
-  setTimeout(() => { map.invalidateSize(); refreshMarkers(); }, 200);
+  setTimeout(() => { map.invalidateSize({pan:false}); refreshMarkers(false); fitMapToCurrentMarkers(); }, 120);
+  setTimeout(() => { map.invalidateSize({pan:false}); refreshMarkers(false); fitMapToCurrentMarkers(); }, 500);
 }
 function setMapFilter(f){
   mapFilter=f;
@@ -1644,7 +1690,7 @@ function markerClass(r){
   if(r.kind==='action') return 'action';
   return (r.type||'').toLowerCase().includes('tote') ? 'dead' : 'rat';
 }
-async function refreshMarkers(){
+async function refreshMarkers(shouldFit=true){
   if(!map)return;
   mapMarkers.forEach(m=>map.removeLayer(m));mapMarkers=[];
   const filtered=entries.filter(e=>e.lat&&e.lon&&entryInDateRange(e)&&((mapFilter==='all')||(mapFilter==='rat'&&e.kind==='rat')||(mapFilter==='action'&&e.kind==='action'&&!isAuthorityEntry(e))||(mapFilter==='authority'&&isAuthorityEntry(e))||(mapFilter==='done'&&isDoneEntry(e))));
@@ -1665,7 +1711,7 @@ async function refreshMarkers(){
     m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap(${safeId})">Meldung öffnen</button>`);
     mapMarkers.push(m);
   }
-  if(filtered.length) map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3));
+  if(filtered.length && shouldFit) fitMapToCurrentMarkers();
 }
 function openEntryFromMap(id){
   if(map){map.closePopup();}
@@ -1961,6 +2007,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
   }
 
   function keepFocusedFieldVisible(){
+    if(!document.body.classList.contains('keyboard-open')) return;
     var el=document.activeElement;
     if(!el || !el.matches || !el.matches('input, textarea, select')) return;
     var vv=window.visualViewport;
@@ -1986,18 +2033,11 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
     }
   }, true);
 
-  document.addEventListener('input', function(e){
-    if(e.target && e.target.matches && e.target.matches('input, textarea')){
-      clearTimeout(focusTimer);
-      focusTimer=setTimeout(keepFocusedFieldVisible,180);
-    }
-  }, true);
-
   updateViewportSpace();
   window.addEventListener('resize', updateViewportSpace, {passive:true});
   window.addEventListener('orientationchange', function(){setTimeout(updateViewportSpace,250);}, {passive:true});
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', function(){updateViewportSpace();setTimeout(keepFocusedFieldVisible,120);}, {passive:true});
+    window.visualViewport.addEventListener('resize', function(){updateViewportSpace();}, {passive:true});
     window.visualViewport.addEventListener('scroll', updateViewportSpace, {passive:true});
   }
 })();
