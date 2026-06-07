@@ -1,12 +1,15 @@
 <!DOCTYPE html>
+<!-- BUILD: FINAL_RATTENMELDER_WORKFLOW_2026-06-07_1648 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Ratten melden Hamburg</title>
+<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_WORKFLOW_2026-06-07_1648</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
+console.log('Rattenmelder Version: FINAL_RATTENMELDER_WORKFLOW_2026-06-07_1648');
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -24,7 +27,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .page.active{display:flex;}
 
 /* ── TAB BAR ── */
-.tab-bar{flex-shrink:0;display:flex;background:rgba(19,19,26,.985);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--border);padding:8px 6px max(10px,env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.35);}
+.tab-bar{flex-shrink:0;display:flex;background:rgba(19,19,26,.985);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--border);padding:10px 6px max(12px,env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.35);}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0 7px;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1px;transition:color .15s,transform .15s;}
 .tab-item.active{color:var(--red);}
 .tab-item:active{transform:scale(.96);}
@@ -348,7 +351,164 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
 .loc-crosshair{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#0a84ff;color:#fff;border:3px solid #fff;box-shadow:0 4px 18px rgba(0,0,0,.45);font-size:22px;transform:translate(-50%,-50%);}
 .loc-note{font-size:11px;color:#6b7280;padding:7px 14px 0;background:#fff;line-height:1.35;}
 
+
+
+/* ── RESPONSIVE BOTTOM NAVIGATION FIX ──
+   Hält die Menüleiste auf iPhone, Android, Tablet und Desktop sauber am unteren sichtbaren Rand.
+   Die Leiste liegt nicht mehr mitten im Inhalt und wird nicht von der Browserleiste verdeckt. */
+:root{
+  --tabbar-height: 86px;
+  --tabbar-gap: 6px;
+  --browser-bottom: 0px;
+}
+
+.tab-bar{
+  position:fixed !important;
+  left:0;
+  right:0;
+  bottom:calc(var(--browser-bottom, 0px) + var(--tabbar-gap));
+  z-index:2500;
+  min-height:var(--tabbar-height);
+  padding:10px 8px max(12px, env(safe-area-inset-bottom, 0px)) !important;
+  background:rgba(19,19,26,.96) !important;
+  border-top:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:0 -12px 34px rgba(0,0,0,.42) !important;
+  backdrop-filter:blur(24px) saturate(150%) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(150%) !important;
+}
+
+.tab-item{
+  min-height:58px;
+  border-radius:16px;
+  font-size:12px !important;
+}
+.tab-item.active{
+  background:rgba(255,59,59,.10);
+}
+.tab-item .ti,.ti{
+  font-size:25px !important;
+}
+
+/* Inhalt bekommt unten genug Luft, damit nichts hinter der Leiste verschwindet */
+.scroll-body{
+  padding-bottom:calc(28px + var(--tabbar-height) + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+#page-karte .map-wrap{
+  margin-bottom:calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px));
+}
+
+#page-home .scroll-body{
+  padding-bottom:calc(42px + var(--tabbar-height) + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* Tablet */
+@media (min-width: 700px){
+  :root{--tabbar-height:92px;--tabbar-gap:12px;}
+  .tab-bar{
+    left:50%;
+    right:auto;
+    width:min(720px, calc(100vw - 32px));
+    transform:translateX(-50%);
+    border:1px solid rgba(255,255,255,.10) !important;
+    border-radius:28px;
+    padding:12px 14px !important;
+  }
+  .tab-item{font-size:13px !important;}
+}
+
+/* Desktop */
+@media (min-width: 1024px){
+  :root{--tabbar-height:78px;--tabbar-gap:18px;}
+  .tab-bar{
+    width:min(620px, calc(100vw - 48px));
+    min-height:var(--tabbar-height);
+    border-radius:24px;
+    padding:8px 12px !important;
+  }
+  .tab-item{
+    min-height:54px;
+    flex-direction:row;
+    justify-content:center;
+    gap:8px;
+    font-size:13px !important;
+  }
+  .tab-item .ti,.ti{font-size:22px !important;}
+  .scroll-body{padding-bottom:calc(36px + var(--tabbar-height)) !important;}
+  #page-karte .map-wrap{margin-bottom:calc(var(--tabbar-height) + 24px);}
+}
+
+
+/* ── WORKFLOW / DATENSCHUTZ / LEGAL ── */
+.stats-row.workflow-stats{max-width:380px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.workflow-note{width:100%;max-width:380px;background:rgba(10,132,255,.08);border:1px solid rgba(10,132,255,.22);border-radius:16px;padding:12px 14px;margin:0 0 12px;color:var(--text2);font-size:12px;line-height:1.5;}
+.cta-third{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;background:rgba(10,132,255,.12);border:1.5px solid rgba(10,132,255,.3);color:var(--blue);border-radius:18px;font-family:'Inter',sans-serif;font-size:16px;font-weight:800;cursor:pointer;touch-action:manipulation;-webkit-appearance:none;}
+.legal-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0 18px;font-size:12px;}
+.legal-links button{background:transparent;border:none;color:var(--orange);font:inherit;font-weight:700;cursor:pointer;padding:6px;}
+.form-check{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:10px;}
+.form-check input{width:18px;height:18px;margin-top:2px;accent-color:var(--orange);}
+.form-check span{font-size:12px;color:var(--text2);line-height:1.45;}
+.legal-page .scroll-body{padding-bottom:calc(40px + var(--tabbar-height,80px));}
+.legal-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;line-height:1.55;color:var(--text2);font-size:14px;}
+.legal-card h2{font-size:18px;color:var(--text);margin:0 0 8px;}
+.legal-card h3{font-size:15px;color:var(--text);margin:14px 0 6px;}
+.legal-card ul{margin-left:18px;}
+.legal-card li{margin:4px 0;}
+.workflow-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.workflow-btn{border:none;border-radius:10px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.workflow-btn.mail{background:rgba(10,132,255,.12);border-color:rgba(10,132,255,.3);color:var(--blue);}
+.workflow-btn.whatsapp{background:rgba(48,209,88,.12);border-color:rgba(48,209,88,.3);color:var(--green);}
+.workflow-btn.status{background:rgba(255,149,0,.12);border-color:rgba(255,149,0,.3);color:var(--orange);}
+.history-box{margin-top:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:10px;}
+.history-title{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:800;margin-bottom:6px;}
+.history-item{font-size:12px;color:var(--text2);line-height:1.45;padding:4px 0;border-top:1px solid rgba(255,255,255,.04);}
+.history-item:first-of-type{border-top:none;}
+.cookie-layer{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:5000;display:none;align-items:flex-end;justify-content:center;padding:16px;}
+.cookie-layer.open{display:flex;}
+.cookie-card{width:100%;max-width:560px;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.cookie-title{font-size:20px;font-weight:900;margin-bottom:8px;}
+.cookie-text{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:12px;}
+.cookie-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.cookie-btn{flex:1;min-width:140px;border:none;border-radius:12px;padding:12px;font-family:'Inter',sans-serif;font-size:14px;font-weight:900;cursor:pointer;}
+.cookie-btn.ok{background:var(--green);color:#000;}
+.cookie-btn.no{background:var(--surface2);border:1px solid var(--border);color:var(--text2);}
+.a-hint{font-size:12px;color:var(--text2);line-height:1.45;padding:0 18px 12px;}
+@media (min-width:768px){.stats-row.workflow-stats{max-width:520px}.cta-group{max-width:420px}.workflow-note{max-width:420px}.cookie-layer{align-items:center}}
+@media (max-width:380px){.stats-row.workflow-stats{grid-template-columns:repeat(2,1fr)}.stat-card{padding:10px 6px}.stat-num{font-size:20px}.stat-lbl{font-size:9px}}
+
+
+
+/* === FINAL responsive bottom navigation and map layer cleanup === */
+:root{--bottom-nav-height:92px;}
+.tab-bar{
+  position:fixed!important;
+  left:0;right:0;
+  bottom:0!important;
+  z-index:1200!important;
+  min-height:var(--bottom-nav-height);
+  padding:10px 8px calc(12px + env(safe-area-inset-bottom,0px))!important;
+  background:rgba(19,19,26,.985)!important;
+  border-top:1px solid var(--border)!important;
+  box-shadow:0 -12px 32px rgba(0,0,0,.45)!important;
+}
+.tab-item{font-size:12px!important;min-height:62px;border-radius:14px!important;}
+.tab-item .ti{font-size:26px!important;}
+.scroll-body,.a-scroll{padding-bottom:calc(var(--bottom-nav-height) + env(safe-area-inset-bottom,0px) + 28px)!important;}
+.map-wrap{padding-bottom:calc(var(--bottom-nav-height) + env(safe-area-inset-bottom,0px))!important;}
+#page-karte .map-wrap{height:auto!important;}
+#map{min-height:calc(100dvh - 310px - var(--bottom-nav-height))!important;}
+.leaflet-control-layers-overlays{display:none!important;}
+.leaflet-control-layers-separator{display:none!important;}
+@media (min-width:768px){
+  :root{--bottom-nav-height:76px;}
+  .tab-bar{left:50%!important;right:auto!important;transform:translateX(-50%);bottom:18px!important;max-width:560px;border-radius:24px;border:1px solid var(--border)!important;padding:8px 10px!important;}
+  .tab-item{min-height:54px!important;}
+  .tab-item .ti{font-size:24px!important;}
+  body{max-width:980px;margin:0 auto;}
+}
+
 </style>
+<!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
 </head>
 <body>
 
@@ -362,13 +522,17 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
 
     <div class="cta-group">
       <button class="cta-main" onclick="goPage('melden-rat')">🚨 Ratte melden</button>
-      <button class="cta-sec" onclick="goPage('melden-action')">🟢 Maßnahme melden</button>
+      <button class="cta-sec" onclick="goPage('melden-action')">🟢 Maßnahme vor Ort melden</button>
+      <button class="cta-third" onclick="openAdmin()">📧 Behörde / Verwaltung informieren</button>
     </div>
 
-    <div class="stats-row">
+    <div class="workflow-note">Behördenmails und Updates werden nicht automatisch verschickt. Ein eingeloggter Verwalter prüft die Meldung, öffnet eine vorbereitete E-Mail oder WhatsApp-Nachricht und sendet sie bewusst selbst ab.</div>
+
+    <div class="stats-row workflow-stats">
       <div class="stat-card" role="button" title="Alle Sichtungen anzeigen" onclick="openStatList('rat')"><span class="stat-num" id="s-rat">0</span><div class="stat-lbl">Sichtungen</div></div>
       <div class="stat-card" role="button" title="Alle Maßnahmen anzeigen" onclick="openStatList('action')"><span class="stat-num" id="s-action">0</span><div class="stat-lbl">Maßnahmen</div></div>
-      <div class="stat-card" role="button" title="Heutige Meldungen anzeigen" onclick="openStatList('today')"><span class="stat-num" id="s-today">0</span><div class="stat-lbl">Heute</div></div>
+      <div class="stat-card" role="button" title="Behördenmeldungen anzeigen" onclick="openStatList('authority')"><span class="stat-num" id="s-authority">0</span><div class="stat-lbl">Behörde</div></div>
+      <div class="stat-card" role="button" title="Erledigte Fälle anzeigen" onclick="openStatList('done')"><span class="stat-num" id="s-done">0</span><div class="stat-lbl">Erledigt</div></div>
     </div>
 
     <div class="info-card">
@@ -381,9 +545,9 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
       </div>
     </div>
     <div class="info-card">
-      <div class="ic-row"><span class="ic-icon">🔒</span><div><div class="ic-title">Datenschutz</div><div class="ic-text">Anonym melden möglich. Daten werden nicht weitergegeben.</div></div></div>
+      <div class="ic-row"><span class="ic-icon">🔒</span><div><div class="ic-title">Datenschutz</div><div class="ic-text">Anonym melden möglich. Standort, Beschreibung und Fotos werden im Browser gespeichert. Abonnements und Behördenmails laufen nur nach bewusster Aktion.</div></div></div>
     </div>
-    <div class="admin-lnk" onclick="openAdmin()">Verwalter-Login</div>
+    <div class="legal-links"><button onclick="goPage('datenschutz')">Datenschutz</button><button onclick="goPage('impressum')">Impressum</button><button onclick="openAdmin()">Verwalter-Login</button></div>
   </div>
   <nav class="tab-bar">
     <button class="tab-item active" id="tab-home" onclick="goPage('home')"><span class="ti">🏠</span>Start</button>
@@ -434,8 +598,9 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
       <div class="photo-row" id="fr-photo-row"></div>
       <div class="hint">🔒 Fotos bleiben dauerhaft gespeichert</div>
     </div>
+    <label class="form-check"><input type="checkbox" id="fr-consent"/><span>Ich bestätige, dass ich keine fremden Personen erkennbar fotografiere und dass diese Meldung mit Standort, Beschreibung und optionalen Fotos gespeichert und öffentlich angezeigt werden darf.</span></label>
     <button class="submit-btn" onclick="submitReport('rat')">🚨 Jetzt melden!</button>
-    <div class="submit-note">Anonym · Sicher · Keine Registrierung</div>
+    <div class="submit-note">Anonym · Keine Registrierung · Prüfung durch Verwalter möglich</div>
   </div>
 </div>
 
@@ -443,7 +608,7 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
 <div class="page" id="page-melden-action">
   <div class="nav-hdr">
     <button class="nav-back" onclick="goPage('home')">←</button>
-    <span class="nav-title">🟢 Maßnahme melden</span>
+    <span class="nav-title">🟢 Maßnahme vor Ort melden</span>
   </div>
   <div class="scroll-body" style="padding-bottom:30px">
     <div class="field-grp">
@@ -465,8 +630,6 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
         <div class="tc" data-val="Rattenbau verschlossen" onclick="pickType(this,'action')"><span class="tc-icon">🧱</span><span class="tc-label">Bau verschlossen</span></div>
         <div class="tc" data-val="Hinweisschild aufgestellt" onclick="pickType(this,'action')"><span class="tc-icon">⚠️</span><span class="tc-label">Hinweisschild</span></div>
         <div class="tc" data-val="Köderbox kontrolliert" onclick="pickType(this,'action')"><span class="tc-icon">🔍</span><span class="tc-label">Box kontrolliert</span></div>
-        <div class="tc" data-val="Meldung an Stadt Hamburg" onclick="pickType(this,'action')"><span class="tc-icon">📧</span><span class="tc-label">Stadt informiert</span></div>
-        <div class="tc" data-val="Meldung an Bezirksamt" onclick="pickType(this,'action')"><span class="tc-icon">🏛️</span><span class="tc-label">Bezirksamt informiert</span></div>
         <div class="tc" data-val="Sonstige Maßnahme" onclick="pickType(this,'action')"><span class="tc-icon">🔧</span><span class="tc-label">Sonstiges</span></div>
       </div>
     </div>
@@ -481,6 +644,7 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
       <div class="photo-zone"><input type="file" id="fa-photo" accept="image/*" multiple onchange="handleFiles(event,'action')" /><div class="pz-icon">📷</div><div class="pz-text">Foto · <b>Antippen</b></div></div>
       <div class="photo-row" id="fa-photo-row"></div>
     </div>
+    <label class="form-check"><input type="checkbox" id="fa-consent"/><span>Ich bestätige, dass diese Maßnahme vor Ort so beobachtet wurde und dass Ort, Beschreibung und optionale Fotos gespeichert und öffentlich angezeigt werden dürfen.</span></label>
     <button class="submit-btn green" onclick="submitReport('action')">🟢 Maßnahme speichern!</button>
     <div class="submit-note">Hilft allen Nachbarn den Fortschritt zu sehen</div>
   </div>
@@ -496,6 +660,8 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
     <button class="mf-btn active-all" id="mf-all" onclick="setMapFilter('all')">🗺️ Alle</button>
     <button class="mf-btn" id="mf-rat" onclick="setMapFilter('rat')">🔴 Sichtungen</button>
     <button class="mf-btn" id="mf-action" onclick="setMapFilter('action')">🟢 Maßnahmen</button>
+    <button class="mf-btn" id="mf-authority" onclick="setMapFilter('authority')">📧 Behörde</button>
+    <button class="mf-btn" id="mf-done" onclick="setMapFilter('done')">✅ Erledigt</button>
   </div>
   <div class="date-filter">
     <span class="df-lbl">Datum</span>
@@ -531,6 +697,8 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
     <button class="lf-btn act" id="lf-all" onclick="setListFilter('all')">Alle</button>
     <button class="lf-btn" id="lf-rat" onclick="setListFilter('rat')">🔴 Sichtungen</button>
     <button class="lf-btn" id="lf-action" onclick="setListFilter('action')">🟢 Maßnahmen</button>
+    <button class="lf-btn" id="lf-authority" onclick="setListFilter('authority')">📧 Behörde</button>
+    <button class="lf-btn" id="lf-done" onclick="setListFilter('done')">✅ Erledigt</button>
   </div>
   <div class="date-filter">
     <span class="df-lbl">Meldedatum</span>
@@ -564,11 +732,12 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
     </div>
     <div id="abo-form">
       <div class="abo-hero"><span class="abo-hero-icon">🔔</span><h2>Auf dem Laufenden bleiben</h2><p>Trag dich ein – wir informieren dich bei Neuigkeiten.</p></div>
-      <div class="field-grp"><div class="field-lbl"><span class="step-badge">1</span>Deine E-Mail</div><input class="inp" type="email" id="abo-email" placeholder="deine@email.de" /><div class="hint">🔒 Nur für Benachrichtigungen – nie weitergegeben</div></div>
+      <div class="field-grp"><div class="field-lbl"><span class="step-badge">1</span>Kontakt</div><input class="inp" type="email" id="abo-email" placeholder="E-Mail für Updates" style="margin-bottom:9px" /><input class="inp" type="tel" id="abo-phone" placeholder="Telefonnummer für WhatsApp, optional" /><div class="hint">Für E-Mail bitte E-Mail eintragen. Für WhatsApp bitte Telefonnummer eintragen.</div></div>
       <div class="field-grp"><div class="field-lbl"><span class="step-badge">2</span>Wie benachrichtigt?</div><div class="kanal-row"><div class="kc" data-val="email" onclick="pickKanal(this)"><span class="kc-icon">📧</span><span class="kc-lbl">E-Mail</span></div><div class="kc" data-val="whatsapp" onclick="pickKanal(this)"><span class="kc-icon">💬</span><span class="kc-lbl">WhatsApp</span></div><div class="kc" data-val="beides" onclick="pickKanal(this)"><span class="kc-icon">📲</span><span class="kc-lbl">Beides</span></div></div></div>
       <div class="field-grp"><div class="field-lbl">Name <span class="field-opt">optional</span></div><input class="inp" type="text" id="abo-name" placeholder="z.B. Anwohnerin Haus 7" /></div>
+      <label class="form-check"><input type="checkbox" id="abo-consent"/><span>Ich möchte über neue Informationen informiert werden. Mir ist klar, dass E-Mail und WhatsApp nicht automatisch gesendet werden, sondern durch einen Verwalter vorbereitet und manuell versendet werden.</span></label>
       <button class="submit-btn" onclick="aboAnmelden()">🔔 Eintragen</button>
-      <div class="submit-note" style="margin-top:8px">Jederzeit abmelden · Datenschutzkonform</div>
+      <div class="submit-note" style="margin-top:8px">Jederzeit lokal abmeldbar · Bitte keine sensiblen Daten eintragen</div>
     </div>
   </div>
   <nav class="tab-bar">
@@ -577,6 +746,30 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
     <button class="tab-item" onclick="goPage('liste')"><span class="ti">📋</span>Liste</button>
     <button class="tab-item active" onclick="goPage('abo')"><span class="ti">🔔</span>Updates</button>
   </nav>
+</div>
+
+
+<!-- ═══════════ DATENSCHUTZ ═══════════ -->
+<div class="page legal-page" id="page-datenschutz">
+  <div class="nav-hdr"><button class="nav-back" onclick="goPage('home')">←</button><span class="nav-title">🔒 Datenschutz</span></div>
+  <div class="scroll-body">
+    <div class="legal-card"><h2>Datenschutzhinweise</h2><p>Diese Seite dient der nachbarschaftlichen Dokumentation von Rattensichtungen, Maßnahmen vor Ort und dem Bearbeitungsstand. Bitte trage keine sensiblen personenbezogenen Daten ein.</p></div>
+    <div class="legal-card"><h3>Welche Daten werden verarbeitet?</h3><ul><li>Ort, GPS-Koordinaten und Zeitpunkt der Meldung</li><li>Art der Sichtung oder Maßnahme</li><li>Beschreibung und optional Fotos</li><li>bei Updates: E-Mail-Adresse und/oder Telefonnummer für WhatsApp</li><li>bei Verwaltern: Login-E-Mail und Bearbeitungshistorie</li></ul></div>
+    <div class="legal-card"><h3>Wofür werden die Daten genutzt?</h3><p>Zur Darstellung auf Karte und Liste, zur internen Prüfung durch Verwalter, zur Vorbereitung von E-Mails an Behörden oder Verwaltungen und zur manuellen Information von Abonnenten.</p></div>
+    <div class="legal-card"><h3>Wichtig</h3><p>Behördenmails und WhatsApp-Nachrichten werden nicht automatisch verschickt. Ein Verwalter prüft die Informationen und sendet vorbereitete Nachrichten bewusst selbst ab.</p></div>
+    <div class="legal-card"><h3>Speicherung</h3><p>Diese erste Version arbeitet überwiegend mit Browser-Speicher. Das bedeutet: Einträge können je nach Gerät und Browser lokal gespeichert werden. Für einen echten Mehrnutzerbetrieb sollte später eine zentrale datenschutzkonforme Datenbank mit Löschkonzept genutzt werden.</p></div>
+    <div class="legal-card"><h3>Fotos</h3><p>Bitte lade nur Fotos hoch, auf denen keine Personen, Kennzeichen, Klingelschilder oder privaten Innenbereiche erkennbar sind. Problematische Fotos sollten durch Verwalter gelöscht werden.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════ IMPRESSUM ═══════════ -->
+<div class="page legal-page" id="page-impressum">
+  <div class="nav-hdr"><button class="nav-back" onclick="goPage('home')">←</button><span class="nav-title">ℹ️ Impressum</span></div>
+  <div class="scroll-body">
+    <div class="legal-card"><h2>Impressum</h2><p><strong>Rattenmelder Hamburg</strong><br>Nachbarschaftliches Meldeprojekt</p><p>Verantwortliche Person bitte vor Veröffentlichung ergänzen:<br>Name, Anschrift, Kontakt-E-Mail.</p></div>
+    <div class="legal-card"><h3>Kontakt</h3><p>E-Mail: bitte eintragen, z. B. info@rattenmelder.de oder eine zentrale Projektadresse.</p></div>
+    <div class="legal-card"><h3>Hinweis</h3><p>Diese Seite ist kein offizielles Angebot der Stadt Hamburg. Offizielle Meldungen erfolgen erst durch manuelle Weiterleitung durch einen Verwalter oder direkt durch Bürgerinnen und Bürger an die zuständige Stelle.</p></div>
+  </div>
 </div>
 
 <!-- ═══════════ ADMIN ═══════════ -->
@@ -600,7 +793,7 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
     </div>
     <div id="a-panel" style="display:none;padding-bottom:40px">
       <div class="sheets-bar" id="sheets-bar">📊 <strong>Google Sheets nicht verbunden.</strong> <a href="#" onclick="openSheetsSheet(event)">→ Einrichten</a></div>
-      <div class="a-sec">📋 Meldungen & Maßnahmen</div>
+      <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Verwalter können Meldungen prüfen, Status setzen, eine E-Mail an Behörde/Verwaltung vorbereiten und Updates für Nachbarn per E-Mail oder WhatsApp vorbereiten. Gesendet wird bewusst über das eigene Mailprogramm bzw. WhatsApp.</div>
       <div class="a-bar">
         <button class="a-del-all" onclick="clearAll()">🗑️ Alle löschen</button>
         <span class="a-count" id="a-count"></span>
@@ -609,7 +802,7 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
       <div class="a-rep-list" id="a-rep-list"></div>
       <div class="a-divider"></div>
       <div class="a-sec">🔔 Abonnenten</div>
-      <button class="notify-btn" onclick="openNotifySheet()">📢 Alle benachrichtigen</button>
+      <button class="notify-btn" onclick="openNotifySheet()">📧 E-Mail Update vorbereiten</button><button class="notify-btn" onclick="sendWhatsAppBroadcast()">💬 WhatsApp Update vorbereiten</button>
       <div class="a-abo-list" id="a-abo-list"></div>
       <div id="v-section" style="display:none">
         <div class="a-divider"></div>
@@ -689,13 +882,21 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
   </div>
 </div>
 
+
+<div class="cookie-layer" id="privacy-consent">
+  <div class="cookie-card">
+    <div class="cookie-title">🔒 Datenschutz & lokale Speicherung</div>
+    <div class="cookie-text">Diese Seite speichert Meldungen, Status und Abonnements im Browser und kann Standortdaten, Fotos und Kontaktdaten verarbeiten. Bitte keine Personen, Kennzeichen oder sensiblen Daten eintragen. Behördenmails und WhatsApp Updates werden nur manuell durch Verwalter vorbereitet und versendet.</div>
+    <div class="cookie-btns"><button class="cookie-btn ok" onclick="acceptPrivacy()">Einverstanden</button><button class="cookie-btn no" onclick="declinePrivacy()">Nur ansehen</button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
 const ADMIN_EMAIL = 'Saschakitschke@gmx.net';
 const ADMIN_HASH  = '61b7e976eddc704c57cfb195cd0c27e6ad553bc4b3b803d1b56e5b275e9339f7';
-// Passwort: Nachbar2024!
 
 let entries    = JSON.parse(localStorage.getItem('rattenEntries')    || '[]'); // alles: rats + actions
 let verwalter  = JSON.parse(localStorage.getItem('rattenVerwalter')  || '[]');
@@ -718,12 +919,29 @@ let listFilter    = 'all';
 let dateFilterFrom = '';
 let dateFilterTo   = '';
 let isHaupt       = false;
+let currentAdminEmail = '';
+let currentAdminName  = '';
+let privacyAccepted = localStorage.getItem('rattenPrivacyAccepted') === 'yes';
 let curPage       = 'home';
 let db            = null;
 let locPickerMap  = null;
 let locPickerMarker = null;
 let locPickerTarget = null;
 let locPickerCoord = null;
+
+
+function pageFromHash(){
+  const allowed = ['home','karte','liste','abo','melden-rat','melden-action','datenschutz','impressum'];
+  const raw = (location.hash || '').replace('#','').trim();
+  return allowed.includes(raw) ? raw : 'home';
+}
+function rememberPage(name){
+  try{ sessionStorage.setItem('rattenAktiveSeite', name); }catch(e){}
+  const nextHash = '#' + name;
+  if(location.hash !== nextHash){
+    history.replaceState(null, '', nextHash);
+  }
+}
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -734,8 +952,50 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', e => {
     if (!e.target.closest('.ac-wrap')) { closeAC('fr-ac'); closeAC('fa-ac'); }
   });
-  updateStats(); checkAboStatus();
+  updateStats(); checkAboStatus(); showPrivacyConsentIfNeeded();
+  const initialPage = pageFromHash();
+  if(initialPage !== 'home') goPage(initialPage);
+  window.addEventListener('hashchange', () => {
+    const targetPage = pageFromHash();
+    if(targetPage !== curPage) goPage(targetPage);
+  });
 });
+
+
+function showPrivacyConsentIfNeeded(){
+  const layer=document.getElementById('privacy-consent');
+  if(layer && !privacyAccepted && !localStorage.getItem('rattenPrivacyDeclined')) layer.classList.add('open');
+}
+function acceptPrivacy(){privacyAccepted=true;localStorage.setItem('rattenPrivacyAccepted','yes');localStorage.removeItem('rattenPrivacyDeclined');const l=document.getElementById('privacy-consent');if(l)l.classList.remove('open');toast('✅ Datenschutzhinweis bestätigt');}
+function declinePrivacy(){privacyAccepted=false;localStorage.setItem('rattenPrivacyDeclined','yes');const l=document.getElementById('privacy-consent');if(l)l.classList.remove('open');toast('ℹ️ Du kannst die Seite ansehen. Für Meldungen bitte Datenschutz bestätigen.');}
+function ensurePrivacyOk(){if(privacyAccepted)return true;showPrivacyConsentIfNeeded();toast('🔒 Bitte Datenschutzhinweis bestätigen');return false;}
+function isAuthorityEntry(e){return e.kind==='authority'||(e.kind==='action'&&/(meldung|stadt|bezirksamt|behörde|verwaltung|vermieter|hausverwaltung|gesundheitsamt)/i.test(e.type||''));}
+function isDoneEntry(e){return (e.status||'').toLowerCase()==='erledigt';}
+function adminLabel(){return currentAdminName || currentAdminEmail || 'Verwalter';}
+function addHistory(e,text){if(!e)return; if(!Array.isArray(e.history))e.history=[]; e.history.unshift({ts:new Date().toISOString(),by:adminLabel(),text});}
+function formatHistory(e){if(!e.history||!e.history.length)return '';return `<div class="history-box"><div class="history-title">Verlauf</div>${e.history.map(h=>{const d=new Date(h.ts);return `<div class="history-item">${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · ${esc(h.text)}${h.by?' · '+esc(h.by):''}</div>`}).join('')}</div>`;}
+function publicUrl(){return 'https://rattenmelder.github.io/ratten-meldung/';}
+function buildEntryText(e){return `Ort: ${e.street||''}
+GPS: ${e.lat?Number(e.lat).toFixed(6)+', '+Number(e.lon).toFixed(6):'nicht vorhanden'}
+Art: ${e.type||''}
+Status: ${ST[e.status||'neu']?.lbl||e.status||'Neu'}
+Datum: ${new Date(e.time||e.createdAt||Date.now()).toLocaleString('de-DE')}
+Gemeldet von: ${e.name||'Anonym'}
+Beschreibung:
+${e.desc||''}
+
+Link: ${publicUrl()}#liste`;}
+function rememberAuthoritySent(e,recipient){
+  e.kind=e.kind||'rat';
+  e.status='gesendet';
+  e.authorityNotifiedAt=new Date().toISOString();
+  e.authorityRecipient=recipient;
+  e.authorityBy=adminLabel();
+  addHistory(e,`Behörde/Verwaltung informiert: ${recipient}`);
+  const log={id:Date.now()+Math.floor(Math.random()*999),kind:'authority',street:e.street,type:'Behörde / Verwaltung informiert',desc:`Weiterleitung zu Meldung ${e.type}: ${e.desc||''}`,time:new Date().toISOString(),name:adminLabel(),hasPhotos:false,status:'gesendet',createdAt:new Date().toISOString(),lat:e.lat,lon:e.lon,accuracy:e.accuracy,gpsSource:e.gpsSource,gpsExact:e.gpsExact,linkedEntryId:e.id,authorityRecipient:recipient,authorityBy:adminLabel(),history:[{ts:new Date().toISOString(),by:adminLabel(),text:`E-Mail an ${recipient} vorbereitet`} ]};
+  entries.unshift(log);
+  saveEntries(); updateStats(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); renderAdminList();
+}
 
 // ── INDEXEDDB ──
 function openDB(){return new Promise((res,rej)=>{if(db){res(db);return;}const r=indexedDB.open('rattenDB',1);r.onupgradeneeded=e=>e.target.result.createObjectStore('photos',{keyPath:'id'});r.onsuccess=e=>{db=e.target.result;res(db);};r.onerror=()=>rej();});}
@@ -749,6 +1009,7 @@ function goPage(name){
   const pg = document.getElementById('page-'+name);
   if(pg) pg.classList.add('active');
   curPage = name;
+  rememberPage(name);
   if(name==='karte') {
     // Warten bis Page sichtbar ist, dann Karte initialisieren
     requestAnimationFrame(() => {
@@ -811,10 +1072,12 @@ function openLocationPicker(inputId, hintId, coordObj, label){
   setTimeout(()=>{
     if(!locPickerMap){
       const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,attribution:'© OpenStreetMap'});
-      const aerial=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Luftbild © Esri'});
-      const labels=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:20,pane:'shadowPane',attribution:'Beschriftung © OpenStreetMap © CARTO'});
+      const aerialOnly=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Luftbild © Esri'});
       locPickerMap=L.map('loc-map',{layers:[street],zoomControl:true,attributionControl:false}).setView([coordObj.lat,coordObj.lon],19);
-      L.control.layers({'Straßenkarte':street,'Luftbild / Häuser':aerial},{'Straßennamen über Luftbild':labels},{collapsed:true,position:'topright'}).addTo(locPickerMap);
+      L.control.layers({
+        'Straßenkarte mit Hausnummern':street,
+        'Luftbild / Häuseransicht':aerialOnly
+      }, null,{collapsed:true,position:'topright'}).addTo(locPickerMap);
       locPickerMap.on('click',e=>setPickerPoint(e.latlng.lat,e.latlng.lng,null,'manual'));
     }
     locPickerMap.invalidateSize();
@@ -829,7 +1092,7 @@ function setPickerPoint(lat,lon,accuracy,source){
   if(!locPickerMarker){locPickerMarker=L.marker([lat,lon],{icon,draggable:true}).addTo(locPickerMap);locPickerMarker.on('dragend',e=>{const p=e.target.getLatLng();setPickerPoint(p.lat,p.lng,null,'manual');});}
   else locPickerMarker.setLatLng([lat,lon]);
   const note=document.getElementById('loc-note');
-  if(note) note.textContent=`Gewählter Punkt: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · GPS-Genauigkeit ca. ${Math.round(accuracy)} m`:''}. Beim Übernehmen werden GPS-Daten und nächste Adresse neu gespeichert.`;
+  if(note) note.textContent=`Gewählter Punkt: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · GPS-Genauigkeit ca. ${Math.round(accuracy)} m`:''}. Beim Übernehmen werden GPS-Daten und die nächste Straße/Hausnummer genau von diesem Punkt neu gespeichert.`;
 }
 
 function centerPickerOnGPS(){
@@ -843,13 +1106,15 @@ function centerPickerOnGPS(){
 
 async function reverseAddressFromCoords(lat,lon){
   try{
+    // Wichtig: Diese Abfrage läuft immer auf die aktuell gesetzte Nadel, nicht auf den ersten GPS-Punkt.
     const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=de&zoom=18&addressdetails=1`);
     const d=await r.json();
     const a=d?.address||{};
     const street=[a.road,a.house_number].filter(Boolean).join(' ');
-    const place=[a.postcode,a.city||a.town||a.village||a.suburb].filter(Boolean).join(' ');
+    const place=[a.postcode,a.city||a.town||a.village||a.suburb||a.neighbourhood].filter(Boolean).join(' ');
     const label=[street,place].filter(Boolean).join(', ');
-    return label || d?.display_name?.split(',').slice(0,3).join(', ') || '';
+    if(label) return label;
+    return d?.display_name?.split(',').slice(0,4).join(', ') || '';
   }catch(e){
     return '';
   }
@@ -927,6 +1192,7 @@ function removePhoto(i,kind){if(kind==='rat'){photosRat.splice(i,1);renderPhotos
 
 // ── SUBMIT ──
 function submitReport(kind){
+  if(!ensurePrivacyOk())return;
   const isRat = kind==='rat';
   const street = document.getElementById(isRat?'fr-street':'fa-street').value.trim();
   const desc   = document.getElementById(isRat?'fr-desc':'fa-desc').value.trim();
@@ -934,6 +1200,8 @@ function submitReport(kind){
   if(!street){flashInp(isRat?'fr-street':'fa-street');toast('📍 Bitte Ort angeben');return;}
   if(!selType){toast(isRat?'👆 Bitte Sichtung wählen':'👆 Bitte Maßnahme wählen');return;}
   if(!desc){flashInp(isRat?'fr-desc':'fa-desc');toast('✏️ Bitte kurz beschreiben');return;}
+  const consentId=isRat?'fr-consent':'fa-consent';
+  if(document.getElementById(consentId)&&!document.getElementById(consentId).checked){toast('🔒 Bitte Datenschutzbestätigung anhaken');return;}
   const id=Date.now();
   const coords = isRat?coordsRat:coordsAction;
   const photoArr = isRat?photosRat:photosAction;
@@ -947,8 +1215,8 @@ function flashInp(id){const el=document.getElementById(id);el.style.borderColor=
 function resetForm(kind){
   const isRat=kind==='rat';
   ['street','desc','name'].forEach(f=>document.getElementById(`f${isRat?'r':'a'}-${f}`).value='');
-  if(isRat){photosRat=[];coordsRat=null;document.getElementById('fr-photo-row').innerHTML='';document.getElementById('fr-photo').value='';document.getElementById('fr-hint').textContent='GPS-Button für automatische Adresse';document.getElementById('fr-hint').className='hint';document.getElementById('rat-type-grid').querySelectorAll('.tc').forEach(t=>t.classList.remove('sel'));selTypeRat='';}
-  else{photosAction=[];coordsAction=null;document.getElementById('fa-photo-row').innerHTML='';document.getElementById('fa-photo').value='';document.getElementById('fa-hint').textContent='GPS-Button für automatische Adresse';document.getElementById('fa-hint').className='hint';document.getElementById('action-type-grid').querySelectorAll('.tc').forEach(t=>t.classList.remove('sel','sel-green'));selTypeAction='';}
+  if(isRat){photosRat=[];coordsRat=null;document.getElementById('fr-photo-row').innerHTML='';document.getElementById('fr-photo').value='';document.getElementById('fr-hint').textContent='GPS-Button für automatische Adresse';document.getElementById('fr-hint').className='hint';document.getElementById('rat-type-grid').querySelectorAll('.tc').forEach(t=>t.classList.remove('sel'));const c=document.getElementById('fr-consent');if(c)c.checked=false;selTypeRat='';}
+  else{photosAction=[];coordsAction=null;document.getElementById('fa-photo-row').innerHTML='';document.getElementById('fa-photo').value='';document.getElementById('fa-hint').textContent='GPS-Button für automatische Adresse';document.getElementById('fa-hint').className='hint';document.getElementById('action-type-grid').querySelectorAll('.tc').forEach(t=>t.classList.remove('sel','sel-green'));const c=document.getElementById('fa-consent');if(c)c.checked=false;selTypeAction='';}
   const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
   document.getElementById(isRat?'fr-time':'fa-time').value=now.toISOString().slice(0,16);
 }
@@ -961,10 +1229,11 @@ async function syncSheets(r){const url=window._sheetsUrl||localStorage.getItem('
 
 // ── STATS ──
 function updateStats(){
-  const today=localDateValue(new Date());
-  document.getElementById('s-rat').textContent=entries.filter(e=>e.kind==='rat').length;
-  document.getElementById('s-action').textContent=entries.filter(e=>e.kind==='action').length;
-  document.getElementById('s-today').textContent=entries.filter(e=>entryDateValue(e)===today).length;
+  const byId=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  byId('s-rat',entries.filter(e=>e.kind==='rat').length);
+  byId('s-action',entries.filter(e=>e.kind==='action'&&!isAuthorityEntry(e)).length);
+  byId('s-authority',entries.filter(isAuthorityEntry).length);
+  byId('s-done',entries.filter(isDoneEntry).length);
 }
 
 function localDateValue(d){
@@ -1025,65 +1294,54 @@ function clearDateFilter(){
   applyDateFilter();
 }
 function openStatList(kind){
-  // Startseiten-Kacheln öffnen direkt die passende Meldeliste.
-  // Sichtungen => nur Rattenmeldungen, Maßnahmen => nur Gegenmaßnahmen, Heute => alle heutigen Einträge.
-  if(kind==='today'){
-    listFilter='all';
-    const today=localDateValue(new Date());
-    dateFilterFrom=today;
-    dateFilterTo=today;
-  }else if(kind==='rat'){
-    listFilter='rat';
-    dateFilterFrom='';
-    dateFilterTo='';
-  }else if(kind==='action'){
-    listFilter='action';
-    dateFilterFrom='';
-    dateFilterTo='';
-  }else{
-    listFilter='all';
-    dateFilterFrom='';
-    dateFilterTo='';
-  }
+  if(kind==='rat'){listFilter='rat';dateFilterFrom='';dateFilterTo='';}
+  else if(kind==='action'){listFilter='action';dateFilterFrom='';dateFilterTo='';}
+  else if(kind==='authority'){listFilter='authority';dateFilterFrom='';dateFilterTo='';}
+  else if(kind==='done'){listFilter='done';dateFilterFrom='';dateFilterTo='';}
+  else {listFilter='all';dateFilterFrom='';dateFilterTo='';}
   goPage('liste');
-  setTimeout(()=>{
-    setListFilter(listFilter);
-    syncDateInputs();
-    const body=document.getElementById('list-body');
-    if(body) body.scrollTop=0;
-    toast(kind==='today'?'📅 Heutige Meldungen':kind==='rat'?'🐀 Sichtungen':'🟢 Maßnahmen');
-  }, 80);
+  setTimeout(()=>{setListFilter(listFilter);syncDateInputs();const body=document.getElementById('list-body');if(body)body.scrollTop=0;},80);
 }
 
 // ── LIST ──
-const ST={neu:{cls:'sn',lbl:'🆕 Neu'},gesendet:{cls:'ss',lbl:'📨 Gesendet'},bearbeitung:{cls:'sb',lbl:'🔄 In Bearbeitung'},erledigt:{cls:'se',lbl:'✅ Erledigt'}};
+const ST={neu:{cls:'sn',lbl:'🆕 Neu'},geprueft:{cls:'ss',lbl:'👀 Geprüft'},gesendet:{cls:'ss',lbl:'📧 Behörde informiert'},bearbeitung:{cls:'sb',lbl:'🔄 In Bearbeitung'},erledigt:{cls:'se',lbl:'✅ Erledigt'}};
 
 function setListFilter(f){
   listFilter=f;
-  document.getElementById('lf-all').className='lf-btn'+(f==='all'?' act':'');
-  document.getElementById('lf-rat').className='lf-btn'+(f==='rat'?' act-rat':'');
-  document.getElementById('lf-action').className='lf-btn'+(f==='action'?' act-action':'');
+  const ids=['all','rat','action','authority','done'];
+  ids.forEach(id=>{const el=document.getElementById('lf-'+id);if(el)el.className='lf-btn';});
+  const act=document.getElementById('lf-'+f); if(act)act.className='lf-btn act';
   renderList();
 }
 
 async function renderList(){
   const el=document.getElementById('list-body');
-  const filtered = (listFilter==='all' ? entries : entries.filter(e=>e.kind===listFilter)).filter(entryInDateRange);
-  const rats = entries.filter(e=>e.kind==='rat');
-  const neuRats = rats.filter(e=>!e.status||e.status==='neu');
-  document.getElementById('list-count').textContent=`${filtered.length} angezeigt · ${rats.length} Sichtungen · ${entries.filter(e=>e.kind==='action').length} Maßnahmen · ${entries.filter(e=>e.kind==='action'&&(e.type||'').toLowerCase().includes('meldung')).length} Behördenmeldungen`;
+  const filtered = entries.filter(e=>{
+    if(listFilter==='rat' && e.kind!=='rat') return false;
+    if(listFilter==='action' && (e.kind!=='action'||isAuthorityEntry(e))) return false;
+    if(listFilter==='authority' && !isAuthorityEntry(e)) return false;
+    if(listFilter==='done' && !isDoneEntry(e)) return false;
+    return entryInDateRange(e);
+  });
+  const rats=entries.filter(e=>e.kind==='rat').length;
+  const actions=entries.filter(e=>e.kind==='action'&&!isAuthorityEntry(e)).length;
+  const auth=entries.filter(isAuthorityEntry).length;
+  const done=entries.filter(isDoneEntry).length;
+  document.getElementById('list-count').textContent=`${filtered.length} angezeigt · ${rats} Sichtungen · ${actions} Maßnahmen · ${auth} Behörden · ${done} erledigt`;
   if(!filtered.length){el.innerHTML=`<div class="empty-state"><div class="ei">🔍</div><div class="et">Keine Einträge für diese Auswahl</div></div>`;return;}
   let html='';
   for(const r of filtered){
     const d=new Date(r.time||r.createdAt);
     const ts=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';
-    const st=ST[r.status||'neu'];
+    const st=ST[r.status||'neu']||ST.neu;
+    const isAuth=isAuthorityEntry(r);
     const typeBadgeCls=r.kind==='rat'?'rat-badge':'action-badge';
-    const cardCls=r.kind==='action'?'r-card action-card':'r-card';
+    const cardCls=(r.kind==='action'||isAuth)?'r-card action-card':'r-card';
     const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
     const photoHtml=photoArr.length?`<div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${u}" onclick="openLightbox(${r.id},${i})" />`).join('')}</div>`:'';
-    const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort der Stadt Hamburg</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
-    html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div></div>`;
+    const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
+    const hist=formatHistory(r);
+    html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${hist}</div>`;
   }
   el.innerHTML=html;
 }
@@ -1097,7 +1355,7 @@ function initMap(){
   container.style.height = '100%';
 
   const strassenkarte = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
+    maxZoom: 20,
     attribution: '© OpenStreetMap'
   });
 
@@ -1106,16 +1364,11 @@ function initMap(){
     attribution: '© OpenStreetMap © CARTO'
   });
 
-  const luftbild = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  const luftbildOnly = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 19,
     attribution: 'Luftbild © Esri'
   });
 
-  const beschriftung = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-    maxZoom: 20,
-    pane: 'shadowPane',
-    attribution: 'Beschriftung © OpenStreetMap © CARTO'
-  });
 
   map = L.map('map', {
     zoomControl: true,
@@ -1125,13 +1378,11 @@ function initMap(){
 
   L.control.layers(
     {
-      'Straßenkarte mit Namen': strassenkarte,
+      'Straßenkarte mit Hausnummern': strassenkarte,
       'Helle Übersichtskarte': helleKarte,
-      'Luftbild / Häuseransicht': luftbild
+      'Luftbild / Häuseransicht': luftbildOnly
     },
-    {
-      'Straßennamen über Luftbild': beschriftung
-    },
+    null,
     { collapsed: false, position: 'topright' }
   ).addTo(map);
 
@@ -1140,15 +1391,15 @@ function initMap(){
 }
 function setMapFilter(f){
   mapFilter=f;
-  document.getElementById('mf-all').className='mf-btn'+(f==='all'?' active-all':'');
-  document.getElementById('mf-rat').className='mf-btn'+(f==='rat'?' active-red':'');
-  document.getElementById('mf-action').className='mf-btn'+(f==='action'?' active-green':'');
+  ['all','rat','action','authority','done'].forEach(id=>{const el=document.getElementById('mf-'+id);if(el)el.className='mf-btn';});
+  const act=document.getElementById('mf-'+f); if(act)act.className='mf-btn active-all';
   refreshMarkers();
 }
 function markerEmoji(r){
   const t=(r.type||'').toLowerCase();
+  if(isDoneEntry(r)) return '✅';
+  if(isAuthorityEntry(r)) return '📧';
   if(r.kind==='action'){
-    if(t.includes('meldung')||t.includes('stadt')||t.includes('bezirksamt')||t.includes('behörde')) return '📧';
     if(t.includes('köderbox')) return '📦';
     if(t.includes('bekämpfer')) return '👷';
     if(t.includes('verschlossen')) return '🧱';
@@ -1165,13 +1416,14 @@ function markerEmoji(r){
   return '🐀';
 }
 function markerClass(r){
+  if(isAuthorityEntry(r)) return 'action';
   if(r.kind==='action') return 'action';
   return (r.type||'').toLowerCase().includes('tote') ? 'dead' : 'rat';
 }
 async function refreshMarkers(){
   if(!map)return;
   mapMarkers.forEach(m=>map.removeLayer(m));mapMarkers=[];
-  const filtered=entries.filter(e=>e.lat&&e.lon&&(mapFilter==='all'||e.kind===mapFilter)&&entryInDateRange(e));
+  const filtered=entries.filter(e=>e.lat&&e.lon&&entryInDateRange(e)&&((mapFilter==='all')||(mapFilter==='rat'&&e.kind==='rat')||(mapFilter==='action'&&e.kind==='action'&&!isAuthorityEntry(e))||(mapFilter==='authority'&&isAuthorityEntry(e))||(mapFilter==='done'&&isDoneEntry(e))));
   document.getElementById('map-empty').style.display=filtered.length?'none':'flex';
   for(const r of filtered){
     const isRat=r.kind==='rat';
@@ -1213,8 +1465,8 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 
 // ── ABO ──
 function checkAboStatus(){const myId=localStorage.getItem('rattenMeinAboId');const mine=myId?abonnenten.find(a=>a.id===myId):null;const done=document.getElementById('abo-done');const form=document.getElementById('abo-form');if(!done||!form)return;if(mine){const kl={email:'📧 E-Mail',whatsapp:'💬 WhatsApp',beides:'📧 + 💬'};document.getElementById('abo-kanal-name').textContent=kl[mine.kanale]||mine.kanale;done.style.display='block';form.style.display='none';}else{done.style.display='none';form.style.display='block';}}
-function aboAnmelden(){const email=document.getElementById('abo-email').value.trim();if(!email||!email.includes('@')){flashInp('abo-email');toast('📧 Bitte E-Mail eingeben');return;}if(!selKanal){toast('👆 Bitte Kanal wählen');return;}if(abonnenten.some(a=>a.email.toLowerCase()===email.toLowerCase())){toast('⚠️ Bereits eingetragen');return;}const id='abo_'+Date.now();abonnenten.push({id,name:document.getElementById('abo-name').value.trim()||'Anonym',email,kanale:selKanal,seit:new Date().toISOString()});saveAbonnenten();localStorage.setItem('rattenMeinAboId',id);checkAboStatus();toast('✅ Erfolgreich eingetragen!');}
-function aboAustragen(){if(!confirm('Abmelden?'))return;const myId=localStorage.getItem('rattenMeinAboId');abonnenten=abonnenten.filter(a=>a.id!==myId);saveAbonnenten();localStorage.removeItem('rattenMeinAboId');selKanal='';document.querySelectorAll('.kc').forEach(t=>t.classList.remove('sel'));document.getElementById('abo-email').value='';document.getElementById('abo-name').value='';checkAboStatus();toast('👋 Abgemeldet');}
+function aboAnmelden(){if(!ensurePrivacyOk())return;const email=document.getElementById('abo-email').value.trim();const phone=document.getElementById('abo-phone').value.trim();if(!selKanal){toast('👆 Bitte Kanal wählen');return;}if((selKanal==='email'||selKanal==='beides')&&(!email||!email.includes('@'))){flashInp('abo-email');toast('📧 Bitte E-Mail eingeben');return;}if((selKanal==='whatsapp'||selKanal==='beides')&&!phone){flashInp('abo-phone');toast('💬 Bitte Telefonnummer für WhatsApp eingeben');return;}if(!document.getElementById('abo-consent').checked){toast('🔒 Bitte Zustimmung anhaken');return;}if(email&&abonnenten.some(a=>a.email&&a.email.toLowerCase()===email.toLowerCase())){toast('⚠️ E-Mail bereits eingetragen');return;}const id='abo_'+Date.now();abonnenten.push({id,name:document.getElementById('abo-name').value.trim()||'Anonym',email,phone,kanale:selKanal,seit:new Date().toISOString(),consentAt:new Date().toISOString()});saveAbonnenten();localStorage.setItem('rattenMeinAboId',id);checkAboStatus();toast('✅ Erfolgreich eingetragen!');}
+function aboAustragen(){if(!confirm('Abmelden?'))return;const myId=localStorage.getItem('rattenMeinAboId');abonnenten=abonnenten.filter(a=>a.id!==myId);saveAbonnenten();localStorage.removeItem('rattenMeinAboId');selKanal='';document.querySelectorAll('.kc').forEach(t=>t.classList.remove('sel'));document.getElementById('abo-email').value='';const ph=document.getElementById('abo-phone');if(ph)ph.value='';document.getElementById('abo-name').value='';const co=document.getElementById('abo-consent');if(co)co.checked=false;checkAboStatus();toast('👋 Abgemeldet');}
 
 // ── EMAIL ──
 function openEmailSheet(){
@@ -1303,15 +1555,59 @@ function checkSheetsBar(){const s=localStorage.getItem('rattenSheetsUrl')||'';co
 
 // ── NOTIFY ──
 function openNotifySheet(){if(!abonnenten.length){toast('🔔 Noch keine Abonnenten');return;}document.getElementById('n-count').textContent=abonnenten.length;document.getElementById('n-body').value='';openSheetBg('notify-sheet');}
-function sendNotify(){const subject=document.getElementById('n-subject').value.trim();const body=document.getElementById('n-body').value.trim();if(!body){toast('✏️ Bitte Nachricht eingeben');return;}const emails=abonnenten.filter(a=>a.kanale==='email'||a.kanale==='beides').map(a=>a.email);const full=`Liebe Nachbarinnen und Nachbarn,\n\n${body}\n\nViele Grüße\n${GRUPPENNAME}\n\n---\nAbmelden: App öffnen → 🔔 Updates → Abmelden`;window.location.href=`mailto:${ADMIN_EMAIL}?bcc=${encodeURIComponent(emails.join(','))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(full)}`;closeSheet('notify-sheet');}
+function sendNotify(){const subject=document.getElementById('n-subject').value.trim();const body=document.getElementById('n-body').value.trim();if(!body){toast('✏️ Bitte Nachricht eingeben');return;}const emails=abonnenten.filter(a=>(a.kanale==='email'||a.kanale==='beides')&&a.email).map(a=>a.email);if(!emails.length){toast('📧 Keine E-Mail Empfänger');return;}const full=`Liebe Nachbarinnen und Nachbarn,
+
+${body}
+
+Viele Grüße
+${adminLabel()}
+${GRUPPENNAME}
+
+---
+Hinweis: Diese E-Mail wurde manuell vorbereitet und über das Mailprogramm eines Verwalters gesendet.`;window.location.href=`mailto:?bcc=${encodeURIComponent(emails.join(','))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(full)}`;closeSheet('notify-sheet');toast('📧 E-Mail wurde vorbereitet');}
+function sendWhatsAppBroadcast(){const phones=abonnenten.filter(a=>(a.kanale==='whatsapp'||a.kanale==='beides')&&a.phone);const text=`🐀 Rattenmelder Hamburg
+
+Neues Update aus der Nachbarschaft.
+Bitte öffne die Seite für Details:
+${publicUrl()}
+
+Gesendet von: ${adminLabel()}`;navigator.clipboard?.writeText(text);window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');toast(phones.length?`💬 WhatsApp Text vorbereitet (${phones.length} Kontakte gespeichert)`:'💬 WhatsApp Text vorbereitet');}
+function notifyEntryWhatsApp(id){const e=entries.find(x=>x.id===id);if(!e)return;const text=`🐀 Rattenmelder Hamburg
+
+Update zu: ${e.street}
+Art: ${e.type}
+Status: ${ST[e.status||'neu']?.lbl||'Neu'}
+
+${e.desc||''}
+
+Link: ${publicUrl()}#liste`;navigator.clipboard?.writeText(text);window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');addHistory(e,'WhatsApp Update vorbereitet');saveEntries();renderAdminList();}
+function notifyEntryEmail(id){const e=entries.find(x=>x.id===id);if(!e)return;const emails=abonnenten.filter(a=>(a.kanale==='email'||a.kanale==='beides')&&a.email).map(a=>a.email);const subject=`Update Rattenmelder: ${e.street}`;const body=`Liebe Nachbarinnen und Nachbarn,
+
+zu folgender Meldung gibt es ein Update:
+
+${buildEntryText(e)}
+
+Viele Grüße
+${adminLabel()}
+${GRUPPENNAME}`;window.location.href=`mailto:?bcc=${encodeURIComponent(emails.join(','))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;addHistory(e,'E-Mail Update an Abonnenten vorbereitet');saveEntries();renderAdminList();}
+function informAuthority(id){const e=entries.find(x=>x.id===id);if(!e)return;const recipient=prompt('Empfänger E-Mail', 'schaedlingsbekaempfung@hu.hamburg.de');if(!recipient)return;const subject=`Rattenmeldung Hamburg: ${e.street}`;const body=`Sehr geehrte Damen und Herren,
+
+hiermit leite ich eine geprüfte Rattenmeldung aus dem nachbarschaftlichen Rattenmelder weiter.
+
+${buildEntryText(e)}
+
+Hinweis: Diese Nachricht wurde manuell durch einen Verwalter geprüft und über dessen Mailprogramm vorbereitet.
+
+Viele Grüße
+${adminLabel()}`;window.location.href=`mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;rememberAuthoritySent(e,recipient);toast('📧 Behördenmail vorbereitet und Verlauf gespeichert');}
 
 // ── ADMIN ──
 function openAdmin(){document.getElementById('admin-page').classList.add('open');}
 function closeAdmin(){document.getElementById('admin-page').classList.remove('open');}
 async function hashPw(pw){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
-async function adminLogin(){const email=document.getElementById('a-email').value.trim().toLowerCase();const pw=document.getElementById('a-pw').value;const err=document.getElementById('a-err');const hash=await hashPw(pw);if(email===ADMIN_EMAIL.toLowerCase()&&hash===ADMIN_HASH){isHaupt=true;showPanel();return;}if(verwalter.some(v=>v.email.toLowerCase()===email&&v.hash===hash)){isHaupt=false;showPanel();return;}const known=email===ADMIN_EMAIL.toLowerCase()||verwalter.some(v=>v.email.toLowerCase()===email);err.textContent=!known?'❌ E-Mail nicht autorisiert':'❌ Falsches Passwort';['a-email','a-pw'].forEach(id=>document.getElementById(id).style.borderColor='var(--red)');document.getElementById('a-pw').value='';setTimeout(()=>{err.textContent='';['a-email','a-pw'].forEach(id=>document.getElementById(id).style.borderColor='');},2500);}
+async function adminLogin(){const email=document.getElementById('a-email').value.trim().toLowerCase();const pw=document.getElementById('a-pw').value;const err=document.getElementById('a-err');const hash=await hashPw(pw);if(email===ADMIN_EMAIL.toLowerCase()&&hash===ADMIN_HASH){isHaupt=true;currentAdminEmail=email;currentAdminName=email.split('@')[0];showPanel();return;}if(verwalter.some(v=>v.email.toLowerCase()===email&&v.hash===hash)){isHaupt=false;currentAdminEmail=email;currentAdminName=email.split('@')[0];showPanel();return;}const known=email===ADMIN_EMAIL.toLowerCase()||verwalter.some(v=>v.email.toLowerCase()===email);err.textContent=!known?'❌ E-Mail nicht autorisiert':'❌ Falsches Passwort';['a-email','a-pw'].forEach(id=>document.getElementById(id).style.borderColor='var(--red)');document.getElementById('a-pw').value='';setTimeout(()=>{err.textContent='';['a-email','a-pw'].forEach(id=>document.getElementById(id).style.borderColor='');},2500);}
 function showPanel(){document.getElementById('a-login').style.display='none';document.getElementById('a-panel').style.display='block';document.getElementById('v-section').style.display=isHaupt?'block':'none';renderAdminList();renderAboList();if(isHaupt){renderVerwalterList();checkSheetsBar();}}
-function adminLogout(){isHaupt=false;document.getElementById('a-login').style.display='flex';document.getElementById('a-panel').style.display='none';['a-email','a-pw'].forEach(id=>document.getElementById(id).value='');}
+function adminLogout(){isHaupt=false;currentAdminEmail='';currentAdminName='';document.getElementById('a-login').style.display='flex';document.getElementById('a-panel').style.display='none';['a-email','a-pw'].forEach(id=>document.getElementById(id).value='');}
 function pwReset(e){e.preventDefault();window.location.href=`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Ratten-App: Passwort vergessen')}&body=${encodeURIComponent('Hallo,\n\nPasswort bitte zurücksetzen.\n\nDanke!')}`;}
 
 function renderAdminList(){
@@ -1322,21 +1618,25 @@ function renderAdminList(){
     const d=new Date(r.time||r.createdAt);
     const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
     const isRat=r.kind==='rat';
+    const isAuth=isAuthorityEntry(r);
     const st=r.status||'neu';
     const statusBtns=Object.entries(ST).map(([k,v])=>`<button class="st-btn st-${k} ${st===k?'on':''}" onclick="setStatus(${r.id},'${k}')">${v.lbl}</button>`).join('');
     const replyVal=r.stadtAntwort?esc(r.stadtAntwort):'';
-    const replyDisplay=r.stadtAntwort?`<div class="city-reply" style="margin-top:8px"><div class="cr-label">🏛️ Antwort der Stadt</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
+    const replyDisplay=r.stadtAntwort?`<div class="city-reply" style="margin-top:8px"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
+    const actions=`<div class="workflow-actions"><button class="workflow-btn status" onclick="setStatus(${r.id},'geprueft')">👀 Geprüft</button><button class="workflow-btn mail" onclick="informAuthority(${r.id})">📧 Behörde informieren</button><button class="workflow-btn mail" onclick="notifyEntryEmail(${r.id})">📧 Update E-Mail</button><button class="workflow-btn whatsapp" onclick="notifyEntryWhatsApp(${r.id})">💬 WhatsApp</button></div>`;
     return`<div class="a-card ${isRat?'':'action'}" id="ac${r.id}">
       <div class="a-card-top">
         <div class="a-card-body">
           <div class="a-loc">📍 ${esc(r.street)}</div>
-          <div class="a-type ${isRat?'a-rat-type':'a-action-type'}">${isRat?'🐀 Sichtung':'🟢 Maßnahme'} · ${esc(r.type)}</div>
+          <div class="a-type ${isRat?'a-rat-type':'a-action-type'}">${isRat?'🐀 Sichtung':(isAuth?'📧 Behörde/Verwaltung':'🟢 Maßnahme')} · ${esc(r.type)}</div>
           <div class="a-desc">${esc(r.desc)}</div>
-          <div class="a-meta">👤 ${esc(r.name)} · ⏰ ${ts}</div>
+          <div class="a-meta">👤 ${esc(r.name)} · ⏰ ${ts}${r.authorityBy?' · weitergeleitet durch '+esc(r.authorityBy):''}</div>
           <div class="status-row">${statusBtns}</div>
+          ${actions}
+          ${formatHistory(r)}
           ${replyDisplay}
           <div class="reply-wrap">
-            <input class="reply-inp" id="reply-${r.id}" placeholder="Antwort der Stadt eintragen…" value="${replyVal}" />
+            <input class="reply-inp" id="reply-${r.id}" placeholder="Antwort, Aktenzeichen oder Hinweis eintragen…" value="${replyVal}" />
             <button class="reply-save" onclick="saveReply(${r.id})">💾</button>
           </div>
         </div>
@@ -1348,7 +1648,7 @@ function renderAdminList(){
 
 function setStatus(id,status){
   const e=entries.find(e=>e.id===id); if(!e)return;
-  e.status=status; if(status==='gesendet')e.gesendet=true;
+  e.status=status; if(status==='gesendet')e.gesendet=true; addHistory(e,`Status gesetzt: ${ST[status]?.lbl||status}`);
   saveEntries(); renderAdminList();
   if(curPage==='liste')renderList();
   toast(`Status: ${ST[status].lbl}`);
@@ -1357,6 +1657,7 @@ function saveReply(id){
   const e=entries.find(e=>e.id===id); if(!e)return;
   const val=document.getElementById('reply-'+id).value.trim();
   e.stadtAntwort=val;
+  if(val){addHistory(e,'Rückmeldung/Aktenzeichen gespeichert');}
   if(val&&e.status!=='erledigt')e.status='bearbeitung';
   saveEntries(); renderAdminList();
   if(curPage==='liste')renderList();
@@ -1371,5 +1672,31 @@ function rmVerwalter(i){if(!confirm(`${verwalter[i].email} entfernen?`))return;v
 function renderAboList(){const el=document.getElementById('a-abo-list');if(!abonnenten.length){el.innerHTML='<div class="empty-state" style="padding:15px 0"><div class="ei" style="font-size:26px">🔔</div><div class="et" style="font-size:13px">Noch keine Abonnenten</div></div>';return;}const kl={email:'📧 E-Mail',whatsapp:'💬 WhatsApp',beides:'📧 + 💬'};el.innerHTML=abonnenten.map((a,i)=>`<div class="a-abo-card"><div><div class="aac-email">${esc(a.email)}</div><div class="aac-meta">👤 ${esc(a.name)} · <span class="kanal-tag">${kl[a.kanale]||a.kanale}</span></div></div><button class="a-v-rm" onclick="rmAbo(${i})">Entfernen</button></div>`).join('');}
 function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(localStorage.getItem('rattenMeinAboId')===abonnenten[i].id)localStorage.removeItem('rattenMeinAboId');abonnenten.splice(i,1);saveAbonnenten();renderAboList();}
 </script>
+
+<script>
+/* Dynamische Browserleisten-Korrektur für Safari/Chrome mobil.
+   Nutzt VisualViewport, damit die Navigation direkt über der URL-Leiste bleibt. */
+(function(){
+  function updateBottomNavigationSpace(){
+    var vv = window.visualViewport;
+    var bottom = 0;
+    if(vv){
+      bottom = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop));
+    }
+    // Ein kleiner Mindestabstand hält die Leiste optisch sauber, ohne mitten im Bild zu stehen.
+    var gap = window.innerWidth >= 1024 ? 18 : (window.innerWidth >= 700 ? 12 : 6);
+    document.documentElement.style.setProperty('--browser-bottom', Math.round(bottom) + 'px');
+    document.documentElement.style.setProperty('--tabbar-gap', gap + 'px');
+  }
+  updateBottomNavigationSpace();
+  window.addEventListener('resize', updateBottomNavigationSpace, {passive:true});
+  window.addEventListener('orientationchange', function(){setTimeout(updateBottomNavigationSpace, 250);}, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateBottomNavigationSpace, {passive:true});
+    window.visualViewport.addEventListener('scroll', updateBottomNavigationSpace, {passive:true});
+  }
+})();
+</script>
+
 </body>
 </html>
