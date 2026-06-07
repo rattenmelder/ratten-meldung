@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<!-- BUILD: FINAL_RATTENMELDER_FIX5_STABLE -->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX5_STABLE</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
+console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX5_STABLE');
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c26;--border:#252535;
+  --red:#ff3b3b;--red-dim:rgba(255,59,59,.12);
+  --orange:#ff9500;--green:#30d158;--blue:#0a84ff;--purple:#bf5af2;
+  --text:#f5f5f7;--text2:#86868b;--text3:#48484a;
+  --r:18px;--r-sm:12px;
+}
+html,body{height:100%;height:100dvh;overflow:hidden;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+/* ── PAGES ── */
+.page{display:none;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
+.page.active{display:flex;}
+
+/* ── TAB BAR ── */
+.tab-bar{flex-shrink:0;display:flex;background:rgba(19,19,26,.985);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--border);padding:10px 6px max(12px,env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.35);}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0 7px;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1px;transition:color .15s,transform .15s;}
+.tab-item.active{color:var(--red);}
+.tab-item:active{transform:scale(.96);}
+.ti{font-size:24px;line-height:1;}
+
+/* ── NAV HEADER ── */
+.nav-hdr{flex-shrink:0;display:flex;align-items:center;padding:14px 18px 12px;gap:12px;border-bottom:1px solid var(--border);background:var(--bg);}
+.nav-back{width:36px;height:36px;background:var(--surface2);border:none;border-radius:10px;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-title{font-size:17px;font-weight:700;letter-spacing:-.3px;flex:1;}
+
+/* ── SCROLL BODY ── */
+.scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 18px 24px;}
+
+/* ── HOME ── */
+#page-home .scroll-body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:50px;}
+.home-glow{position:fixed;width:400px;height:300px;background:radial-gradient(circle,rgba(255,59,59,.12) 0%,transparent 70%);top:-60px;left:50%;transform:translateX(-50%);pointer-events:none;}
+.rat-ani{font-size:72px;display:block;margin-bottom:16px;animation:rb 2.5s ease-in-out infinite;}
+@keyframes rb{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-12px) rotate(4deg);}}
+.home-title{font-size:36px;font-weight:900;letter-spacing:-1.5px;line-height:1.05;text-align:center;margin-bottom:8px;}
+.home-title .hl{color:var(--red);}
+.home-sub{font-size:15px;color:var(--text2);text-align:center;margin-bottom:28px;line-height:1.5;}
+
+/* CTA Buttons */
+.cta-group{width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
+.cta-main{display:flex;align-items:center;justify-content:center;gap:10px;padding:18px;background:var(--red);color:#fff;border:none;border-radius:18px;font-family:'Inter',sans-serif;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 0 32px rgba(255,59,59,.3);touch-action:manipulation;-webkit-appearance:none;}
+.cta-main:active{transform:scale(.97);}
+.cta-sec{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;background:rgba(48,209,88,.12);border:1.5px solid rgba(48,209,88,.3);color:var(--green);border-radius:18px;font-family:'Inter',sans-serif;font-size:17px;font-weight:700;cursor:pointer;touch-action:manipulation;-webkit-appearance:none;}
+.cta-sec:active{transform:scale(.97);}
+
+/* Stats */
+.stats-row{width:100%;max-width:340px;display:flex;gap:8px;margin-bottom:18px;}
+.stat-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;}
+.stat-card{cursor:pointer;transition:transform .15s,border-color .15s;}
+.stat-card:active{transform:scale(.97);border-color:var(--orange);}
+.date-filter{flex-shrink:0;display:flex;gap:7px;align-items:center;padding:9px 16px;border-bottom:1px solid var(--border);background:var(--bg);overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.date-filter::-webkit-scrollbar{display:none;}
+.df-inp{min-width:122px;background:var(--surface);border:1.5px solid var(--border);color:var(--text);border-radius:10px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;-webkit-appearance:none;}
+.df-btn{flex-shrink:0;background:var(--surface2);border:1.5px solid var(--border);color:var(--text2);border-radius:10px;padding:8px 12px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+.df-btn.active{border-color:var(--orange);color:var(--orange);background:rgba(255,149,0,.1);}
+.df-lbl{font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+
+.stat-num{font-size:22px;font-weight:800;color:var(--orange);letter-spacing:-1px;display:block;line-height:1;margin-bottom:2px;}
+.stat-lbl{font-size:10px;color:var(--text2);font-weight:600;}
+
+/* Info Cards */
+.info-card{width:100%;max-width:340px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;}
+.ic-row{display:flex;gap:10px;align-items:flex-start;}
+.ic-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.ic-title{font-size:13px;font-weight:700;margin-bottom:3px;}
+.ic-text{font-size:12px;color:var(--text2);line-height:1.5;}
+.ic-link{color:var(--orange);text-decoration:none;font-weight:600;}
+.admin-lnk{font-size:12px;color:var(--text3);text-align:center;margin-top:10px;cursor:pointer;padding:8px;}
+
+/* ── FORM ── */
+.field-grp{margin-bottom:20px;}
+.field-lbl{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:.05em;}
+.step-badge{width:20px;height:20px;background:var(--red);color:#fff;border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-badge.green{background:var(--green);}
+.field-opt{color:var(--text3);font-size:11px;font-weight:400;text-transform:none;letter-spacing:0;}
+.inp{width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;font-weight:500;padding:13px 15px;border-radius:var(--r-sm);outline:none;transition:border-color .15s;-webkit-appearance:none;}
+.inp:focus{border-color:var(--red);}
+.inp.green-focus:focus{border-color:var(--green);}
+.inp::placeholder{color:var(--text3);}
+textarea.inp{resize:none;min-height:85px;line-height:1.5;}
+.hint{font-size:12px;color:var(--text3);margin-top:6px;min-height:18px;display:flex;align-items:center;gap:5px;}
+.hint.ok{color:var(--green);}
+.hint.err{color:var(--red);}
+
+/* GPS Row */
+.gps-row{display:flex;gap:8px;}
+.ac-wrap{flex:1;position:relative;}
+.ac-wrap .inp{width:100%;}
+.ac-list{position:absolute;top:calc(100% + 5px);left:0;right:0;background:var(--surface2);border:1px solid var(--red);border-radius:var(--r-sm);z-index:300;display:none;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.6);}
+.ac-list.open{display:block;}
+.ac-row{padding:12px 15px;cursor:pointer;border-bottom:1px solid var(--border);}
+.ac-row:last-child{border-bottom:none;}
+.ac-row:active,.ac-row.hi{background:rgba(255,59,59,.1);}
+.ac-main{font-size:14px;font-weight:600;}
+.ac-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.ac-msg{padding:14px;font-size:13px;color:var(--text2);text-align:center;}
+.gps-btn{width:50px;height:50px;background:rgba(255,149,0,.12);border:1px solid rgba(255,149,0,.3);border-radius:var(--r-sm);color:var(--orange);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;}
+.gps-btn:active{background:var(--orange);color:#000;}
+
+/* Type Grid */
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.type-grid.two{grid-template-columns:repeat(2,1fr);}
+.tc{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:13px 8px;text-align:center;cursor:pointer;transition:all .15s;touch-action:manipulation;}
+.tc:active{transform:scale(.95);}
+.tc.sel{border-color:var(--red);background:var(--red-dim);}
+.tc.sel-green{border-color:var(--green);background:rgba(48,209,88,.1);}
+.tc-icon{font-size:24px;display:block;margin-bottom:5px;line-height:1;}
+.tc-label{font-size:11px;font-weight:600;color:var(--text2);line-height:1.3;}
+.tc.sel .tc-label,.tc.sel-green .tc-label{color:var(--text);}
+
+/* Photo */
+.photo-zone{background:var(--surface);border:1.5px dashed var(--border);border-radius:var(--r-sm);padding:18px;text-align:center;cursor:pointer;position:relative;touch-action:manipulation;}
+.photo-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.pz-icon{font-size:26px;margin-bottom:5px;}
+.pz-text{font-size:13px;color:var(--text2);}
+.pz-text b{color:var(--orange);}
+.photo-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.photo-item{position:relative;}
+.photo-thumb{width:66px;height:66px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
+.photo-del{position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:var(--red);border:none;border-radius:50%;color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;}
+
+/* Submit */
+.submit-btn{width:100%;padding:16px;background:var(--red);color:#fff;border:none;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:17px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(255,59,59,.3);touch-action:manipulation;-webkit-appearance:none;margin-bottom:8px;}
+.submit-btn:active{transform:scale(.97);}
+.submit-btn.green{background:var(--green);box-shadow:0 4px 20px rgba(48,209,88,.25);color:#000;}
+.submit-note{font-size:12px;color:var(--text3);text-align:center;}
+
+/* ── KARTE ── */
+#page-karte{overflow:hidden;}
+.map-filter-bar{flex-shrink:0;display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);overflow-x:auto;background:var(--bg);}
+.map-filter-bar::-webkit-scrollbar{display:none;}
+.mf-btn{flex-shrink:0;padding:6px 14px;border-radius:20px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);white-space:nowrap;touch-action:manipulation;}
+.mf-btn.active-red{border-color:var(--red);background:var(--red-dim);color:var(--red);}
+.mf-btn.active-green{border-color:var(--green);background:rgba(48,209,88,.1);color:var(--green);}
+.mf-btn.active-all{border-color:var(--text2);background:var(--surface2);color:var(--text);}
+#map{width:100%;height:100%;min-height:200px;}
+.map-wrap{flex:1;position:relative;min-height:0;overflow:hidden;}
+.map-empty-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text2);font-size:14px;pointer-events:none;z-index:10;background:var(--surface);}
+.leaflet-popup-content-wrapper{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:14px!important;color:var(--text)!important;box-shadow:0 12px 40px rgba(0,0,0,.6)!important;}
+.leaflet-popup-tip{background:var(--surface2)!important;}
+.leaflet-popup-content{margin:12px 14px!important;font-family:'Inter',sans-serif;}
+.pu-loc{font-weight:700;font-size:14px;margin-bottom:3px;}
+.pu-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.pu-rat{color:var(--red);}
+.pu-action{color:var(--green);}
+.pu-desc{font-size:13px;color:var(--text2);}
+.pu-meta{font-size:11px;color:var(--text3);margin-top:5px;border-top:1px solid var(--border);padding-top:5px;}
+
+/* ── LISTE ── */
+.list-bar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);}
+.list-count{font-size:13px;color:var(--text2);font-weight:500;}
+.city-btn{padding:9px 14px;background:transparent;border:1.5px solid var(--orange);color:var(--orange);border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;}
+.city-btn:active{background:var(--orange);color:#000;}
+
+/* Filter Tabs */
+.list-filter{flex-shrink:0;display:flex;gap:6px;padding:8px 16px;border-bottom:1px solid var(--border);}
+.lf-btn{padding:5px 14px;border-radius:20px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--text3);}
+.lf-btn.act{background:var(--surface2);border-color:var(--text2);color:var(--text);}
+.lf-btn.act-rat{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.lf-btn.act-action{background:rgba(48,209,88,.1);border-color:var(--green);color:var(--green);}
+
+/* Cards */
+.r-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:10px;animation:fadeUp .25s ease;}
+.r-card.action-card{border-color:rgba(48,209,88,.2);background:rgba(48,209,88,.04);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.r-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
+.r-loc{font-size:15px;font-weight:700;}
+.r-time{font-size:11px;color:var(--text3);white-space:nowrap;}
+.r-badges{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:8px;}
+.r-type-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;}
+.rat-badge{background:var(--red-dim);border:1px solid rgba(255,59,59,.25);color:var(--red);}
+.action-badge{background:rgba(48,209,88,.1);border:1px solid rgba(48,209,88,.25);color:var(--green);}
+.status-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.sn{background:rgba(255,149,0,.1);border:1px solid rgba(255,149,0,.25);color:var(--orange);}
+.ss{background:rgba(10,132,255,.1);border:1px solid rgba(10,132,255,.25);color:var(--blue);}
+.sb{background:rgba(255,214,10,.1);border:1px solid rgba(255,214,10,.25);color:#ffd60a;}
+.se{background:rgba(48,209,88,.1);border:1px solid rgba(48,209,88,.25);color:var(--green);}
+.r-desc{font-size:14px;color:var(--text2);line-height:1.5;margin-bottom:8px;}
+.r-photos{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.r-photo{width:72px;height:72px;border-radius:9px;object-fit:cover;border:1px solid var(--border);cursor:pointer;}
+.r-photo:active{transform:scale(.95);}
+.city-reply{background:rgba(48,209,88,.06);border:1px solid rgba(48,209,88,.2);border-radius:10px;padding:11px 13px;margin-bottom:8px;}
+.cr-label{font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.cr-text{font-size:13px;color:var(--text2);line-height:1.5;}
+.r-meta{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--text3);border-top:1px solid var(--border);padding-top:8px;}
+.empty-state{text-align:center;padding:50px 20px;}
+.ei{font-size:40px;margin-bottom:10px;opacity:.4;}
+.et{font-size:14px;color:var(--text2);}
+
+/* ── LIGHTBOX ── */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:3000;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:100%;max-height:78vh;border-radius:12px;object-fit:contain;}
+.lb-close{position:absolute;top:16px;right:16px;width:38px;height:38px;background:rgba(255,255,255,.15);border:none;border-radius:50%;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.lb-cap{color:rgba(255,255,255,.5);font-size:13px;margin-top:10px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:11px 20px;border-radius:40px;font-size:14px;font-weight:600;z-index:2000;transition:transform .35s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 32px rgba(0,0,0,.5);white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ── BOTTOM SHEET ── */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;}
+.sheet-bg.open{opacity:1;pointer-events:all;}
+.sheet{background:var(--surface);border-top:1px solid var(--border);border-radius:24px 24px 0 0;padding:6px 20px 36px;width:100%;max-height:85vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.4,1);}
+.sheet-bg.open .sheet{transform:translateY(0);}
+.sheet-handle{width:34px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 18px;}
+.sheet-title{font-size:19px;font-weight:800;letter-spacing:-.4px;margin-bottom:14px;}
+.email-pre{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:13px;font-size:13px;line-height:1.7;color:var(--text2);white-space:pre-wrap;max-height:220px;overflow-y:auto;margin-bottom:14px;font-family:'Inter',sans-serif;}
+.sheet-btns{display:flex;gap:8px;}
+.s-btn{flex:1;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;}
+.s-btn.orange{background:var(--orange);color:#000;border:none;}
+.s-btn.outline{background:transparent;border:1.5px solid var(--red);color:var(--red);text-decoration:none;display:flex;align-items:center;justify-content:center;}
+.s-btn:active{transform:scale(.97);}
+.sheet-close{width:100%;padding:11px;background:transparent;border:none;color:var(--text3);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;margin-top:6px;}
+
+/* ── ADMIN ── */
+.admin-page{position:fixed;inset:0;background:var(--bg);z-index:900;display:none;flex-direction:column;}
+.admin-page.open{display:flex;}
+.a-scroll{flex:1;overflow-y:auto;}
+.a-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:40px 20px;}
+.a-login-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:30px 22px;width:100%;max-width:350px;text-align:center;}
+.al-icon{font-size:42px;margin-bottom:12px;}
+.al-title{font-size:22px;font-weight:800;margin-bottom:5px;}
+.al-sub{font-size:14px;color:var(--text2);margin-bottom:22px;}
+.a-err{font-size:13px;color:var(--red);min-height:18px;margin-top:7px;}
+.pw-reset{font-size:13px;color:var(--text3);margin-top:12px;}
+.pw-reset a{color:var(--orange);text-decoration:none;}
+.a-sec{font-size:18px;font-weight:800;letter-spacing:-.3px;padding:18px 18px 10px;}
+.a-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:10px 18px;margin-bottom:12px;gap:8px;flex-wrap:wrap;}
+.a-count{font-size:13px;color:var(--text2);}
+.a-del-all{padding:7px 13px;background:var(--red-dim);border:1px solid rgba(255,59,59,.3);color:var(--red);border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+.a-logout{padding:7px 13px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;}
+.a-rep-list,.a-abo-list,.a-v-list{padding:0 18px;}
+.a-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:8px;}
+.a-card.action{border-color:rgba(48,209,88,.2);}
+.a-card-top{display:flex;gap:10px;align-items:flex-start;}
+.a-card-body{flex:1;min-width:0;}
+.a-loc{font-size:13px;font-weight:700;margin-bottom:2px;}
+.a-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;}
+.a-rat-type{color:var(--red);}
+.a-action-type{color:var(--green);}
+.a-desc{font-size:13px;color:var(--text2);}
+.a-meta{font-size:11px;color:var(--text3);margin-top:5px;}
+.a-del{flex-shrink:0;padding:8px 11px;background:var(--red-dim);border:1px solid rgba(255,59,59,.3);color:var(--red);border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.a-del:active{background:var(--red);color:#fff;}
+/* Status buttons */
+.status-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;}
+.st-btn{padding:5px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;border:1.5px solid transparent;opacity:.5;touch-action:manipulation;}
+.st-btn.on{opacity:1;box-shadow:0 0 0 1.5px currentColor;}
+.st-neu{background:rgba(255,149,0,.1);border-color:rgba(255,149,0,.3);color:var(--orange);}
+.st-gesendet{background:rgba(10,132,255,.1);border-color:rgba(10,132,255,.3);color:var(--blue);}
+.st-bearbeitung{background:rgba(255,214,10,.1);border-color:rgba(255,214,10,.3);color:#ffd60a;}
+.st-erledigt{background:rgba(48,209,88,.1);border-color:rgba(48,209,88,.3);color:var(--green);}
+/* Reply */
+.reply-wrap{display:flex;gap:7px;margin-top:9px;}
+.reply-inp{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px;border-radius:9px;outline:none;}
+.reply-inp:focus{border-color:var(--green);}
+.reply-save{padding:9px 13px;background:var(--green);color:#000;border:none;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+/* Verwalter */
+.a-v-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.a-v-email{font-size:13px;font-weight:600;}
+.a-v-badge{font-size:11px;color:var(--green);background:rgba(48,209,88,.1);border:1px solid rgba(48,209,88,.25);padding:3px 9px;border-radius:20px;}
+.a-v-rm{padding:6px 11px;background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:7px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;}
+/* Abo */
+.a-abo-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.aac-email{font-size:13px;font-weight:600;}
+.aac-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+.kanal-tag{display:inline-block;background:rgba(255,149,0,.1);border:1px solid rgba(255,149,0,.2);color:var(--orange);font-size:10px;padding:1px 7px;border-radius:20px;}
+.notify-btn{width:calc(100% - 36px);margin:0 18px 14px;padding:14px;background:rgba(48,209,88,.1);border:1.5px solid rgba(48,209,88,.3);color:var(--green);border-radius:14px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;}
+.notify-btn:active{background:var(--green);color:#000;}
+.sheets-bar{margin:0 18px 12px;background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.2);border-radius:10px;padding:11px 13px;font-size:13px;color:var(--orange);}
+.sheets-bar a{color:var(--orange);font-weight:700;text-decoration:underline;}
+.a-divider{height:1px;background:var(--border);margin:20px 18px 18px;}
+.a-v-form{margin:0 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px;}
+.a-note{font-size:12px;color:var(--text3);margin-top:9px;line-height:1.5;}
+
+/* ABO PAGE */
+#page-abo .scroll-body{padding-bottom:30px;}
+.abo-hero{text-align:center;padding:8px 0 22px;}
+.abo-hero-icon{font-size:48px;display:block;margin-bottom:12px;}
+.abo-hero h2{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px;}
+.abo-hero p{font-size:14px;color:var(--text2);line-height:1.5;}
+.kanal-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.kc{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:14px 8px;text-align:center;cursor:pointer;touch-action:manipulation;}
+.kc.sel{border-color:var(--orange);background:rgba(255,149,0,.1);}
+.kc:active{transform:scale(.95);}
+.kc-icon{font-size:22px;display:block;margin-bottom:4px;}
+.kc-lbl{font-size:11px;font-weight:700;}
+.abo-done-card{background:var(--surface);border:1.5px solid rgba(48,209,88,.3);border-radius:var(--r);padding:24px 18px;text-align:center;display:none;}
+.adc-icon{font-size:40px;margin-bottom:10px;}
+.adc-title{font-size:20px;font-weight:800;color:var(--green);margin-bottom:6px;}
+.adc-sub{font-size:13px;color:var(--text2);margin-bottom:14px;}
+.unsub-btn{padding:9px 18px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;}
+
+/* Mobile browser fix: hebt die untere Navigation über die iPhone-Safari-Leiste. */
+@media (max-width: 768px){
+  .scroll-body{padding-bottom:96px;}
+  .page[id="page-melden-rat"] .scroll-body,
+  .page[id="page-melden-action"] .scroll-body,
+  #page-abo .scroll-body{padding-bottom:120px!important;}
+}
+
+
+/* ── MAP IMPROVEMENTS ── */
+.leaflet-container{background:#e9eef3!important;color:#1f2937!important;}
+.leaflet-control-zoom a{background:#fff!important;color:#111827!important;border-color:#d1d5db!important;}
+.map-symbol{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;background:#fff;border:3px solid #111827;box-shadow:0 4px 14px rgba(0,0,0,.35);transform:translate(-50%,-50%);}
+.map-symbol.rat{border-color:#ff3b3b;background:#fff0f0;}
+.map-symbol.dead{border-color:#48484a;background:#f2f2f7;}
+.map-symbol.action{border-color:#30d158;background:#ecfff1;}
+.map-symbol.small{font-size:19px;}
+.pu-photo{width:100%;max-width:230px;height:130px;object-fit:cover;border-radius:10px;border:1px solid var(--border);margin:8px 0 2px;display:block;}
+.pu-btn{width:100%;margin-top:9px;padding:9px 11px;border:none;border-radius:10px;background:var(--blue);color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+.pu-coords{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.35;}
+.gps-exact{font-size:11px;color:var(--green);margin-top:5px;line-height:1.4;}
+.leaflet-control-layers{border-radius:12px!important;box-shadow:0 6px 20px rgba(0,0,0,.25)!important;border:1px solid #d1d5db!important;overflow:hidden;font-family:'Inter',sans-serif!important;}
+.leaflet-control-layers-toggle{width:42px!important;height:42px!important;background-size:22px 22px!important;}
+.leaflet-control-layers-expanded{background:#fff!important;color:#111827!important;padding:10px 12px!important;font-size:13px!important;line-height:1.6!important;}
+.leaflet-control-layers label{margin:3px 0!important;}
+.leaflet-control-layers-separator{border-top:1px solid #e5e7eb!important;margin:6px 0!important;}
+
+
+/* ── Standort genau auf Karte setzen ── */
+.loc-picker-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:4500;display:none;align-items:flex-end;}
+.loc-picker-bg.open{display:flex;}
+.loc-picker{width:100%;height:86vh;background:#fff;color:#111827;border-radius:24px 24px 0 0;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 -12px 40px rgba(0,0,0,.55);}
+.loc-picker-head{flex-shrink:0;padding:14px 16px 10px;border-bottom:1px solid #e5e7eb;background:#fff;}
+.loc-picker-title{font-size:17px;font-weight:900;letter-spacing:-.3px;margin-bottom:4px;}
+.loc-picker-sub{font-size:12px;color:#4b5563;line-height:1.4;}
+.loc-map{flex:1;min-height:280px;background:#e5e7eb;}
+.loc-picker-actions{flex-shrink:0;display:flex;gap:8px;padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid #e5e7eb;background:#fff;}
+.loc-btn{flex:1;border:none;border-radius:13px;padding:13px 10px;font-family:'Inter',sans-serif;font-size:14px;font-weight:850;cursor:pointer;}
+.loc-btn.cancel{background:#f3f4f6;color:#374151;}
+.loc-btn.save{background:#0a84ff;color:#fff;}
+.loc-btn.gps{background:#ecfff1;color:#047857;border:1px solid #a7f3d0;}
+.loc-crosshair{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#0a84ff;color:#fff;border:3px solid #fff;box-shadow:0 4px 18px rgba(0,0,0,.45);font-size:22px;transform:translate(-50%,-50%);}
+.loc-note{font-size:11px;color:#6b7280;padding:7px 14px 0;background:#fff;line-height:1.35;}
+
+
+
+/* ── RESPONSIVE BOTTOM NAVIGATION FIX ──
+   Hält die Menüleiste auf iPhone, Android, Tablet und Desktop sauber am unteren sichtbaren Rand.
+   Die Leiste liegt nicht mehr mitten im Inhalt und wird nicht von der Browserleiste verdeckt. */
+:root{
+  --tabbar-height: 86px;
+  --tabbar-gap: 6px;
+  --browser-bottom: 0px;
+}
+
+.tab-bar{
+  position:fixed !important;
+  left:0;
+  right:0;
+  bottom:calc(var(--browser-bottom, 0px) + var(--tabbar-gap));
+  z-index:2500;
+  min-height:var(--tabbar-height);
+  padding:10px 8px max(12px, env(safe-area-inset-bottom, 0px)) !important;
+  background:rgba(19,19,26,.96) !important;
+  border-top:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:0 -12px 34px rgba(0,0,0,.42) !important;
+  backdrop-filter:blur(24px) saturate(150%) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(150%) !important;
+}
+
+.tab-item{
+  min-height:58px;
+  border-radius:16px;
+  font-size:12px !important;
+}
+.tab-item.active{
+  background:rgba(255,59,59,.10);
+}
+.tab-item .ti,.ti{
+  font-size:25px !important;
+}
+
+/* Inhalt bekommt unten genug Luft, damit nichts hinter der Leiste verschwindet */
+.scroll-body{
+  padding-bottom:calc(28px + var(--tabbar-height) + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+#page-karte .map-wrap{
+  margin-bottom:calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px));
+}
+
+#page-home .scroll-body{
+  padding-bottom:calc(42px + var(--tabbar-height) + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* Tablet */
+@media (min-width: 700px){
+  :root{--tabbar-height:92px;--tabbar-gap:12px;}
+  .tab-bar{
+    left:50%;
+    right:auto;
+    width:min(720px, calc(100vw - 32px));
+    transform:translateX(-50%);
+    border:1px solid rgba(255,255,255,.10) !important;
+    border-radius:28px;
+    padding:12px 14px !important;
+  }
+  .tab-item{font-size:13px !important;}
+}
+
+/* Desktop */
+@media (min-width: 1024px){
+  :root{--tabbar-height:78px;--tabbar-gap:18px;}
+  .tab-bar{
+    width:min(620px, calc(100vw - 48px));
+    min-height:var(--tabbar-height);
+    border-radius:24px;
+    padding:8px 12px !important;
+  }
+  .tab-item{
+    min-height:54px;
+    flex-direction:row;
+    justify-content:center;
+    gap:8px;
+    font-size:13px !important;
+  }
+  .tab-item .ti,.ti{font-size:22px !important;}
+  .scroll-body{padding-bottom:calc(36px + var(--tabbar-height)) !important;}
+  #page-karte .map-wrap{margin-bottom:calc(var(--tabbar-height) + 24px);}
+}
+
+
+/* ── WORKFLOW / DATENSCHUTZ / LEGAL ── */
+.stats-row.workflow-stats{max-width:380px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.workflow-note{width:100%;max-width:380px;background:rgba(10,132,255,.08);border:1px solid rgba(10,132,255,.22);border-radius:16px;padding:12px 14px;margin:0 0 12px;color:var(--text2);font-size:12px;line-height:1.5;}
+.cta-third{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;background:rgba(10,132,255,.12);border:1.5px solid rgba(10,132,255,.3);color:var(--blue);border-radius:18px;font-family:'Inter',sans-serif;font-size:16px;font-weight:800;cursor:pointer;touch-action:manipulation;-webkit-appearance:none;}
+.legal-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0 18px;font-size:12px;}
+.legal-links button{background:transparent;border:none;color:var(--orange);font:inherit;font-weight:700;cursor:pointer;padding:6px;}
+.form-check{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:10px;}
+.form-check input{width:18px;height:18px;margin-top:2px;accent-color:var(--orange);}
+.form-check span{font-size:12px;color:var(--text2);line-height:1.45;}
+.legal-page .scroll-body{padding-bottom:calc(40px + var(--tabbar-height,80px));}
+.legal-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;line-height:1.55;color:var(--text2);font-size:14px;}
+.legal-card h2{font-size:18px;color:var(--text);margin:0 0 8px;}
+.legal-card h3{font-size:15px;color:var(--text);margin:14px 0 6px;}
+.legal-card ul{margin-left:18px;}
+.legal-card li{margin:4px 0;}
+.workflow-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.workflow-btn{border:none;border-radius:10px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.workflow-btn.mail{background:rgba(10,132,255,.12);border-color:rgba(10,132,255,.3);color:var(--blue);}
+.workflow-btn.whatsapp{background:rgba(48,209,88,.12);border-color:rgba(48,209,88,.3);color:var(--green);}
+.workflow-btn.status{background:rgba(255,149,0,.12);border-color:rgba(255,149,0,.3);color:var(--orange);}
+.history-box{margin-top:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:10px;}
+.history-title{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:800;margin-bottom:6px;}
+.history-item{font-size:12px;color:var(--text2);line-height:1.45;padding:4px 0;border-top:1px solid rgba(255,255,255,.04);}
+.history-item:first-of-type{border-top:none;}
+.cookie-layer{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:5000;display:none;align-items:flex-end;justify-content:center;padding:16px;}
+.cookie-layer.open{display:flex;}
+.cookie-card{width:100%;max-width:560px;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.cookie-title{font-size:20px;font-weight:900;margin-bottom:8px;}
+.cookie-text{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:12px;}
+.cookie-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.cookie-btn{flex:1;min-width:140px;border:none;border-radius:12px;padding:12px;font-family:'Inter',sans-serif;font-size:14px;font-weight:900;cursor:pointer;}
+.cookie-btn.ok{background:var(--green);color:#000;}
+.cookie-btn.no{background:var(--surface2);border:1px solid var(--border);color:var(--text2);}
+.a-hint{font-size:12px;color:var(--text2);line-height:1.45;padding:0 18px 12px;}
+@media (min-width:768px){.stats-row.workflow-stats{max-width:520px}.cta-group{max-width:420px}.workflow-note{max-width:420px}.cookie-layer{align-items:center}}
+@media (max-width:380px){.stats-row.workflow-stats{grid-template-columns:repeat(2,1fr)}.stat-card{padding:10px 6px}.stat-num{font-size:20px}.stat-lbl{font-size:9px}}
+
+
+
+/* === FINAL responsive bottom navigation and map layer cleanup === */
+:root{--bottom-nav-height:92px;}
+.tab-bar{
+  position:fixed!important;
+  left:0;right:0;
+  bottom:0!important;
+  z-index:1200!important;
+  min-height:var(--bottom-nav-height);
+  padding:10px 8px calc(12px + env(safe-area-inset-bottom,0px))!important;
+  background:rgba(19,19,26,.985)!important;
+  border-top:1px solid var(--border)!important;
+  box-shadow:0 -12px 32px rgba(0,0,0,.45)!important;
+}
+.tab-item{font-size:12px!important;min-height:62px;border-radius:14px!important;}
+.tab-item .ti{font-size:26px!important;}
+.scroll-body,.a-scroll{padding-bottom:calc(var(--bottom-nav-height) + env(safe-area-inset-bottom,0px) + 28px)!important;}
+.map-wrap{padding-bottom:calc(var(--bottom-nav-height) + env(safe-area-inset-bottom,0px))!important;}
+#page-karte .map-wrap{height:auto!important;}
+#map{min-height:calc(100dvh - 310px - var(--bottom-nav-height))!important;}
+.leaflet-control-layers-overlays{display:none!important;}
+.leaflet-control-layers-separator{display:none!important;}
+@media (min-width:768px){
+  :root{--bottom-nav-height:76px;}
+  .tab-bar{left:50%!important;right:auto!important;transform:translateX(-50%);bottom:18px!important;max-width:560px;border-radius:24px;border:1px solid var(--border)!important;padding:8px 10px!important;}
+  .tab-item{min-height:54px!important;}
+  .tab-item .ti{font-size:24px!important;}
+  body{max-width:980px;margin:0 auto;}
+}
+
+
+
+/* === FIX5: stabile Fotos, Karte und Mobile Keyboard === */
+.r-photo,.pu-photo{background:#252535;display:block;}
+.r-photo.broken,.pu-photo.broken{display:flex!important;align-items:center;justify-content:center;color:#ff9500;font-size:11px;text-align:center;padding:6px;}
+#page-melden-rat .tab-bar,#page-melden-action .tab-bar{display:none!important;}
+body.keyboard-open .tab-bar{display:none!important;}
+body.keyboard-open .scroll-body{padding-bottom:42vh!important;}
+body.keyboard-open .photo-zone,body.keyboard-open .form-check,body.keyboard-open .submit-btn{scroll-margin-bottom:42vh;}
+#page-karte .map-wrap{height:calc(100dvh - 260px - var(--bottom-nav-height,92px))!important;min-height:360px!important;padding-bottom:0!important;margin-bottom:0!important;}
+#map{height:100%!important;min-height:360px!important;}
+@media(max-width:480px){#page-karte .map-wrap{min-height:390px!important;height:calc(100dvh - 245px - var(--bottom-nav-height,92px))!important;}}
+
+</style>
+<!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
+</head>
+<body>
+
+<!-- ═══════════ STARTSEITE ═══════════ -->
+<div class="page active" id="page-home">
+  <div class="scroll-body">
+    <div class="home-glow"></div>
+    <span class="rat-ani">🐀</span>
+    <h1 class="home-title">Ratte gesehen?<br><span class="hl">Jetzt melden.</span></h1>
+    <p class="home-sub">Einfach, anonym & sicher – für Hamburg.</p>
+
+    <div class="cta-group">
+      <button class="cta-main" onclick="goPage('melden-rat')">🚨 Ratte melden</button>
+      <button class="cta-sec" onclick="goPage('melden-action')">🟢 Maßnahme vor Ort melden</button>
+    </div>
+
+    <div class="stats-row workflow-stats">
+      <div class="stat-card" role="button" title="Alle Sichtungen anzeigen" onclick="openStatList('rat')"><span class="stat-num" id="s-rat">0</span><div class="stat-lbl">Sichtungen</div></div>
+      <div class="stat-card" role="button" title="Alle Maßnahmen anzeigen" onclick="openStatList('action')"><span class="stat-num" id="s-action">0</span><div class="stat-lbl">Maßnahmen</div></div>
+      <div class="stat-card" role="button" title="Behördenmeldungen anzeigen" onclick="openStatList('authority')"><span class="stat-num" id="s-authority">0</span><div class="stat-lbl">Behörde</div></div>
+      <div class="stat-card" role="button" title="Erledigte Fälle anzeigen" onclick="openStatList('done')"><span class="stat-num" id="s-done">0</span><div class="stat-lbl">Erledigt</div></div>
+    </div>
+
+    <div class="info-card">
+      <div class="ic-row">
+        <span class="ic-icon">🏛️</span>
+        <div>
+          <div class="ic-title">Institut für Hygiene und Umwelt Hamburg</div>
+          <div class="ic-text">📞 <a class="ic-link" href="tel:+494042845-7972">(040) 42845-7972</a> · Mo–Fr 7–14:30<br>📧 <a class="ic-link" href="mailto:schaedlingsbekaempfung@hu.hamburg.de">schaedlingsbekaempfung@hu.hamburg.de</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="ic-row"><span class="ic-icon">🔒</span><div><div class="ic-title">Datenschutz</div><div class="ic-text">Anonym melden möglich. Standort, Beschreibung und optionale Fotos werden in Supabase gespeichert. Abonnements und Behördenmails laufen nur nach bewusster Aktion.</div></div></div>
+    </div>
+    <div class="legal-links"><button onclick="goPage('datenschutz')">Datenschutz</button><button onclick="goPage('impressum')">Impressum</button><button onclick="openAdmin()">Verwalter-Login</button></div>
+  </div>
+  <nav class="tab-bar">
+    <button class="tab-item active" id="tab-home" onclick="goPage('home')"><span class="ti">🏠</span>Start</button>
+    <button class="tab-item" id="tab-karte" onclick="goPage('karte')"><span class="ti">🗺️</span>Karte</button>
+    <button class="tab-item" id="tab-liste" onclick="goPage('liste')"><span class="ti">📋</span>Liste</button>
+    <button class="tab-item" id="tab-abo" onclick="goPage('abo')"><span class="ti">🔔</span>Updates</button>
+  </nav>
+</div>
+
+<!-- ═══════════ RATTE MELDEN ═══════════ -->
+<div class="page" id="page-melden-rat">
+  <div class="nav-hdr">
+    <button class="nav-back" onclick="goPage('home')">←</button>
+    <span class="nav-title">🐀 Ratte melden</span>
+  </div>
+  <div class="scroll-body" style="padding-bottom:30px">
+    <div class="field-grp">
+      <div class="field-lbl"><span class="step-badge">1</span>Wo war es?</div>
+      <div class="gps-row">
+        <div class="ac-wrap">
+          <input class="inp" type="text" id="fr-street" placeholder="Straße eingeben…" autocomplete="off" oninput="acInput('fr-street','fr-ac')" onkeydown="acKey(event,'fr-ac')" />
+          <div class="ac-list" id="fr-ac"></div>
+        </div>
+        <button class="gps-btn" onclick="getGPS('fr-street','fr-hint')">📍</button>
+      </div>
+      <div class="hint" id="fr-hint">GPS-Button für automatische Adresse</div>
+    </div>
+    <div class="field-grp">
+      <div class="field-lbl"><span class="step-badge">2</span>Was gesehen?</div>
+      <div class="type-grid" id="rat-type-grid">
+        <div class="tc" data-val="Lebende Ratte gesehen" onclick="pickType(this,'rat')"><span class="tc-icon">🐀</span><span class="tc-label">Lebende Ratte</span></div>
+        <div class="tc" data-val="Mehrere Ratten gesehen" onclick="pickType(this,'rat')"><span class="tc-icon">🐀🐀</span><span class="tc-label">Mehrere Ratten</span></div>
+        <div class="tc" data-val="Tote Ratte gefunden" onclick="pickType(this,'rat')"><span class="tc-icon">💀</span><span class="tc-label">Tote Ratte</span></div>
+        <div class="tc" data-val="Rattenbau entdeckt" onclick="pickType(this,'rat')"><span class="tc-icon">🕳️</span><span class="tc-label">Rattenbau</span></div>
+        <div class="tc" data-val="Rattenkot gefunden" onclick="pickType(this,'rat')"><span class="tc-icon">💩</span><span class="tc-label">Rattenkot</span></div>
+        <div class="tc" data-val="Fraßspuren entdeckt" onclick="pickType(this,'rat')"><span class="tc-icon">🦷</span><span class="tc-label">Fraßspuren</span></div>
+      </div>
+    </div>
+    <div class="field-grp">
+      <div class="field-lbl"><span class="step-badge">3</span>Beschreibung</div>
+      <textarea class="inp" id="fr-desc" placeholder="z.B. Hinter den Mülltonnen, gegen Abend…"></textarea>
+    </div>
+    <div class="field-grp">
+      <div class="field-lbl">Optional <span class="field-opt">– muss nicht ausgefüllt werden</span></div>
+      <input class="inp" type="datetime-local" id="fr-time" style="margin-bottom:9px" />
+      <input class="inp" type="text" id="fr-name" placeholder="Spitzname (oder anonym lassen)" style="margin-bottom:9px" />
+      <div class="photo-zone"><input type="file" id="fr-photo" accept="image/*" multiple onchange="handleFiles(event,'rat')" /><div class="pz-icon">📷</div><div class="pz-text">Foto · <b>Antippen</b></div></div>
+      <div class="photo-row" id="fr-photo-row"></div>
+      <div class="hint">🔒 Fotos bleiben dauerhaft gespeichert</div>
+    </div>
+    <label class="form-check"><input type="checkbox" id="fr-consent"/><span>Ich bestätige, dass ich keine fremden Personen erkennbar fotografiere und dass diese Meldung mit Standort, Beschreibung und optionalen Fotos gespeichert und öffentlich angezeigt werden darf.</span></label>
+    <button class="submit-btn" onclick="submitReport('rat')">🚨 Jetzt melden!</button>
+    <div class="submit-note">Anonym · Keine Registrierung · Prüfung durch Verwalter möglich</div>
+  </div>
+</div>
+
+<!-- ═══════════ MASSNAHME MELDEN ═══════════ -->
+<div class="page" id="page-melden-action">
+  <div class="nav-hdr">
+    <button class="nav-back" onclick="goPage('home')">←</button>
+    <span class="nav-title">🟢 Maßnahme vor Ort melden</span>
+  </div>
+  <div class="scroll-body" style="padding-bottom:30px">
+    <div class="field-grp">
+      <div class="field-lbl"><span class="step-badge green">1</span>Wo?</div>
+      <div class="gps-row">
+        <div class="ac-wrap">
+          <input class="inp green-focus" type="text" id="fa-street" placeholder="Straße eingeben…" autocomplete="off" oninput="acInput('fa-street','fa-ac')" onkeydown="acKey(event,'fa-ac')" />
+          <div class="ac-list" id="fa-ac"></div>
+        </div>
+        <button class="gps-btn" onclick="getGPS('fa-street','fa-hint')">📍</button>
+      </div>
+      <div class="hint" id="fa-hint">GPS-Button für automatische Adresse</div>
+    </div>
+    <div class="field-grp">
+      <div class="field-lbl"><span class="step-badge green">2</span>Was wurde unternommen?</div>
+      <div class="type-grid two" id="action-type-grid">
+        <div class="tc" data-val="Köderbox aufgestellt" onclick="pickType(this,'action')"><span class="tc-icon">📦</span><span class="tc-label">Köderbox aufgestellt</span></div>
+        <div class="tc" data-val="Schädlingsbekämpfer vor Ort" onclick="pickType(this,'action')"><span class="tc-icon">👷</span><span class="tc-label">Bekämpfer vor Ort</span></div>
+        <div class="tc" data-val="Rattenbau verschlossen" onclick="pickType(this,'action')"><span class="tc-icon">🧱</span><span class="tc-label">Bau verschlossen</span></div>
+        <div class="tc" data-val="Hinweisschild aufgestellt" onclick="pickType(this,'action')"><span class="tc-icon">⚠️</span><span class="tc-label">Hinweisschild</span></div>
+        <div class="tc" data-val="Köderbox kontrolliert" onclick="pickType(this,'action')"><span class="tc-icon">🔍</span><span class="tc-label">Box kontrolliert</span></div>
+        <div class="tc" data-val="Sonstige Maßnahme" onclick="pickType(this,'action')"><span class="tc-icon">🔧</span><span class="tc-label">Sonstiges</span></div>
+      </div>
+    </div>
+    <div class="field-grp">
+      <div class="field-lbl"><span class="step-badge green">3</span>Beschreibung</div>
+      <textarea class="inp green-focus" id="fa-desc" placeholder="z.B. Zwei Köderboxen am Gehweg neben Nr. 12 aufgestellt…"></textarea>
+    </div>
+    <div class="field-grp">
+      <div class="field-lbl">Optional <span class="field-opt">– muss nicht ausgefüllt werden</span></div>
+      <input class="inp green-focus" type="datetime-local" id="fa-time" style="margin-bottom:9px" />
+      <input class="inp green-focus" type="text" id="fa-name" placeholder="Spitzname (oder anonym lassen)" style="margin-bottom:9px" />
+      <div class="photo-zone"><input type="file" id="fa-photo" accept="image/*" multiple onchange="handleFiles(event,'action')" /><div class="pz-icon">📷</div><div class="pz-text">Foto · <b>Antippen</b></div></div>
+      <div class="photo-row" id="fa-photo-row"></div>
+    </div>
+    <label class="form-check"><input type="checkbox" id="fa-consent"/><span>Ich bestätige, dass diese Maßnahme vor Ort so beobachtet wurde und dass Ort, Beschreibung und optionale Fotos gespeichert und öffentlich angezeigt werden dürfen.</span></label>
+    <button class="submit-btn green" onclick="submitReport('action')">🟢 Maßnahme speichern!</button>
+    <div class="submit-note">Hilft allen Nachbarn den Fortschritt zu sehen</div>
+  </div>
+</div>
+
+<!-- ═══════════ KARTE ═══════════ -->
+<div class="page" id="page-karte">
+  <div class="nav-hdr">
+    <button class="nav-back" onclick="goPage('home')">←</button>
+    <span class="nav-title">🗺️ Karte</span>
+  </div>
+  <div class="map-filter-bar">
+    <button class="mf-btn active-all" id="mf-all" onclick="setMapFilter('all')">🗺️ Alle</button>
+    <button class="mf-btn" id="mf-rat" onclick="setMapFilter('rat')">🔴 Sichtungen</button>
+    <button class="mf-btn" id="mf-action" onclick="setMapFilter('action')">🟢 Maßnahmen</button>
+    <button class="mf-btn" id="mf-authority" onclick="setMapFilter('authority')">📧 Behörde</button>
+    <button class="mf-btn" id="mf-done" onclick="setMapFilter('done')">✅ Erledigt</button>
+  </div>
+  <div class="date-filter">
+    <span class="df-lbl">Datum</span>
+    <input class="df-inp" type="date" id="map-date-from" onchange="setDateRangeFromInputs('map')" />
+    <span class="df-lbl">bis</span>
+    <input class="df-inp" type="date" id="map-date-to" onchange="setDateRangeFromInputs('map')" />
+    <button class="df-btn" id="map-today-btn" onclick="setTodayDateFilter()">Heute</button>
+    <button class="df-btn" onclick="clearDateFilter()">Alle</button>
+  </div>
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="map-empty-overlay" id="map-empty"><span style="font-size:34px">🗺️</span><span>Noch keine Einträge auf der Karte</span></div>
+  </div>
+  <nav class="tab-bar">
+    <button class="tab-item" id="tab-home2" onclick="goPage('home')"><span class="ti">🏠</span>Start</button>
+    <button class="tab-item active" id="tab-karte2" onclick="goPage('karte')"><span class="ti">🗺️</span>Karte</button>
+    <button class="tab-item" id="tab-liste2" onclick="goPage('liste')"><span class="ti">📋</span>Liste</button>
+    <button class="tab-item" id="tab-abo2" onclick="goPage('abo')"><span class="ti">🔔</span>Updates</button>
+  </nav>
+</div>
+
+<!-- ═══════════ LISTE ═══════════ -->
+<div class="page" id="page-liste">
+  <div class="nav-hdr">
+    <button class="nav-back" onclick="goPage('home')">←</button>
+    <span class="nav-title">📋 Meldungen</span>
+  </div>
+  <div class="list-bar">
+    <span class="list-count" id="list-count"></span>
+    
+  </div>
+  <div class="list-filter">
+    <button class="lf-btn act" id="lf-all" onclick="setListFilter('all')">Alle</button>
+    <button class="lf-btn" id="lf-rat" onclick="setListFilter('rat')">🔴 Sichtungen</button>
+    <button class="lf-btn" id="lf-action" onclick="setListFilter('action')">🟢 Maßnahmen</button>
+    <button class="lf-btn" id="lf-authority" onclick="setListFilter('authority')">📧 Behörde</button>
+    <button class="lf-btn" id="lf-done" onclick="setListFilter('done')">✅ Erledigt</button>
+  </div>
+  <div class="date-filter">
+    <span class="df-lbl">Meldedatum</span>
+    <input class="df-inp" type="date" id="list-date-from" onchange="setDateRangeFromInputs('list')" />
+    <span class="df-lbl">bis</span>
+    <input class="df-inp" type="date" id="list-date-to" onchange="setDateRangeFromInputs('list')" />
+    <button class="df-btn" id="list-today-btn" onclick="setTodayDateFilter()">Heute</button>
+    <button class="df-btn" onclick="clearDateFilter()">Alle</button>
+  </div>
+  <div class="scroll-body" style="padding-top:10px" id="list-body"></div>
+  <nav class="tab-bar">
+    <button class="tab-item" onclick="goPage('home')"><span class="ti">🏠</span>Start</button>
+    <button class="tab-item" onclick="goPage('karte')"><span class="ti">🗺️</span>Karte</button>
+    <button class="tab-item active" onclick="goPage('liste')"><span class="ti">📋</span>Liste</button>
+    <button class="tab-item" onclick="goPage('abo')"><span class="ti">🔔</span>Updates</button>
+  </nav>
+</div>
+
+<!-- ═══════════ ABO ═══════════ -->
+<div class="page" id="page-abo">
+  <div class="nav-hdr">
+    <button class="nav-back" onclick="goPage('home')">←</button>
+    <span class="nav-title">🔔 Benachrichtigungen</span>
+  </div>
+  <div class="scroll-body">
+    <div class="abo-done-card" id="abo-done">
+      <div class="adc-icon">✅</div>
+      <div class="adc-title">Du bist dabei!</div>
+      <div class="adc-sub">Du wirst benachrichtigt.<br>Kanal: <span id="abo-kanal-name"></span></div>
+      <button class="unsub-btn" onclick="aboAustragen()">Abmelden</button>
+    </div>
+    <div id="abo-form">
+      <div class="abo-hero"><span class="abo-hero-icon">🔔</span><h2>Auf dem Laufenden bleiben</h2><p>Trag dich ein – wir informieren dich bei Neuigkeiten.</p></div>
+      <div class="field-grp"><div class="field-lbl"><span class="step-badge">1</span>Kontakt</div><input class="inp" type="email" id="abo-email" placeholder="E-Mail für Updates" style="margin-bottom:9px" /><input class="inp" type="tel" id="abo-phone" placeholder="Telefonnummer für WhatsApp, optional" /><div class="hint">Für E-Mail bitte E-Mail eintragen. Für WhatsApp bitte Telefonnummer eintragen.</div></div>
+      <div class="field-grp"><div class="field-lbl"><span class="step-badge">2</span>Wie benachrichtigt?</div><div class="kanal-row"><div class="kc" data-val="email" onclick="pickKanal(this)"><span class="kc-icon">📧</span><span class="kc-lbl">E-Mail</span></div><div class="kc" data-val="whatsapp" onclick="pickKanal(this)"><span class="kc-icon">💬</span><span class="kc-lbl">WhatsApp</span></div><div class="kc" data-val="beides" onclick="pickKanal(this)"><span class="kc-icon">📲</span><span class="kc-lbl">Beides</span></div></div></div>
+      <div class="field-grp"><div class="field-lbl">Name <span class="field-opt">optional</span></div><input class="inp" type="text" id="abo-name" placeholder="z.B. Anwohnerin Haus 7" /></div>
+      <label class="form-check"><input type="checkbox" id="abo-consent"/><span>Ich möchte über neue Informationen informiert werden. Mir ist klar, dass E-Mail und WhatsApp nicht automatisch gesendet werden, sondern durch einen Verwalter vorbereitet und manuell versendet werden.</span></label>
+      <button class="submit-btn" onclick="aboAnmelden()">🔔 Eintragen</button>
+      <div class="submit-note" style="margin-top:8px">Jederzeit lokal abmeldbar · Bitte keine sensiblen Daten eintragen</div>
+    </div>
+  </div>
+  <nav class="tab-bar">
+    <button class="tab-item" onclick="goPage('home')"><span class="ti">🏠</span>Start</button>
+    <button class="tab-item" onclick="goPage('karte')"><span class="ti">🗺️</span>Karte</button>
+    <button class="tab-item" onclick="goPage('liste')"><span class="ti">📋</span>Liste</button>
+    <button class="tab-item active" onclick="goPage('abo')"><span class="ti">🔔</span>Updates</button>
+  </nav>
+</div>
+
+
+<!-- ═══════════ DATENSCHUTZ ═══════════ -->
+<div class="page legal-page" id="page-datenschutz">
+  <div class="nav-hdr"><button class="nav-back" onclick="goPage('home')">←</button><span class="nav-title">🔒 Datenschutz</span></div>
+  <div class="scroll-body">
+    <div class="legal-card"><h2>Datenschutzhinweise</h2><p>Diese Seite dient der nachbarschaftlichen Dokumentation von Rattensichtungen, Maßnahmen vor Ort und dem Bearbeitungsstand. Bitte trage keine sensiblen personenbezogenen Daten ein.</p></div>
+    <div class="legal-card"><h3>Welche Daten werden verarbeitet?</h3><ul><li>Ort, GPS-Koordinaten und Zeitpunkt der Meldung</li><li>Art der Sichtung oder Maßnahme</li><li>Beschreibung und optional Fotos</li><li>bei Updates: E-Mail-Adresse und/oder Telefonnummer für WhatsApp</li><li>bei Verwaltern: Login-E-Mail und Bearbeitungshistorie</li></ul></div>
+    <div class="legal-card"><h3>Wofür werden die Daten genutzt?</h3><p>Zur Darstellung auf Karte und Liste, zur internen Prüfung durch Verwalter, zur Vorbereitung von E-Mails an Behörden oder Verwaltungen und zur manuellen Information von Abonnenten.</p></div>
+    <div class="legal-card"><h3>Wichtig</h3><p>Behördenmails und WhatsApp-Nachrichten werden nicht automatisch verschickt. Ein Verwalter prüft die Informationen und sendet vorbereitete Nachrichten bewusst selbst ab.</p></div>
+    <div class="legal-card"><h3>Speicherung</h3><p>Diese erste Version arbeitet überwiegend mit Browser-Speicher. Das bedeutet: Einträge können je nach Gerät und Browser lokal gespeichert werden. Für einen echten Mehrnutzerbetrieb sollte später eine zentrale datenschutzkonforme Datenbank mit Löschkonzept genutzt werden.</p></div>
+    <div class="legal-card"><h3>Fotos</h3><p>Bitte lade nur Fotos hoch, auf denen keine Personen, Kennzeichen, Klingelschilder oder privaten Innenbereiche erkennbar sind. Problematische Fotos sollten durch Verwalter gelöscht werden.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════ IMPRESSUM ═══════════ -->
+<div class="page legal-page" id="page-impressum">
+  <div class="nav-hdr"><button class="nav-back" onclick="goPage('home')">←</button><span class="nav-title">ℹ️ Impressum</span></div>
+  <div class="scroll-body">
+    <div class="legal-card"><h2>Impressum</h2><p><strong>Rattenmelder Hamburg</strong><br>Nachbarschaftliches Meldeprojekt</p><p>Verantwortliche Person bitte vor Veröffentlichung ergänzen:<br>Name, Anschrift, Kontakt-E-Mail.</p></div>
+    <div class="legal-card"><h3>Kontakt</h3><p>E-Mail: bitte eintragen, z. B. info@rattenmelder.de oder eine zentrale Projektadresse.</p></div>
+    <div class="legal-card"><h3>Hinweis</h3><p>Diese Seite ist kein offizielles Angebot der Stadt Hamburg. Offizielle Meldungen erfolgen erst durch manuelle Weiterleitung durch einen Verwalter oder direkt durch Bürgerinnen und Bürger an die zuständige Stelle.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════ ADMIN ═══════════ -->
+<div class="admin-page" id="admin-page">
+  <div class="nav-hdr" style="background:var(--bg)">
+    <button class="nav-back" onclick="closeAdmin()">←</button>
+    <span class="nav-title">🛠️ Verwalter</span>
+  </div>
+  <div class="a-scroll">
+    <div id="a-login">
+      <div class="a-login-card">
+        <div class="al-icon">🔐</div>
+        <div class="al-title">Verwalter-Login</div>
+        <div class="al-sub">Nur für autorisierte Verwalter</div>
+        <input class="inp" type="email" id="a-email" placeholder="E-Mail" style="margin-bottom:9px" onkeydown="if(event.key==='Enter')document.getElementById('a-pw').focus()" />
+        <input class="inp" type="password" id="a-pw" placeholder="Passwort" onkeydown="if(event.key==='Enter')adminLogin()" />
+        <div class="a-err" id="a-err"></div>
+        <button class="submit-btn" style="margin-top:14px" onclick="adminLogin()">Einloggen</button>
+        <div class="pw-reset">Passwort vergessen? <a href="#" onclick="pwReset(event)">Hier klicken</a></div>
+      </div>
+    </div>
+    <div id="a-panel" style="display:none;padding-bottom:40px">
+      <div class="sheets-bar" id="sheets-bar">📊 <strong>Google Sheets nicht verbunden.</strong> <a href="#" onclick="openSheetsSheet(event)">→ Einrichten</a></div>
+      <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Verwalter können Meldungen prüfen, Status setzen, eine E-Mail an Behörde/Verwaltung vorbereiten und Updates für Nachbarn per E-Mail oder WhatsApp vorbereiten. Gesendet wird bewusst über das eigene Mailprogramm bzw. WhatsApp.</div>
+      <div class="a-bar">
+        <button class="a-del-all" onclick="clearAll()">🗑️ Alle löschen</button>
+        <span class="a-count" id="a-count"></span>
+        <button class="a-logout" onclick="adminLogout()">Ausloggen</button>
+      </div>
+      <div class="a-rep-list" id="a-rep-list"></div>
+      <div class="a-divider"></div>
+      <div class="a-sec">🔔 Abonnenten</div>
+      <button class="notify-btn" onclick="openNotifySheet()">📧 E-Mail Update vorbereiten</button><button class="notify-btn" onclick="sendWhatsAppBroadcast()">💬 WhatsApp Update vorbereiten</button>
+      <div class="a-abo-list" id="a-abo-list"></div>
+      <div id="v-section" style="display:none">
+        <div class="a-divider"></div>
+        <div class="a-sec">👥 Verwalter</div>
+        <div class="a-v-list" id="a-v-list" style="margin-bottom:12px"></div>
+        <div class="a-v-form">
+          <div class="two-col"><input class="inp" type="email" id="nv-email" placeholder="E-Mail" /><input class="inp" type="text" id="nv-pw" placeholder="Passwort" /></div>
+          <button class="submit-btn" style="font-size:14px;padding:13px" onclick="addVerwalter()">＋ Verwalter hinzufügen</button>
+          <div class="a-note">Nur du als Haupt-Admin kannst Verwalter verwalten.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sheets Sheet -->
+<div class="sheet-bg" id="sheets-sheet" onclick="closeSheetBg('sheets-sheet',event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">📊 Google Sheets verbinden</div>
+    <div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:14px">1. <a href="https://sheets.new" target="_blank" style="color:var(--orange)">sheets.new</a> → „Ratten-Meldungen"<br>2. Erweiterungen → Apps Script → Code → Deployen<br>3. URL eintragen:</div>
+    <input class="inp" type="url" id="sheets-url" placeholder="https://script.google.com/macros/s/.../exec" style="margin-bottom:13px" />
+    <button class="submit-btn" style="background:var(--green);box-shadow:none;font-size:15px;padding:14px;color:#000" onclick="saveSheetsUrl()">✅ Verbinden</button>
+    <button class="sheet-close" onclick="closeSheet('sheets-sheet')">Schließen</button>
+  </div>
+</div>
+
+<!-- Email Sheet -->
+<div class="sheet-bg" id="email-sheet" onclick="closeSheetBg('email-sheet',event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">✉️ E-Mail an Stadt Hamburg</div>
+    <div class="email-pre" id="email-pre"></div>
+    <div class="sheet-btns">
+      <button class="s-btn orange" onclick="copyEmail()">📋 Kopieren</button>
+      <a class="s-btn outline" id="email-link" href="#">📧 Mail-App</a>
+    </div>
+    <button class="sheet-close" onclick="closeSheet('email-sheet')">Schließen</button>
+  </div>
+</div>
+
+<!-- Notify Sheet -->
+<div class="sheet-bg" id="notify-sheet" onclick="closeSheetBg('notify-sheet',event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">📢 Alle benachrichtigen</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Nachricht an alle <span id="n-count"></span> Abonnenten</div>
+    <input class="inp" type="text" id="n-subject" value="Update: Nachbarschaftshilfe Hamburg-Ratten" style="margin-bottom:9px" />
+    <textarea class="inp" id="n-body" style="min-height:95px;margin-bottom:13px" placeholder="z.B. Die Stadt hat geantwortet…"></textarea>
+    <button class="submit-btn" style="background:var(--green);box-shadow:none;font-size:15px;padding:14px;color:#000" onclick="sendNotify()">📧 E-Mail öffnen</button>
+    <div class="submit-note" style="margin-top:7px">Alle im BCC – niemand sieht die anderen Adressen</div>
+    <button class="sheet-close" onclick="closeSheet('notify-sheet')">Schließen</button>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lb-close">×</button>
+  <img id="lb-img" src="" />
+  <div class="lb-cap" id="lb-cap"></div>
+</div>
+
+<!-- Standort genau setzen -->
+<div class="loc-picker-bg" id="loc-picker-bg">
+  <div class="loc-picker">
+    <div class="loc-picker-head">
+      <div class="loc-picker-title">📍 Genauen Fundort setzen</div>
+      <div class="loc-picker-sub">Tippe auf die Karte, um den Punkt exakt dort zu setzen, wo du die Ratte oder Maßnahme gesehen hast.</div>
+    </div>
+    <div id="loc-map" class="loc-map"></div>
+    <div class="loc-note" id="loc-note">Der GPS-Standort ist vorgewählt. Du kannst ihn per Fingertipp korrigieren.</div>
+    <div class="loc-picker-actions">
+      <button class="loc-btn cancel" onclick="closeLocationPicker(false)">Abbrechen</button>
+      <button class="loc-btn gps" onclick="centerPickerOnGPS()">GPS neu</button>
+      <button class="loc-btn save" onclick="closeLocationPicker(true)">Punkt übernehmen</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="cookie-layer" id="privacy-consent">
+  <div class="cookie-card">
+    <div class="cookie-title">🔒 Datenschutz & Datenspeicherung</div>
+    <div class="cookie-text">Diese Anwendung speichert Meldungen, Status, Fotos, Standortdaten und optionale Kontaktdaten zur Bearbeitung von Rattenmeldungen in Hamburg. Die Daten werden über Supabase in der EU verarbeitet. Bitte keine Personen, Kennzeichen oder sensiblen Daten fotografieren oder eintragen. Behördenmails und WhatsApp Updates werden nur manuell durch eingeloggte Verwalter vorbereitet und versendet.</div>
+    <div class="cookie-btns"><button class="cookie-btn ok" onclick="acceptPrivacy()">Einverstanden</button><button class="cookie-btn no" onclick="goPage('datenschutz')">Datenschutzerklärung ansehen</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
+const ADMIN_EMAIL = 'saschakitschke@gmx.net';
+const SUPABASE_URL = 'https://fholanhyuwapgrnhlsqq.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_iA3ucEytqulGO5MtRnaDTw_Kg--b6P6';
+const PHOTO_BUCKET = 'report-photos';
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY) : null;
+
+let entries    = []; // zentrale Datenquelle: Supabase reports
+let verwalter  = []; // zentrale Datenquelle: Supabase admin_users
+let abonnenten = []; // zentrale Datenquelle: Supabase subscriptions
+
+let selTypeRat    = '';
+let selTypeAction = '';
+let selKanal      = '';
+let photosRat     = [];
+let photosAction  = [];
+let coordsRat     = null;
+let coordsAction  = null;
+let acTimers      = {};
+let acDataMap     = {};
+let acIdxMap      = {};
+let map           = null;
+let mapMarkers    = [];
+let mapFilter     = 'all';
+let listFilter    = 'all';
+let dateFilterFrom = '';
+let dateFilterTo   = '';
+let isHaupt       = false;
+let currentAdminEmail = '';
+let currentAdminName  = '';
+let privacyAccepted = localStorage.getItem('rattenPrivacyAccepted') === 'yes';
+let curPage       = 'home';
+let db            = null;
+let locPickerMap  = null;
+let locPickerMarker = null;
+let locPickerTarget = null;
+let locPickerCoord = null;
+
+
+function pageFromHash(){
+  const allowed = ['home','karte','liste','abo','melden-rat','melden-action','datenschutz','impressum'];
+  const raw = (location.hash || '').replace('#','').trim();
+  return allowed.includes(raw) ? raw : 'home';
+}
+function rememberPage(name){
+  try{ sessionStorage.setItem('rattenAktiveSeite', name); }catch(e){}
+  const nextHash = '#' + name;
+  if(location.hash !== nextHash){
+    history.replaceState(null, '', nextHash);
+  }
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', async () => {
+  const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  const ts = now.toISOString().slice(0,16);
+  document.getElementById('fr-time').value = ts;
+  document.getElementById('fa-time').value = ts;
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.ac-wrap')) { closeAC('fr-ac'); closeAC('fa-ac'); }
+  });
+  await loadSupabaseData(); updateStats(); checkAboStatus(); showPrivacyConsentIfNeeded();
+  const initialPage = pageFromHash();
+  if(initialPage !== 'home') goPage(initialPage);
+  window.addEventListener('hashchange', () => {
+    const targetPage = pageFromHash();
+    if(targetPage !== curPage) goPage(targetPage);
+  });
+});
+
+
+function showPrivacyConsentIfNeeded(){
+  const layer=document.getElementById('privacy-consent');
+  if(layer && !privacyAccepted && !localStorage.getItem('rattenPrivacyDeclined')) layer.classList.add('open');
+}
+function acceptPrivacy(){privacyAccepted=true;localStorage.setItem('rattenPrivacyAccepted','yes');localStorage.removeItem('rattenPrivacyDeclined');const l=document.getElementById('privacy-consent');if(l)l.classList.remove('open');toast('✅ Datenschutzhinweis bestätigt');}
+function declinePrivacy(){privacyAccepted=false;localStorage.setItem('rattenPrivacyDeclined','yes');const l=document.getElementById('privacy-consent');if(l)l.classList.remove('open');toast('ℹ️ Du kannst die Seite ansehen. Für Meldungen bitte Datenschutz bestätigen.');}
+function ensurePrivacyOk(){if(privacyAccepted)return true;showPrivacyConsentIfNeeded();toast('🔒 Bitte Datenschutzhinweis bestätigen');return false;}
+
+function hasSupabase(){return !!supabaseClient;}
+function dbStatusToUi(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'bearbeitung',resolved:'erledigt',rejected:'neu'})[s]||s||'neu';}
+function uiStatusToDb(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',bearbeitung:'in_progress',erledigt:'resolved'})[s]||'new';}
+function normalizePhotoUrls(r){let photos=[]; if(Array.isArray(r?.photo_urls)) photos=r.photo_urls.filter(Boolean); else if(typeof r?.photo_urls==='string'&&r.photo_urls.trim()){try{const parsed=JSON.parse(r.photo_urls);photos=Array.isArray(parsed)?parsed.filter(Boolean):[r.photo_urls];}catch(e){photos=[r.photo_urls];}} if(r?.image_url && !photos.includes(r.image_url)) photos.unshift(r.image_url); return photos.filter(Boolean);} 
+function dbReportToEntry(r){const photos=normalizePhotoUrls(r);return {id:String(r.id),kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};}
+function entryToDb(e){const photos=Array.isArray(e.photoUrls)?e.photoUrls.filter(Boolean):[];return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,image_url:photos.length?photos[0]:null,photo_urls:photos,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};}
+async function loadSupabaseData(){
+  if(!hasSupabase()){toast('⚠️ Supabase konnte nicht geladen werden');return;}
+  try{
+    const {data,error}=await supabaseClient.from('reports').select('*').order('created_at',{ascending:false});
+    if(error) throw error;
+    entries=(data||[]).map(dbReportToEntry);
+  }catch(e){console.error(e);toast('⚠️ Meldungen konnten nicht geladen werden');}
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(session){currentAdminEmail=session.user.email||''; await loadAdminDataIfAllowed();}
+  }catch(e){}
+}
+async function loadAdminDataIfAllowed(){
+  if(!hasSupabase()||!currentAdminEmail)return false;
+  const {data,error}=await supabaseClient.from('admin_users').select('email').limit(200);
+  if(error){return false;}
+  verwalter=(data||[]).map(x=>({email:x.email,hash:''}));
+  isHaupt=verwalter.some(v=>(v.email||'').toLowerCase()===currentAdminEmail.toLowerCase());
+  try{const {data:subs}=await supabaseClient.from('subscriptions').select('*').order('created_at',{ascending:false});abonnenten=(subs||[]).map(s=>({id:s.id,name:s.name||'Anonym',email:s.email||'',phone:s.phone||'',kanale:s.channel||'email',seit:s.created_at,consentAt:s.consent_at}));}catch(e){}
+  return isHaupt;
+}
+async function uploadPhotoDataUrls(reportId,arr){
+  if(!hasSupabase()||!arr||!arr.length)return [];
+  const urls=[];
+  for(let i=0;i<arr.length;i++){
+    try{
+      const dataUrl=arr[i];
+      const mime=(dataUrl.match(/^data:(.*?);/)||[])[1]||'image/jpeg';
+      const ext=mime.includes('png')?'png':(mime.includes('webp')?'webp':'jpg');
+      const bin=atob(dataUrl.split(',')[1]);
+      const bytes=new Uint8Array(bin.length); for(let j=0;j<bin.length;j++)bytes[j]=bin.charCodeAt(j);
+      const path=`${reportId}/${Date.now()}_${i}.${ext}`;
+      const {error}=await supabaseClient.storage.from(PHOTO_BUCKET).upload(path,new Blob([bytes],{type:mime}),{upsert:false,contentType:mime});
+      if(error) throw error;
+      const {data}=supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path);
+      urls.push(data.publicUrl);
+    }catch(e){console.error('Foto Upload fehlgeschlagen',e); if(arr[i]) urls.push(arr[i]);}
+  }
+  return urls;
+}
+async function writeAudit(action,recordId,details){
+  if(!hasSupabase()||!currentAdminEmail)return;
+  try{await supabaseClient.from('audit_log').insert({actor_email:currentAdminEmail,action,table_name:'reports',record_id:recordId,new_data:details||{}});}catch(e){}
+}
+function isAuthorityEntry(e){return e.kind==='authority'||(e.kind==='action'&&/(meldung|stadt|bezirksamt|behörde|verwaltung|vermieter|hausverwaltung|gesundheitsamt)/i.test(e.type||''));}
+function isDoneEntry(e){return (e.status||'').toLowerCase()==='erledigt';}
+function adminLabel(){return currentAdminName || currentAdminEmail || 'Verwalter';}
+function addHistory(e,text){if(!e)return; if(!Array.isArray(e.history))e.history=[]; e.history.unshift({ts:new Date().toISOString(),by:adminLabel(),text});}
+function formatHistory(e){if(!e.history||!e.history.length)return '';return `<div class="history-box"><div class="history-title">Verlauf</div>${e.history.map(h=>{const d=new Date(h.ts);return `<div class="history-item">${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · ${esc(h.text)}${h.by?' · '+esc(h.by):''}</div>`}).join('')}</div>`;}
+function publicUrl(){return 'https://rattenmelder.github.io/ratten-meldung/';}
+function buildEntryText(e){return `Ort: ${e.street||''}
+GPS: ${e.lat?Number(e.lat).toFixed(6)+', '+Number(e.lon).toFixed(6):'nicht vorhanden'}
+Art: ${e.type||''}
+Status: ${ST[e.status||'neu']?.lbl||e.status||'Neu'}
+Datum: ${new Date(e.time||e.createdAt||Date.now()).toLocaleString('de-DE')}
+Gemeldet von: ${e.name||'Anonym'}
+Beschreibung:
+${e.desc||''}
+
+Link: ${publicUrl()}#liste`;}
+function rememberAuthoritySent(e,recipient){
+  e.kind=e.kind||'rat';
+  e.status='gesendet';
+  e.authorityNotifiedAt=new Date().toISOString();
+  e.authorityRecipient=recipient;
+  e.authorityBy=adminLabel();
+  addHistory(e,`Behörde/Verwaltung informiert: ${recipient}`);
+  const log={id:Date.now()+Math.floor(Math.random()*999),kind:'authority',street:e.street,type:'Behörde / Verwaltung informiert',desc:`Weiterleitung zu Meldung ${e.type}: ${e.desc||''}`,time:new Date().toISOString(),name:adminLabel(),hasPhotos:false,status:'gesendet',createdAt:new Date().toISOString(),lat:e.lat,lon:e.lon,accuracy:e.accuracy,gpsSource:e.gpsSource,gpsExact:e.gpsExact,linkedEntryId:e.id,authorityRecipient:recipient,authorityBy:adminLabel(),history:[{ts:new Date().toISOString(),by:adminLabel(),text:`E-Mail an ${recipient} vorbereitet`} ]};
+  entries.unshift(log);
+  saveEntries(); updateStats(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); renderAdminList();
+}
+
+// ── INDEXEDDB ──
+function openDB(){return new Promise((res,rej)=>{if(db){res(db);return;}const r=indexedDB.open('rattenDB',1);r.onupgradeneeded=e=>e.target.result.createObjectStore('photos',{keyPath:'id'});r.onsuccess=e=>{db=e.target.result;res(db);};r.onerror=()=>rej();});}
+async function savePhotoDB(id,arr){if(!arr.length)return;const d=await openDB();const tx=d.transaction('photos','readwrite');tx.objectStore('photos').put({id,photos:arr});}
+async function loadPhotosDB(id){const entry=entries.find(e=>String(e.id)===String(id));if(entry&&entry.photoUrls&&entry.photoUrls.length)return entry.photoUrls;try{const d=await openDB();return new Promise(res=>{const tx=d.transaction('photos','readonly');const r=tx.objectStore('photos').get(id);r.onsuccess=()=>res(r.result?.photos||[]);r.onerror=()=>res([]);});}catch(e){return[];}}
+async function delPhotosDB(id){try{const d=await openDB();const tx=d.transaction('photos','readwrite');tx.objectStore('photos').delete(id);}catch(e){}}
+
+// ── PAGES ──
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg = document.getElementById('page-'+name);
+  if(pg) pg.classList.add('active');
+  curPage = name;
+  rememberPage(name);
+  if(name==='karte') {
+    // Warten bis Page sichtbar ist, dann Karte initialisieren
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        initMap();
+      });
+    });
+  }
+  if(name==='liste') { syncDateInputs(); renderList(); }
+  if(name==='karte') syncDateInputs();
+  if(name==='abo')   checkAboStatus();
+  const active=document.querySelector('.page.active .scroll-body'); if(active && !document.body.classList.contains('keyboard-open')) active.scrollTop=0;
+}
+
+
+// ── TYPE / KANAL ──
+function pickType(el, kind){
+  if(document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) document.activeElement.blur();
+  const grid = kind==='rat' ? document.getElementById('rat-type-grid') : document.getElementById('action-type-grid');
+  grid.querySelectorAll('.tc').forEach(t=>{t.classList.remove('sel','sel-green');});
+  el.classList.add(kind==='rat'?'sel':'sel-green');
+  if(kind==='rat') selTypeRat=el.dataset.val;
+  else selTypeAction=el.dataset.val;
+}
+function pickKanal(el){document.querySelectorAll('.kc').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');selKanal=el.dataset.val;}
+
+// ── GPS ──
+function getGPS(inputId, hintId){
+  const hint=document.getElementById(hintId);
+  if(!navigator.geolocation){hint.textContent='⚠️ GPS nicht verfügbar';hint.className='hint err';return;}
+  hint.textContent='📡 Exakter GPS-Standort wird ermittelt…';hint.className='hint';
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const {latitude:lat,longitude:lon,accuracy}=pos.coords;
+    const coordObj={lat,lon,accuracy:accuracy||null,source:'gps',exact:true};
+    if(inputId==='fr-street') coordsRat=coordObj;
+    else coordsAction=coordObj;
+    let label=`GPS: ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+    try{
+      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=de&zoom=18&addressdetails=1`);
+      const d=await r.json();
+      if(d?.address){
+        const a=d.address;
+        const s=[a.road,a.house_number].filter(Boolean).join(' ');
+        const c=[a.postcode,a.city||a.town||a.village||a.suburb].filter(Boolean).join(' ');
+        const near=[s,c].filter(Boolean).join(', ');
+        if(near) label=near;
+      }
+    }catch(e){}
+    document.getElementById(inputId).value=label;
+    hint.innerHTML=`✅ GPS-Punkt erkannt. Jetzt auf der Karte genau setzen.<br><span class="gps-exact">Koordinaten: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · Genauigkeit ca. ${Math.round(accuracy)} m`:''}</span>`;
+    hint.className='hint ok';
+    openLocationPicker(inputId, hintId, coordObj, label);
+  },err=>{hint.textContent=['','⚠️ GPS verweigert','⚠️ Nicht ermittelbar','⚠️ Zeitüberschreitung'][err.code]||'⚠️ GPS-Fehler';hint.className='hint err';},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+
+function openLocationPicker(inputId, hintId, coordObj, label){
+  locPickerTarget={inputId,hintId,label};
+  locPickerCoord={...coordObj, source:'map-gps', exact:true};
+  const bg=document.getElementById('loc-picker-bg');
+  if(!bg)return;
+  bg.classList.add('open');
+  setTimeout(()=>{
+    if(!locPickerMap){
+      const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,attribution:'© OpenStreetMap'});
+      const aerialOnly=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Luftbild © Esri'});
+      locPickerMap=L.map('loc-map',{layers:[street],zoomControl:true,attributionControl:false}).setView([coordObj.lat,coordObj.lon],19);
+      L.control.layers({
+        'Straßenkarte mit Hausnummern':street,
+        'Luftbild / Häuseransicht':aerialOnly
+      }, null,{collapsed:true,position:'topright'}).addTo(locPickerMap);
+      locPickerMap.on('click',e=>setPickerPoint(e.latlng.lat,e.latlng.lng,null,'manual'));
+    }
+    locPickerMap.invalidateSize();
+    locPickerMap.setView([coordObj.lat,coordObj.lon],19);
+    setPickerPoint(coordObj.lat,coordObj.lon,coordObj.accuracy,'map-gps');
+  },200);
+}
+
+function setPickerPoint(lat,lon,accuracy,source){
+  locPickerCoord={lat,lon,accuracy:accuracy||null,source:source||'manual',exact:true};
+  const icon=L.divIcon({className:'',html:'<div class="loc-crosshair">📍</div>',iconSize:[42,42],iconAnchor:[21,21]});
+  if(!locPickerMarker){locPickerMarker=L.marker([lat,lon],{icon,draggable:true}).addTo(locPickerMap);locPickerMarker.on('dragend',e=>{const p=e.target.getLatLng();setPickerPoint(p.lat,p.lng,null,'manual');});}
+  else locPickerMarker.setLatLng([lat,lon]);
+  const note=document.getElementById('loc-note');
+  if(note) note.textContent=`Gewählter Punkt: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · GPS-Genauigkeit ca. ${Math.round(accuracy)} m`:''}. Beim Übernehmen werden GPS-Daten und die nächste Straße/Hausnummer genau von diesem Punkt neu gespeichert.`;
+}
+
+function centerPickerOnGPS(){
+  if(!navigator.geolocation){toast('⚠️ GPS nicht verfügbar');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude:lat,longitude:lon,accuracy}=pos.coords;
+    if(locPickerMap) locPickerMap.setView([lat,lon],19);
+    setPickerPoint(lat,lon,accuracy,'map-gps');
+  },()=>toast('⚠️ GPS konnte nicht neu ermittelt werden'),{enableHighAccuracy:true,timeout:12000,maximumAge:0});
+}
+
+async function reverseAddressFromCoords(lat,lon){
+  try{
+    // Wichtig: Diese Abfrage läuft immer auf die aktuell gesetzte Nadel, nicht auf den ersten GPS-Punkt.
+    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=de&zoom=18&addressdetails=1`);
+    const d=await r.json();
+    const a=d?.address||{};
+    const street=[a.road,a.house_number].filter(Boolean).join(' ');
+    const place=[a.postcode,a.city||a.town||a.village||a.suburb||a.neighbourhood].filter(Boolean).join(' ');
+    const label=[street,place].filter(Boolean).join(', ');
+    if(label) return label;
+    return d?.display_name?.split(',').slice(0,4).join(', ') || '';
+  }catch(e){
+    return '';
+  }
+}
+
+async function closeLocationPicker(save){
+  const bg=document.getElementById('loc-picker-bg');
+  if(save&&locPickerTarget&&locPickerCoord){
+    const hint=document.getElementById(locPickerTarget.hintId);
+    if(hint){
+      hint.innerHTML=`🔄 Adresse zum gewählten Punkt wird aktualisiert…<br><span class="gps-exact">Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}</span>`;
+      hint.className='hint';
+    }
+    const newLabel=await reverseAddressFromCoords(locPickerCoord.lat,locPickerCoord.lon);
+    const finalLabel=newLabel || `GPS: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}`;
+    locPickerCoord.address=finalLabel;
+    locPickerCoord.label=finalLabel;
+    const input=document.getElementById(locPickerTarget.inputId);
+    if(input) input.value=finalLabel;
+    if(locPickerTarget.inputId==='fr-street') coordsRat=locPickerCoord;
+    else coordsAction=locPickerCoord;
+    if(hint){
+      hint.innerHTML=`✅ Genauer Kartenpunkt und nächste Adresse gespeichert<br><span class="gps-exact">${finalLabel}<br>Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}${locPickerCoord.accuracy?` · Genauigkeit ca. ${Math.round(locPickerCoord.accuracy)} m`:''}</span>`;
+      hint.className='hint ok';
+    }
+    const inp=document.getElementById(locPickerTarget.inputId); if(inp) inp.blur();
+    toast('✅ Punkt und Adresse übernommen');
+  }
+  if(bg) bg.classList.remove('open');
+}
+
+// ── AUTOCOMPLETE ──
+function acInput(inputId, listId){
+  clearTimeout(acTimers[listId]);
+  if(inputId==='fr-street') coordsRat=null; else coordsAction=null;
+  const val=document.getElementById(inputId).value.trim();
+  const list=document.getElementById(listId);
+  if(val.length<3){closeAC(listId);return;}
+  list.innerHTML='<div class="ac-msg">🔍 Suche…</div>';list.classList.add('open');
+  acTimers[listId]=setTimeout(()=>fetchAC(val,inputId,listId),450);
+}
+async function fetchAC(val,inputId,listId){
+  const list=document.getElementById(listId);
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val+', Hamburg')}&format=json&limit=5&addressdetails=1&accept-language=de&countrycodes=de`);
+    const d=await r.json();
+    if(!d?.length){list.innerHTML='<div class="ac-msg">Nichts gefunden</div>';return;}
+    acDataMap[listId]=d; acIdxMap[listId]=-1;
+    list.innerHTML=d.map((item,i)=>{const a=item.address||{};const s=[a.road,a.house_number].filter(Boolean).join(' ')||item.display_name.split(',')[0];const c=[a.postcode,a.city||a.town||a.village||a.suburb].filter(Boolean).join(' ');return`<div class="ac-row" onclick="pickAC(${i},'${inputId}','${listId}')"><div class="ac-main">${esc(s)}</div><div class="ac-sub">${esc(c)}</div></div>`;}).join('');
+    list.classList.add('open');
+  }catch(e){list.innerHTML='<div class="ac-msg">⚠️ Keine Verbindung – manuell eingeben</div>';}
+}
+function pickAC(i,inputId,listId){
+  const item=acDataMap[listId]?.[i]; if(!item) return;
+  const a=item.address||{};const s=[a.road,a.house_number].filter(Boolean).join(' ')||item.display_name.split(',')[0];const c=[a.postcode,a.city||a.town||a.village||a.suburb].filter(Boolean).join(' ');
+  document.getElementById(inputId).value=[s,c].filter(Boolean).join(', ');
+  const coords={lat:parseFloat(item.lat),lon:parseFloat(item.lon),accuracy:null,source:'address',exact:false};
+  if(inputId==='fr-street') coordsRat=coords; else coordsAction=coords;
+  const hintId=inputId==='fr-street'?'fr-hint':'fa-hint';
+  const hint=document.getElementById(hintId); hint.textContent='✅ Adresse übernommen (ungefähre Position)'; hint.className='hint ok';
+  const activeInput=document.getElementById(inputId); if(activeInput) activeInput.blur();
+  closeAC(listId);
+}
+function acKey(e,listId){
+  const rows=document.querySelectorAll(`#${listId} .ac-row`); if(!rows.length) return;
+  if(e.key==='ArrowDown'){e.preventDefault();acIdxMap[listId]=Math.min((acIdxMap[listId]||0)+1,rows.length-1);rows.forEach((r,i)=>r.classList.toggle('hi',i===acIdxMap[listId]));}
+  else if(e.key==='ArrowUp'){e.preventDefault();acIdxMap[listId]=Math.max((acIdxMap[listId]||0)-1,0);rows.forEach((r,i)=>r.classList.toggle('hi',i===acIdxMap[listId]));}
+  else if(e.key==='Enter'&&(acIdxMap[listId]||0)>=0){e.preventDefault();const inputId=listId==='fr-ac'?'fr-street':'fa-street';pickAC(acIdxMap[listId],inputId,listId);}
+  else if(e.key==='Escape') closeAC(listId);
+}
+function closeAC(listId){const l=document.getElementById(listId);if(l){l.classList.remove('open');l.innerHTML='';acDataMap[listId]=[];acIdxMap[listId]=-1;}}
+
+// ── FOTOS ──
+function handleFiles(e,kind){Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{if(kind==='rat'){photosRat.push(ev.target.result);renderPhotos('fr-photo-row',photosRat,'rat');}else{photosAction.push(ev.target.result);renderPhotos('fa-photo-row',photosAction,'action');}};r.readAsDataURL(f);});}
+function renderPhotos(rowId,arr,kind){document.getElementById(rowId).innerHTML=arr.map((u,i)=>`<div class="photo-item"><img class="photo-thumb" src="${u}"/><button class="photo-del" onclick="removePhoto(${i},'${kind}')">×</button></div>`).join('');}
+function removePhoto(i,kind){if(kind==='rat'){photosRat.splice(i,1);renderPhotos('fr-photo-row',photosRat,'rat');}else{photosAction.splice(i,1);renderPhotos('fa-photo-row',photosAction,'action');}}
+
+// ── SUBMIT ──
+async function submitReport(kind){
+  if(!ensurePrivacyOk())return;
+  const isRat = kind==='rat';
+  const street = document.getElementById(isRat?'fr-street':'fa-street').value.trim();
+  const desc   = document.getElementById(isRat?'fr-desc':'fa-desc').value.trim();
+  const selType = isRat ? selTypeRat : selTypeAction;
+  if(!street){flashInp(isRat?'fr-street':'fa-street');toast('📍 Bitte Ort angeben');return;}
+  if(!selType){toast(isRat?'👆 Bitte Sichtung wählen':'👆 Bitte Maßnahme wählen');return;}
+  if(!desc){flashInp(isRat?'fr-desc':'fa-desc');toast('✏️ Bitte kurz beschreiben');return;}
+  const consentId=isRat?'fr-consent':'fa-consent';
+  if(document.getElementById(consentId)&&!document.getElementById(consentId).checked){toast('🔒 Bitte Datenschutzbestätigung anhaken');return;}
+  const id=(crypto&&crypto.randomUUID)?crypto.randomUUID():('r_'+Date.now());
+  const coords = isRat?coordsRat:coordsAction;
+  const photoArr = isRat?photosRat:photosAction;
+  toast('⏳ Meldung wird gespeichert...');
+  const photoUrls = await uploadPhotoDataUrls(id,photoArr);
+  const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoUrls.length>0,photoUrls,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null,accuracy:coords?coords.accuracy:null,gpsSource:coords?coords.source:null,gpsExact:coords?!!coords.exact:false,history:[]};
+  if(hasSupabase()){
+    const {data,error}=await supabaseClient.from('reports').insert(entryToDb(entry)).select('*').single();
+    if(error){console.error('Supabase INSERT Fehler:',error);const msg=error.message||error.details||error.hint||'Unbekannter Fehler';toast('❌ Supabase: '+msg.slice(0,90));alert('Supabase Fehler beim Speichern:\n\n'+msg+'\n\nDetails: '+(error.details||'-')+'\nHint: '+(error.hint||'-'));return;}
+    entries.unshift(dbReportToEntry(data));
+  }else{
+    entries.unshift(entry); await saveEntries(); if(photoArr.length) savePhotoDB(id,[...photoArr]);
+  }
+  updateStats(); applyDateFilter(); syncSheets(entry);
+  toast(isRat?'✅ Meldung gespeichert!':'✅ Maßnahme gespeichert!');
+  resetForm(kind); goPage('home');
+}
+function flashInp(id){const el=document.getElementById(id);el.style.borderColor='var(--red)';setTimeout(()=>el.style.borderColor='',1500);}
+function resetForm(kind){
+  const isRat=kind==='rat';
+  ['street','desc','name'].forEach(f=>document.getElementById(`f${isRat?'r':'a'}-${f}`).value='');
+  if(isRat){photosRat=[];coordsRat=null;document.getElementById('fr-photo-row').innerHTML='';document.getElementById('fr-photo').value='';document.getElementById('fr-hint').textContent='GPS-Button für automatische Adresse';document.getElementById('fr-hint').className='hint';document.getElementById('rat-type-grid').querySelectorAll('.tc').forEach(t=>t.classList.remove('sel'));const c=document.getElementById('fr-consent');if(c)c.checked=false;selTypeRat='';}
+  else{photosAction=[];coordsAction=null;document.getElementById('fa-photo-row').innerHTML='';document.getElementById('fa-photo').value='';document.getElementById('fa-hint').textContent='GPS-Button für automatische Adresse';document.getElementById('fa-hint').className='hint';document.getElementById('action-type-grid').querySelectorAll('.tc').forEach(t=>t.classList.remove('sel','sel-green'));const c=document.getElementById('fa-consent');if(c)c.checked=false;selTypeAction='';}
+  const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+  document.getElementById(isRat?'fr-time':'fa-time').value=now.toISOString().slice(0,16);
+}
+
+// ── STORAGE ──
+async function saveEntries(){if(hasSupabase()){try{await supabaseClient.from('reports').upsert(entries.map(entryToDb));}catch(e){console.error(e);}}else{try{localStorage.setItem('rattenEntries',JSON.stringify(entries));}catch(e){}}}
+async function saveVerwalter(){/* Admins werden produktiv über Supabase Auth + admin_users verwaltet. */}
+async function saveAbonnenten(){if(hasSupabase()){try{await supabaseClient.from('subscriptions').upsert(abonnenten.map(a=>({id:String(a.id),name:a.name||'Anonym',email:a.email||'',phone:a.phone||'',channel:a.kanale||'email',consent_at:a.consentAt||new Date().toISOString()})));}catch(e){console.error(e);}}else{try{localStorage.setItem('rattenAbonnenten',JSON.stringify(abonnenten));}catch(e){}}}
+async function syncSheets(r){const url=window._sheetsUrl||localStorage.getItem('rattenSheetsUrl')||'';if(!url)return;try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({...r,photos:r.hasPhotos?['Ja']:[]})});}catch(e){}}
+
+// ── STATS ──
+function updateStats(){
+  const byId=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  byId('s-rat',entries.filter(e=>e.kind==='rat').length);
+  byId('s-action',entries.filter(e=>e.kind==='action'&&!isAuthorityEntry(e)).length);
+  byId('s-authority',entries.filter(isAuthorityEntry).length);
+  byId('s-done',entries.filter(isDoneEntry).length);
+}
+
+function localDateValue(d){
+  const x = d instanceof Date ? d : new Date(d || Date.now());
+  if(isNaN(x)) return '';
+  const y = x.getFullYear();
+  const m = String(x.getMonth()+1).padStart(2,'0');
+  const day = String(x.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function entryDateValue(e){
+  return localDateValue(e.createdAt || e.time || Date.now());
+}
+function entryInDateRange(e){
+  const v = entryDateValue(e);
+  if(dateFilterFrom && v < dateFilterFrom) return false;
+  if(dateFilterTo && v > dateFilterTo) return false;
+  return true;
+}
+function syncDateInputs(){
+  ['list','map'].forEach(prefix=>{
+    const from=document.getElementById(prefix+'-date-from');
+    const to=document.getElementById(prefix+'-date-to');
+    const btn=document.getElementById(prefix+'-today-btn');
+    if(from) from.value=dateFilterFrom;
+    if(to) to.value=dateFilterTo;
+    if(btn){
+      const today=localDateValue(new Date());
+      btn.classList.toggle('active', dateFilterFrom===today && dateFilterTo===today);
+    }
+  });
+}
+function applyDateFilter(){
+  syncDateInputs();
+  if(curPage==='liste') renderList();
+  if(curPage==='karte') refreshMarkers();
+}
+function setDateRangeFromInputs(prefix){
+  const from=document.getElementById(prefix+'-date-from');
+  const to=document.getElementById(prefix+'-date-to');
+  dateFilterFrom = from ? from.value : '';
+  dateFilterTo   = to ? to.value : '';
+  if(dateFilterFrom && dateFilterTo && dateFilterFrom > dateFilterTo){
+    const tmp=dateFilterFrom; dateFilterFrom=dateFilterTo; dateFilterTo=tmp;
+    toast('↔️ Datum wurde automatisch sortiert');
+  }
+  applyDateFilter();
+}
+function setTodayDateFilter(){
+  const today=localDateValue(new Date());
+  dateFilterFrom=today;
+  dateFilterTo=today;
+  applyDateFilter();
+}
+function clearDateFilter(){
+  dateFilterFrom='';
+  dateFilterTo='';
+  applyDateFilter();
+}
+function openStatList(kind){
+  if(kind==='rat'){listFilter='rat';dateFilterFrom='';dateFilterTo='';}
+  else if(kind==='action'){listFilter='action';dateFilterFrom='';dateFilterTo='';}
+  else if(kind==='authority'){listFilter='authority';dateFilterFrom='';dateFilterTo='';}
+  else if(kind==='done'){listFilter='done';dateFilterFrom='';dateFilterTo='';}
+  else {listFilter='all';dateFilterFrom='';dateFilterTo='';}
+  goPage('liste');
+  setTimeout(()=>{setListFilter(listFilter);syncDateInputs();const body=document.getElementById('list-body');if(body)body.scrollTop=0;},80);
+}
+
+// ── LIST ──
+const ST={neu:{cls:'sn',lbl:'🆕 Neu'},geprueft:{cls:'ss',lbl:'👀 Geprüft'},gesendet:{cls:'ss',lbl:'📧 Behörde informiert'},bearbeitung:{cls:'sb',lbl:'🔄 In Bearbeitung'},erledigt:{cls:'se',lbl:'✅ Erledigt'}};
+
+function setListFilter(f){
+  listFilter=f;
+  const ids=['all','rat','action','authority','done'];
+  ids.forEach(id=>{const el=document.getElementById('lf-'+id);if(el)el.className='lf-btn';});
+  const act=document.getElementById('lf-'+f); if(act)act.className='lf-btn act';
+  renderList();
+}
+
+async function renderList(){
+  const el=document.getElementById('list-body');
+  const filtered = entries.filter(e=>{
+    if(listFilter==='rat' && e.kind!=='rat') return false;
+    if(listFilter==='action' && (e.kind!=='action'||isAuthorityEntry(e))) return false;
+    if(listFilter==='authority' && !isAuthorityEntry(e)) return false;
+    if(listFilter==='done' && !isDoneEntry(e)) return false;
+    return entryInDateRange(e);
+  });
+  const rats=entries.filter(e=>e.kind==='rat').length;
+  const actions=entries.filter(e=>e.kind==='action'&&!isAuthorityEntry(e)).length;
+  const auth=entries.filter(isAuthorityEntry).length;
+  const done=entries.filter(isDoneEntry).length;
+  document.getElementById('list-count').textContent=`${filtered.length} angezeigt · ${rats} Sichtungen · ${actions} Maßnahmen · ${auth} Behörden · ${done} erledigt`;
+  if(!filtered.length){el.innerHTML=`<div class="empty-state"><div class="ei">🔍</div><div class="et">Keine Einträge für diese Auswahl</div></div>`;return;}
+  let html='';
+  for(const r of filtered){
+    const d=new Date(r.time||r.createdAt);
+    const ts=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';
+    const st=ST[r.status||'neu']||ST.neu;
+    const isAuth=isAuthorityEntry(r);
+    const typeBadgeCls=r.kind==='rat'?'rat-badge':'action-badge';
+    const cardCls=(r.kind==='action'||isAuth)?'r-card action-card':'r-card';
+    const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
+    const photoHtml=photoArr.length?`<div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${u}" onclick="openLightbox('${String(r.id).replace(/'/g,\"\\'\")}',${i})" onerror="this.classList.add('broken');this.removeAttribute('src');this.alt='Foto konnte nicht geladen werden';" />`).join('')}</div>`:'';
+    const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
+    const hist=formatHistory(r);
+    html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${hist}</div>`;
+  }
+  el.innerHTML=html;
+}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── MAP ──
+function initMap(){
+  if(map) { setTimeout(()=>{ map.invalidateSize(); refreshMarkers(); }, 100); return; }
+  // Karte Container muss sichtbar sein
+  const container = document.getElementById('map');
+  container.style.height = '100%';
+
+  const strassenkarte = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 20,
+    attribution: '© OpenStreetMap'
+  });
+
+  const helleKarte = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20,
+    attribution: '© OpenStreetMap © CARTO'
+  });
+
+  const luftbildOnly = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    attribution: 'Luftbild © Esri'
+  });
+
+
+  map = L.map('map', {
+    zoomControl: true,
+    attributionControl: false,
+    layers: [strassenkarte]
+  }).setView([53.55, 10.0], 13);
+
+  L.control.layers(
+    {
+      'Straßenkarte mit Hausnummern': strassenkarte,
+      'Helle Übersichtskarte': helleKarte,
+      'Luftbild / Häuseransicht': luftbildOnly
+    },
+    null,
+    { collapsed: false, position: 'topright' }
+  ).addTo(map);
+
+  L.control.attribution({prefix: false}).addTo(map);
+  setTimeout(() => { map.invalidateSize(true); refreshMarkers(); }, 150);setTimeout(() => { map.invalidateSize(true); refreshMarkers(); }, 600);
+}
+function setMapFilter(f){
+  mapFilter=f;
+  ['all','rat','action','authority','done'].forEach(id=>{const el=document.getElementById('mf-'+id);if(el)el.className='mf-btn';});
+  const act=document.getElementById('mf-'+f); if(act)act.className='mf-btn active-all';
+  refreshMarkers();
+}
+function markerEmoji(r){
+  const t=(r.type||'').toLowerCase();
+  if(isDoneEntry(r)) return '✅';
+  if(isAuthorityEntry(r)) return '📧';
+  if(r.kind==='action'){
+    if(t.includes('köderbox')) return '📦';
+    if(t.includes('bekämpfer')) return '👷';
+    if(t.includes('verschlossen')) return '🧱';
+    if(t.includes('hinweisschild')) return '⚠️';
+    if(t.includes('kontrolliert')) return '🔍';
+    if((r.status||'').toLowerCase().includes('erledigt')) return '✅';
+    return '🟢';
+  }
+  if(t.includes('tote')) return '☠️🐀';
+  if(t.includes('mehrere')) return '🐀🐀';
+  if(t.includes('bau')) return '🕳️';
+  if(t.includes('kot')) return '💩';
+  if(t.includes('fraß')||t.includes('frass')) return '🦷';
+  return '🐀';
+}
+function markerClass(r){
+  if(isAuthorityEntry(r)) return 'action';
+  if(r.kind==='action') return 'action';
+  return (r.type||'').toLowerCase().includes('tote') ? 'dead' : 'rat';
+}
+async function refreshMarkers(){
+  if(!map)return;
+  mapMarkers.forEach(m=>map.removeLayer(m));mapMarkers=[];
+  const filtered=entries.filter(e=>e.lat&&e.lon&&entryInDateRange(e)&&((mapFilter==='all')||(mapFilter==='rat'&&e.kind==='rat')||(mapFilter==='action'&&e.kind==='action'&&!isAuthorityEntry(e))||(mapFilter==='authority'&&isAuthorityEntry(e))||(mapFilter==='done'&&isDoneEntry(e))));
+  document.getElementById('map-empty').style.display=filtered.length?'none':'flex';
+  for(const r of filtered){
+    const isRat=r.kind==='rat';
+    const emoji=markerEmoji(r);
+    const cls=markerClass(r)+(emoji.length>2?' small':'');
+    const icon=L.divIcon({className:'',html:`<div class="map-symbol ${cls}">${emoji}</div>`,iconSize:[38,38],iconAnchor:[19,19],popupAnchor:[0,-18]});
+    const d=new Date(r.time||r.createdAt);
+    const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    const typeCls=isRat?'pu-rat':'pu-action';
+    const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
+    const photoHtml=photoArr.length?`<img class="pu-photo" src="${photoArr[0]}" onclick="openLightbox('${String(r.id).replace(/'/g,\"\\'\")}',0)" onerror="this.classList.add('broken');this.removeAttribute('src');this.alt='Foto nicht ladbar';" />`:'';
+    const gpsLine=r.lat?`<div class="pu-coords">${r.gpsExact?'Exakt gesetzter Kartenpunkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}</div>`:'';
+    const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
+    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap('${String(r.id).replace(/'/g,\"\\'\")}')">Meldung öffnen</button>`);
+    mapMarkers.push(m);
+  }
+  if(filtered.length) map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3));
+}
+function openEntryFromMap(id){
+  if(map){map.closePopup();}
+  goPage('liste');
+  setTimeout(()=>{
+    const el=document.getElementById('entry-'+id);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--blue)';setTimeout(()=>el.style.outline='',1800);}
+  },250);
+}
+
+// ── LIGHTBOX ──
+async function openLightbox(id,idx){
+  const arr=await loadPhotosDB(id); if(!arr.length)return;
+  document.getElementById('lb-img').src=arr[idx];
+  document.getElementById('lb-cap').textContent=`Foto ${idx+1} von ${arr.length}`;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
+
+// ── TOAST ──
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ── ABO ──
+function checkAboStatus(){const myId=localStorage.getItem('rattenMeinAboId');const mine=myId?abonnenten.find(a=>a.id===myId):null;const done=document.getElementById('abo-done');const form=document.getElementById('abo-form');if(!done||!form)return;if(mine){const kl={email:'📧 E-Mail',whatsapp:'💬 WhatsApp',beides:'📧 + 💬'};document.getElementById('abo-kanal-name').textContent=kl[mine.kanale]||mine.kanale;done.style.display='block';form.style.display='none';}else{done.style.display='none';form.style.display='block';}}
+function aboAnmelden(){if(!ensurePrivacyOk())return;const email=document.getElementById('abo-email').value.trim();const phone=document.getElementById('abo-phone').value.trim();if(!selKanal){toast('👆 Bitte Kanal wählen');return;}if((selKanal==='email'||selKanal==='beides')&&(!email||!email.includes('@'))){flashInp('abo-email');toast('📧 Bitte E-Mail eingeben');return;}if((selKanal==='whatsapp'||selKanal==='beides')&&!phone){flashInp('abo-phone');toast('💬 Bitte Telefonnummer für WhatsApp eingeben');return;}if(!document.getElementById('abo-consent').checked){toast('🔒 Bitte Zustimmung anhaken');return;}if(email&&abonnenten.some(a=>a.email&&a.email.toLowerCase()===email.toLowerCase())){toast('⚠️ E-Mail bereits eingetragen');return;}const id='abo_'+Date.now();abonnenten.push({id,name:document.getElementById('abo-name').value.trim()||'Anonym',email,phone,kanale:selKanal,seit:new Date().toISOString(),consentAt:new Date().toISOString()});saveAbonnenten();localStorage.setItem('rattenMeinAboId',id);checkAboStatus();toast('✅ Erfolgreich eingetragen!');}
+function aboAustragen(){if(!confirm('Abmelden?'))return;const myId=localStorage.getItem('rattenMeinAboId');abonnenten=abonnenten.filter(a=>a.id!==myId);saveAbonnenten();localStorage.removeItem('rattenMeinAboId');selKanal='';document.querySelectorAll('.kc').forEach(t=>t.classList.remove('sel'));document.getElementById('abo-email').value='';const ph=document.getElementById('abo-phone');if(ph)ph.value='';document.getElementById('abo-name').value='';const co=document.getElementById('abo-consent');if(co)co.checked=false;checkAboStatus();toast('👋 Abgemeldet');}
+
+// ── EMAIL ──
+function openEmailSheet(){
+  const neu=entries.filter(e=>e.kind==='rat'&&(!e.status||e.status==='neu'));
+  if(!neu.length){toast('✅ Alle Sichtungen wurden bereits an die Stadt vorbereitet oder gesendet');return;}
+  const today=new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const streets=[...new Set(neu.map(r=>r.street))];
+  let body=`Sehr geehrte Damen und Herren,\n\nim Rahmen unserer Nachbarschaft haben wir gehäuft Ratten in Hamburg beobachtet:\n\n━━━━━━━━━━━━━━━━━━━\nNEUE SICHTUNGEN: ${neu.length} · ${today}\nOrte: ${streets.join(', ')}\n━━━━━━━━━━━━━━━━━━━\n\n`;
+  neu.forEach((r,i)=>{const d=new Date(r.time||r.createdAt);const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});body+=`${i+1}. ${r.street}\n   Art: ${r.type}\n   Zeit: ${ts}\n   Beschreibung: ${r.desc}\n${r.lat?`   GPS: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}\n`:''}${r.hasPhotos?'   Fotos: vorhanden\n':''}\n`;});
+  body+=`Wir bitten um geeignete Maßnahmen und eine kurze Rückmeldung zum weiteren Vorgehen.\n\nMit freundlichen Grüßen\n${GRUPPENNAME}`;
+  const subject=`Ratten-Meldung Hamburg – ${neu.length} neue Sichtungen (${today})`;
+  document.getElementById('email-pre').textContent=body;
+  const emailLink=document.getElementById('email-link');
+  emailLink.href=`mailto:schaedlingsbekaempfung@hu.hamburg.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  emailLink.setAttribute('onclick', "markGesendet(); closeSheet('email-sheet'); toast('📧 Als Meldung an die Stadt dokumentiert');");
+  emailLink.textContent='📧 Mail-App öffnen';
+  document.getElementById('email-sheet').classList.add('open');
+  window._pendingSend=neu.map(r=>r.id);
+  window._pendingSubject=subject;
+  window._pendingBody=body;
+}
+function copyEmail(){
+  navigator.clipboard.writeText(document.getElementById('email-pre').textContent).then(()=>{
+    markGesendet();
+    toast('📋 Kopiert und als Meldung an die Stadt dokumentiert.');
+  });
+}
+function markGesendet(){
+  if(!window._pendingSend||!window._pendingSend.length)return;
+  const sentAt=new Date().toISOString();
+  const pendingIds=[...window._pendingSend];
+  const subject=window._pendingSubject||'Ratten-Meldung Hamburg';
+  const body=window._pendingBody||'';
+  const existingLinks=new Set(entries.filter(e=>e.kind==='action'&&e.linkedRatId).map(e=>String(e.linkedRatId)));
+  const newActions=[];
+  pendingIds.forEach((id,idx)=>{
+    const rat=entries.find(e=>e.id===id);
+    if(!rat)return;
+    rat.gesendet=true;
+    rat.status='gesendet';
+    rat.sentToCityAt=sentAt;
+    rat.emailSubject=subject;
+    if(!existingLinks.has(String(id))){
+      newActions.push({
+        id:Date.now()+idx+1,
+        kind:'action',
+        street:rat.street,
+        type:'Meldung an Stadt Hamburg',
+        desc:`E-Mail an die Stadt Hamburg vorbereitet/gesendet. Bezug zur Sichtung: ${rat.type}. ${rat.desc}`,
+        time:sentAt,
+        name:'System',
+        hasPhotos:false,
+        status:'gesendet',
+        stadtAntwort:'',
+        createdAt:sentAt,
+        lat:rat.lat||null,
+        lon:rat.lon||null,
+        accuracy:rat.accuracy||null,
+        gpsSource:rat.gpsSource||'linked-rat',
+        gpsExact:!!rat.gpsExact,
+        linkedRatId:rat.id,
+        emailRecipient:'schaedlingsbekaempfung@hu.hamburg.de',
+        emailSubject:subject,
+        emailBody:body,
+        emailSentAt:sentAt
+      });
+    }
+  });
+  if(newActions.length){entries=[...newActions,...entries];}
+  saveEntries();
+  updateStats();
+  refreshMarkers();
+  window._pendingSend=null;
+  window._pendingSubject='';
+  window._pendingBody='';
+  if(curPage==='liste')renderList();
+}
+
+// ── SHEETS ──
+function openSheetBg(id){document.getElementById(id).classList.add('open');}
+function closeSheet(id){document.getElementById(id).classList.remove('open');}
+function closeSheetBg(id,e){if(e.target===document.getElementById(id))closeSheet(id);}
+function openSheetsSheet(e){e.preventDefault();document.getElementById('sheets-url').value=localStorage.getItem('rattenSheetsUrl')||'';openSheetBg('sheets-sheet');}
+function saveSheetsUrl(){const url=document.getElementById('sheets-url').value.trim();if(url&&!url.startsWith('https://script.google.com')){toast('⚠️ Ungültige URL');return;}localStorage.setItem('rattenSheetsUrl',url);window._sheetsUrl=url;closeSheet('sheets-sheet');checkSheetsBar();if(url)toast('✅ Google Sheets verbunden!');}
+function checkSheetsBar(){const s=localStorage.getItem('rattenSheetsUrl')||'';const b=document.getElementById('sheets-bar');if(!b)return;if(s){b.style.background='rgba(48,209,88,.08)';b.style.borderColor='rgba(48,209,88,.25)';b.style.color='#30d158';b.innerHTML='✅ <strong>Google Sheets verbunden!</strong> <a href="#" onclick="openSheetsSheet(event)" style="color:var(--orange)">URL ändern</a>';}else{b.innerHTML='📊 <strong>Google Sheets nicht verbunden.</strong> <a href="#" onclick="openSheetsSheet(event)">→ Einrichten</a>';}}
+
+// ── NOTIFY ──
+function openNotifySheet(){if(!abonnenten.length){toast('🔔 Noch keine Abonnenten');return;}document.getElementById('n-count').textContent=abonnenten.length;document.getElementById('n-body').value='';openSheetBg('notify-sheet');}
+function sendNotify(){const subject=document.getElementById('n-subject').value.trim();const body=document.getElementById('n-body').value.trim();if(!body){toast('✏️ Bitte Nachricht eingeben');return;}const emails=abonnenten.filter(a=>(a.kanale==='email'||a.kanale==='beides')&&a.email).map(a=>a.email);if(!emails.length){toast('📧 Keine E-Mail Empfänger');return;}const full=`Liebe Nachbarinnen und Nachbarn,
+
+${body}
+
+Viele Grüße
+${adminLabel()}
+${GRUPPENNAME}
+
+---
+Hinweis: Diese E-Mail wurde manuell vorbereitet und über das Mailprogramm eines Verwalters gesendet.`;window.location.href=`mailto:?bcc=${encodeURIComponent(emails.join(','))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(full)}`;closeSheet('notify-sheet');toast('📧 E-Mail wurde vorbereitet');}
+function sendWhatsAppBroadcast(){const phones=abonnenten.filter(a=>(a.kanale==='whatsapp'||a.kanale==='beides')&&a.phone);const text=`🐀 Rattenmelder Hamburg
+
+Neues Update aus der Nachbarschaft.
+Bitte öffne die Seite für Details:
+${publicUrl()}
+
+Gesendet von: ${adminLabel()}`;navigator.clipboard?.writeText(text);window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');toast(phones.length?`💬 WhatsApp Text vorbereitet (${phones.length} Kontakte gespeichert)`:'💬 WhatsApp Text vorbereitet');}
+function notifyEntryWhatsApp(id){const e=entries.find(x=>x.id===id);if(!e)return;const text=`🐀 Rattenmelder Hamburg
+
+Update zu: ${e.street}
+Art: ${e.type}
+Status: ${ST[e.status||'neu']?.lbl||'Neu'}
+
+${e.desc||''}
+
+Link: ${publicUrl()}#liste`;navigator.clipboard?.writeText(text);window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');addHistory(e,'WhatsApp Update vorbereitet');saveEntries();renderAdminList();}
+function notifyEntryEmail(id){const e=entries.find(x=>x.id===id);if(!e)return;const emails=abonnenten.filter(a=>(a.kanale==='email'||a.kanale==='beides')&&a.email).map(a=>a.email);const subject=`Update Rattenmelder: ${e.street}`;const body=`Liebe Nachbarinnen und Nachbarn,
+
+zu folgender Meldung gibt es ein Update:
+
+${buildEntryText(e)}
+
+Viele Grüße
+${adminLabel()}
+${GRUPPENNAME}`;window.location.href=`mailto:?bcc=${encodeURIComponent(emails.join(','))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;addHistory(e,'E-Mail Update an Abonnenten vorbereitet');saveEntries();renderAdminList();}
+function informAuthority(id){const e=entries.find(x=>x.id===id);if(!e)return;const recipient=prompt('Empfänger E-Mail', 'schaedlingsbekaempfung@hu.hamburg.de');if(!recipient)return;const subject=`Rattenmeldung Hamburg: ${e.street}`;const body=`Sehr geehrte Damen und Herren,
+
+hiermit leite ich eine geprüfte Rattenmeldung aus dem nachbarschaftlichen Rattenmelder weiter.
+
+${buildEntryText(e)}
+
+Hinweis: Diese Nachricht wurde manuell durch einen Verwalter geprüft und über dessen Mailprogramm vorbereitet.
+
+Viele Grüße
+${adminLabel()}`;window.location.href=`mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;rememberAuthoritySent(e,recipient);toast('📧 Behördenmail vorbereitet und Verlauf gespeichert');}
+
+// ── ADMIN ──
+function openAdmin(){document.getElementById('admin-page').classList.add('open');}
+function closeAdmin(){document.getElementById('admin-page').classList.remove('open');}
+async function hashPw(pw){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+async function adminLogin(){
+  const email=document.getElementById('a-email').value.trim().toLowerCase();
+  const pw=document.getElementById('a-pw').value;
+  const err=document.getElementById('a-err');
+  if(!hasSupabase()){err.textContent='❌ Supabase ist nicht geladen';return;}
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password:pw});
+  if(error){err.textContent='❌ Login fehlgeschlagen. Bitte E-Mail und Passwort prüfen.';document.getElementById('a-pw').value='';return;}
+  currentAdminEmail=data.user.email||email;
+  currentAdminName=currentAdminEmail.split('@')[0];
+  const ok=await loadAdminDataIfAllowed();
+  if(!ok){await supabaseClient.auth.signOut();currentAdminEmail='';err.textContent='❌ Dieser Benutzer ist nicht als Verwalter freigegeben.';return;}
+  showPanel();
+}
+function showPanel(){document.getElementById('a-login').style.display='none';document.getElementById('a-panel').style.display='block';document.getElementById('v-section').style.display=isHaupt?'block':'none';renderAdminList();renderAboList();if(isHaupt){renderVerwalterList();checkSheetsBar();}}
+async function adminLogout(){if(hasSupabase())await supabaseClient.auth.signOut();isHaupt=false;currentAdminEmail='';currentAdminName='';document.getElementById('a-login').style.display='flex';document.getElementById('a-panel').style.display='none';['a-email','a-pw'].forEach(id=>document.getElementById(id).value='');}
+function pwReset(e){e.preventDefault();window.location.href=`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Ratten-App: Passwort vergessen')}&body=${encodeURIComponent('Hallo,\n\nPasswort bitte zurücksetzen.\n\nDanke!')}`;}
+
+function renderAdminList(){
+  const el=document.getElementById('a-rep-list');
+  document.getElementById('a-count').textContent=`${entries.length} Eintrag${entries.length!==1?'e':''}`;
+  if(!entries.length){el.innerHTML='<div class="empty-state" style="padding:20px 0"><div class="ei" style="font-size:30px">✅</div><div class="et">Keine Einträge</div></div>';return;}
+  el.innerHTML=entries.map(r=>{
+    const d=new Date(r.time||r.createdAt);
+    const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    const isRat=r.kind==='rat';
+    const isAuth=isAuthorityEntry(r);
+    const st=r.status||'neu';
+    const statusBtns=Object.entries(ST).map(([k,v])=>`<button class="st-btn st-${k} ${st===k?'on':''}" onclick="setStatus(${r.id},'${k}')">${v.lbl}</button>`).join('');
+    const replyVal=r.stadtAntwort?esc(r.stadtAntwort):'';
+    const replyDisplay=r.stadtAntwort?`<div class="city-reply" style="margin-top:8px"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
+    const actions=`<div class="workflow-actions"><button class="workflow-btn status" onclick="setStatus(${r.id},'geprueft')">👀 Geprüft</button><button class="workflow-btn mail" onclick="informAuthority(${r.id})">📧 Behörde informieren</button><button class="workflow-btn mail" onclick="notifyEntryEmail(${r.id})">📧 Update E-Mail</button><button class="workflow-btn whatsapp" onclick="notifyEntryWhatsApp(${r.id})">💬 WhatsApp</button></div>`;
+    return`<div class="a-card ${isRat?'':'action'}" id="ac${r.id}">
+      <div class="a-card-top">
+        <div class="a-card-body">
+          <div class="a-loc">📍 ${esc(r.street)}</div>
+          <div class="a-type ${isRat?'a-rat-type':'a-action-type'}">${isRat?'🐀 Sichtung':(isAuth?'📧 Behörde/Verwaltung':'🟢 Maßnahme')} · ${esc(r.type)}</div>
+          <div class="a-desc">${esc(r.desc)}</div>
+          <div class="a-meta">👤 ${esc(r.name)} · ⏰ ${ts}${r.authorityBy?' · weitergeleitet durch '+esc(r.authorityBy):''}</div>
+          <div class="status-row">${statusBtns}</div>
+          ${actions}
+          ${formatHistory(r)}
+          ${replyDisplay}
+          <div class="reply-wrap">
+            <input class="reply-inp" id="reply-${r.id}" placeholder="Antwort, Aktenzeichen oder Hinweis eintragen…" value="${replyVal}" />
+            <button class="reply-save" onclick="saveReply(${r.id})">💾</button>
+          </div>
+        </div>
+        <button class="a-del" onclick="delEntry(${r.id})">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setStatus(id,status){
+  const e=entries.find(e=>e.id===id); if(!e)return;
+  e.status=status; if(status==='gesendet')e.gesendet=true; addHistory(e,`Status gesetzt: ${ST[status]?.lbl||status}`);
+  saveEntries(); renderAdminList();
+  if(curPage==='liste')renderList();
+  toast(`Status: ${ST[status].lbl}`);
+}
+function saveReply(id){
+  const e=entries.find(e=>e.id===id); if(!e)return;
+  const val=document.getElementById('reply-'+id).value.trim();
+  e.stadtAntwort=val;
+  if(val){addHistory(e,'Rückmeldung/Aktenzeichen gespeichert');}
+  if(val&&e.status!=='erledigt')e.status='bearbeitung';
+  saveEntries(); renderAdminList();
+  if(curPage==='liste')renderList();
+  toast(val?'✅ Antwort gespeichert!':'🗑️ Antwort gelöscht');
+}
+async function delEntry(id){if(!confirm('Löschen?'))return;if(hasSupabase())await supabaseClient.from('reports').delete().eq('id',String(id));entries=entries.filter(e=>String(e.id)!==String(id));delPhotosDB(id);updateStats();const c=document.getElementById('ac'+id);if(c){c.style.opacity='0';c.style.transition='opacity .2s';setTimeout(()=>{c.remove();renderAdminList();},200);}if(map)refreshMarkers();}
+async function clearAll(){if(!confirm(`Alle ${entries.length} Einträge löschen?`))return;if(hasSupabase())for(const e of entries){await supabaseClient.from('reports').delete().eq('id',String(e.id));}entries.forEach(e=>delPhotosDB(e.id));entries=[];localStorage.removeItem('rattenEntries');updateStats();renderAdminList();if(map)refreshMarkers();}
+
+function renderVerwalterList(){const el=document.getElementById('a-v-list');el.innerHTML=`<div class="a-v-card"><span class="a-v-email">${esc(ADMIN_EMAIL)}</span><span class="a-v-badge">Haupt-Admin</span></div>`+verwalter.map((v,i)=>`<div class="a-v-card"><span class="a-v-email">${esc(v.email)}</span><button class="a-v-rm" onclick="rmVerwalter(${i})">Entfernen</button></div>`).join('');}
+async function addVerwalter(){const email=document.getElementById('nv-email').value.trim().toLowerCase();if(!email||!email.includes('@')){toast('📧 E-Mail eingeben');return;}if(!hasSupabase()){toast('❌ Supabase nicht geladen');return;}const {error}=await supabaseClient.from('admin_users').insert({email});if(error){toast('⚠️ Verwalter konnte nicht eingetragen werden. Auth Nutzer muss zusätzlich in Supabase angelegt sein.');return;}verwalter.push({email,hash:''});document.getElementById('nv-email').value='';document.getElementById('nv-pw').value='';renderVerwalterList();toast('✅ Verwalter freigegeben. Bitte Supabase Auth Nutzer separat anlegen.');}
+async function rmVerwalter(i){if(!confirm(`${verwalter[i].email} entfernen?`))return;const email=verwalter[i].email;if(hasSupabase())await supabaseClient.from('admin_users').delete().eq('email',email);verwalter.splice(i,1);renderVerwalterList();}
+function renderAboList(){const el=document.getElementById('a-abo-list');if(!abonnenten.length){el.innerHTML='<div class="empty-state" style="padding:15px 0"><div class="ei" style="font-size:26px">🔔</div><div class="et" style="font-size:13px">Noch keine Abonnenten</div></div>';return;}const kl={email:'📧 E-Mail',whatsapp:'💬 WhatsApp',beides:'📧 + 💬'};el.innerHTML=abonnenten.map((a,i)=>`<div class="a-abo-card"><div><div class="aac-email">${esc(a.email)}</div><div class="aac-meta">👤 ${esc(a.name)} · <span class="kanal-tag">${kl[a.kanale]||a.kanale}</span></div></div><button class="a-v-rm" onclick="rmAbo(${i})">Entfernen</button></div>`).join('');}
+function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(localStorage.getItem('rattenMeinAboId')===abonnenten[i].id)localStorage.removeItem('rattenMeinAboId');abonnenten.splice(i,1);saveAbonnenten();renderAboList();}
+</script>
+
+<script>
+/* Dynamische Browserleisten-Korrektur für Safari/Chrome mobil.
+   Nutzt VisualViewport, damit die Navigation direkt über der URL-Leiste bleibt. */
+(function(){
+  function updateBottomNavigationSpace(){
+    var vv = window.visualViewport;
+    var bottom = 0;
+    if(vv){
+      bottom = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop));
+    }
+    // Ein kleiner Mindestabstand hält die Leiste optisch sauber, ohne mitten im Bild zu stehen.
+    var gap = window.innerWidth >= 1024 ? 18 : (window.innerWidth >= 700 ? 12 : 6);
+    document.documentElement.style.setProperty('--browser-bottom', Math.round(bottom) + 'px');
+    document.documentElement.style.setProperty('--tabbar-gap', gap + 'px');
+  }
+  updateBottomNavigationSpace();
+  window.addEventListener('resize', updateBottomNavigationSpace, {passive:true});
+  window.addEventListener('orientationchange', function(){setTimeout(updateBottomNavigationSpace, 250);}, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateBottomNavigationSpace, {passive:true});
+    window.visualViewport.addEventListener('scroll', updateBottomNavigationSpace, {passive:true});
+  }
+})();
+</script>
+
+
+<script>
+/* FIX5 Keyboard: nur Klasse setzen, kein aggressives Scrollen */
+(function(){
+  function updateKeyboardState(){
+    var vv=window.visualViewport;
+    var keyboard=vv && (window.innerHeight - vv.height) > 160;
+    document.body.classList.toggle('keyboard-open', !!keyboard);
+  }
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateKeyboardState, {passive:true});
+    window.visualViewport.addEventListener('scroll', updateKeyboardState, {passive:true});
+  }
+  window.addEventListener('resize', updateKeyboardState, {passive:true});
+})();
+</script>
+
+</body>
+</html>
