@@ -378,6 +378,26 @@ html, body {
   }
 }
 
+
+
+/* ── MAP MARKER & POPUP DETAILS ── */
+.map-emoji-marker{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:21px;line-height:1;
+  background:rgba(19,19,26,.96);
+  border:2px solid #fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.55);
+  transform:translateY(-2px);
+}
+.map-emoji-marker.rat{border-color:var(--red);background:rgba(255,59,59,.20);}
+.map-emoji-marker.dead{border-color:#8e8e93;background:rgba(142,142,147,.24);}
+.map-emoji-marker.action{border-color:var(--green);background:rgba(48,209,88,.18);}
+.pu-photo{width:100%;max-width:210px;height:116px;object-fit:cover;border-radius:10px;border:1px solid var(--border);margin:8px 0;display:block;cursor:pointer;}
+.pu-btn{width:100%;margin-top:9px;padding:8px 10px;border-radius:9px;border:1px solid rgba(255,59,59,.35);background:rgba(255,59,59,.12);color:var(--red);font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+.pu-btn.action{border-color:rgba(48,209,88,.35);background:rgba(48,209,88,.12);color:var(--green);}
+.r-card.map-focus{outline:2px solid var(--orange);box-shadow:0 0 0 4px rgba(255,149,0,.15);}
+
 </style>
 </head>
 <body>
@@ -894,7 +914,7 @@ async function renderList(){
     const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
     const photoHtml=photoArr.length?`<div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${u}" onclick="openLightbox(${r.id},${i})" />`).join('')}</div>`:'';
     const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort der Stadt Hamburg</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
-    html+=`<div class="${cardCls}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${r.kind==='rat'?'🐀':'🟢'} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?'<span>📍 Karte</span>':''}</div></div>`;
+    html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${r.kind==='rat'?'🐀':'🟢'} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?'<span>📍 Karte</span>':''}</div></div>`;
   }
   el.innerHTML=html;
 }
@@ -921,26 +941,60 @@ function setMapFilter(f){
   document.getElementById('mf-action').className='mf-btn'+(f==='action'?' active-green':'');
   refreshMarkers();
 }
-function refreshMarkers(){
+function markerInfo(r){
+  const type=(r.type||'').toLowerCase();
+  if(r.kind==='action'){
+    if(type.includes('köderbox aufgestellt')) return {emoji:'📦', cls:'action'};
+    if(type.includes('schädlingsbekämpfer')) return {emoji:'👷', cls:'action'};
+    if(type.includes('bau verschlossen')) return {emoji:'🧱', cls:'action'};
+    if(type.includes('hinweisschild')) return {emoji:'⚠️', cls:'action'};
+    if(type.includes('kontrolliert')) return {emoji:'🔍', cls:'action'};
+    return {emoji:'🔧', cls:'action'};
+  }
+  if(type.includes('tote')) return {emoji:'☠️🐀', cls:'dead'};
+  if(type.includes('mehrere')) return {emoji:'🐀🐀', cls:'rat'};
+  if(type.includes('bau')) return {emoji:'🕳️', cls:'rat'};
+  if(type.includes('kot')) return {emoji:'💩', cls:'rat'};
+  if(type.includes('fraß')) return {emoji:'🦷', cls:'rat'};
+  return {emoji:'🐀', cls:'rat'};
+}
+
+async function refreshMarkers(){
   if(!map)return;
   mapMarkers.forEach(m=>map.removeLayer(m));mapMarkers=[];
   const filtered=entries.filter(e=>e.lat&&e.lon&&(mapFilter==='all'||e.kind===mapFilter));
   document.getElementById('map-empty').style.display=filtered.length?'none':'flex';
-  filtered.forEach(r=>{
+  for(const r of filtered){
     const isRat=r.kind==='rat';
-    const color=isRat?(r.type?.includes('Tote')?'#666':'#ff3b3b'):'#30d158';
-    const shape=isRat
-      ?`<div style="width:22px;height:22px;background:${color};border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.5)"></div>`
-      :`<div style="width:22px;height:22px;background:${color};border-radius:4px;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:12px">📦</div>`;
-    const icon=L.divIcon({className:'',html:shape,iconSize:[22,22],iconAnchor:[11,22],popupAnchor:[0,-24]});
+    const mi=markerInfo(r);
+    const icon=L.divIcon({
+      className:'',
+      html:`<div class="map-emoji-marker ${mi.cls}">${mi.emoji}</div>`,
+      iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-33]
+    });
     const d=new Date(r.time||r.createdAt);
     const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
     const typeCls=isRat?'pu-rat':'pu-action';
+    const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
+    const photoHtml=photoArr.length?`<img class="pu-photo" src="${photoArr[0]}" onclick="openLightbox(${r.id},0)" />`:'';
+    const detailsBtn=`<button class="pu-btn ${isRat?'':'action'}" onclick="openEntryFromMap(${r.id})">Meldung öffnen</button>`;
+    const popup=`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${mi.emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${detailsBtn}`;
     const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
-    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${isRat?'🐀':'🟢'} ${esc(r.type)}</div><div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>`);
+    m.bindPopup(popup);
     mapMarkers.push(m);
-  });
+  }
   if(filtered.length) map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3));
+}
+
+function openEntryFromMap(id){
+  goPage('liste');
+  setTimeout(()=>{
+    const el=document.getElementById('entry-'+id);
+    if(!el)return;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.add('map-focus');
+    setTimeout(()=>el.classList.remove('map-focus'),2200);
+  },150);
 }
 
 // ── LIGHTBOX ──
