@@ -610,6 +610,39 @@ body.keyboard-open select{
   .home-title{font-size:30px;}
 }
 
+
+/* === PATCH 2: Fotos, Karte öffnen, Tastatur ohne Springen 2026-06-07 === */
+/* Weniger aggressives Keyboard Verhalten: kein automatisches Springen zum Button. */
+#page-melden-rat .scroll-body,
+#page-melden-action .scroll-body,
+#page-abo .scroll-body{
+  overscroll-behavior: contain;
+  scroll-behavior: auto;
+  padding-bottom: calc(var(--bottom-nav-height, 92px) + var(--keyboard-height, 0px) + env(safe-area-inset-bottom, 0px) + 160px) !important;
+  scroll-padding-top: 90px;
+  scroll-padding-bottom: calc(var(--keyboard-height, 0px) + 120px);
+}
+body.keyboard-open .submit-btn,
+body.keyboard-open .form-check,
+body.keyboard-open .photo-zone{
+  scroll-margin-bottom: calc(var(--keyboard-height, 0px) + 90px);
+}
+body.keyboard-open input,
+body.keyboard-open textarea,
+body.keyboard-open select{
+  scroll-margin-top: 78px;
+  scroll-margin-bottom: calc(var(--keyboard-height, 0px) + 80px);
+}
+/* Fotoanzeige in Liste, Karte und Detail stabil erzwingen */
+.r-photos{display:flex !important;flex-wrap:wrap !important;gap:8px !important;margin:10px 0 12px !important;}
+.r-photo{width:88px !important;height:88px !important;flex:0 0 88px !important;border-radius:12px !important;object-fit:cover !important;border:1px solid var(--border) !important;background:var(--surface2) !important;display:block !important;}
+.r-photo-broken{display:flex;align-items:center;justify-content:center;width:88px;height:88px;border-radius:12px;border:1px dashed var(--border);color:var(--text3);font-size:11px;text-align:center;padding:6px;background:var(--surface2);}
+.pu-photo{display:block !important;width:100% !important;max-width:260px !important;height:145px !important;object-fit:cover !important;border-radius:12px !important;margin:8px 0 !important;}
+.pu-photo-broken{width:100%;max-width:260px;min-height:64px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--border);border-radius:12px;color:var(--text2);font-size:12px;margin:8px 0;background:rgba(255,255,255,.03);}
+.pu-btn{position:relative;z-index:10;touch-action:manipulation;}
+/* Der Button darf bei offener Tastatur nicht zwangsweise in den Mittelpunkt scrollen. */
+body.keyboard-open .submit-btn{margin-bottom:18px;}
+
 </style>
 <!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
 </head>
@@ -1115,6 +1148,7 @@ async function loadAdminDataIfAllowed(){
   return isHaupt;
 }
 async function uploadPhotoDataUrls(reportId,arr){
+  window._lastPhotoUploadError='';
   if(!hasSupabase()||!arr||!arr.length)return [];
   const urls=[];
   for(let i=0;i<arr.length;i++){
@@ -1129,7 +1163,7 @@ async function uploadPhotoDataUrls(reportId,arr){
       if(error) throw error;
       const {data}=supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path);
       urls.push(data.publicUrl);
-    }catch(e){console.error('Foto Upload fehlgeschlagen',e);}
+    }catch(e){console.error('Foto Upload fehlgeschlagen',e);window._lastPhotoUploadError=(e&&e.message)?e.message:String(e||'Foto Upload fehlgeschlagen');}
   }
   return urls;
 }
@@ -1375,6 +1409,10 @@ async function submitReport(kind){
   const photoArr = isRat?photosRat:photosAction;
   toast('⏳ Meldung wird gespeichert...');
   const photoUrls = await uploadPhotoDataUrls(id,photoArr);
+  if(photoArr.length && !photoUrls.length){
+    toast('⚠️ Foto konnte nicht gespeichert werden. Meldung wird ohne Foto gespeichert.');
+    console.warn('Foto Upload fehlgeschlagen:', window._lastPhotoUploadError||'unbekannt');
+  }
   const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoUrls.length>0,photoUrls,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null,accuracy:coords?coords.accuracy:null,gpsSource:coords?coords.source:null,gpsExact:coords?!!coords.exact:false,history:[]};
   if(hasSupabase()){
     const {data,error}=await supabaseClient.from('reports').insert(entryToDb(entry)).select('*').single();
@@ -1515,7 +1553,7 @@ async function renderList(){
     const cardCls=(r.kind==='action'||isAuth)?'r-card action-card':'r-card';
     const photoArr=getEntryPhotos(r);
     const safeId=JSON.stringify(String(r.id));
-    const photoHtml=photoArr.length?`<div class="r-badges"><span class="photo-count-badge">📷 ${photoArr.length} Foto${photoArr.length>1?'s':''}</span></div><div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${escAttr(u)}" loading="lazy" onclick="openLightbox(${safeId},${i})" />`).join('')}</div>`:'';
+    const photoHtml=photoArr.length?`<div class="r-badges"><span class="photo-count-badge">📷 ${photoArr.length} Foto${photoArr.length>1?'s':''}</span></div><div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${escAttr(u)}" loading="lazy" title="Foto öffnen" onclick="openLightbox(${safeId},${i})" onerror="imgFallback(this,'Foto nicht ladbar')" />`).join('')}</div>`:'';
     const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
     const hist=formatHistory(r);
     html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${hist}</div>`;
@@ -1524,6 +1562,14 @@ async function renderList(){
 }
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function imgFallback(img,label){
+  if(!img)return;
+  const div=document.createElement('div');
+  div.className=img.classList.contains('pu-photo')?'pu-photo-broken':'r-photo-broken';
+  div.textContent=label||'Foto nicht ladbar';
+  img.replaceWith(div);
+}
 
 // ── MAP ──
 function initMap(){
@@ -1613,7 +1659,7 @@ async function refreshMarkers(){
     const typeCls=isRat?'pu-rat':'pu-action';
     const photoArr=getEntryPhotos(r);
     const safeId=JSON.stringify(String(r.id));
-    const photoHtml=photoArr.length?`<img class="pu-photo" src="${escAttr(photoArr[0])}" loading="lazy" onclick="openLightbox(${safeId},0)" />`:'';
+    const photoHtml=photoArr.length?`<img class="pu-photo" src="${escAttr(photoArr[0])}" loading="lazy" title="Foto öffnen" onclick="openLightbox(${safeId},0)" onerror="imgFallback(this,'Foto nicht ladbar')" />`:'';
     const gpsLine=r.lat?`<div class="pu-coords">${r.gpsExact?'Exakt gesetzter Kartenpunkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}</div>`:'';
     const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
     m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap(${safeId})">Meldung öffnen</button>`);
@@ -1623,11 +1669,25 @@ async function refreshMarkers(){
 }
 function openEntryFromMap(id){
   if(map){map.closePopup();}
+  // Sicherstellen, dass die Meldung in der Liste sichtbar ist, egal welcher Filter vorher aktiv war.
+  listFilter='all';
+  ['all','rat','action','authority','done'].forEach(x=>{const b=document.getElementById('lf-'+x); if(b)b.className='lf-btn';});
+  const allBtn=document.getElementById('lf-all'); if(allBtn)allBtn.className='lf-btn act';
   goPage('liste');
   setTimeout(()=>{
-    const el=document.getElementById('entry-'+id);
-    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--blue)';setTimeout(()=>el.style.outline='',1800);}
-  },250);
+    renderList();
+    requestAnimationFrame(()=>{
+      const el=document.getElementById('entry-'+String(id));
+      if(el){
+        el.scrollIntoView({behavior:'smooth',block:'start'});
+        el.style.outline='2px solid var(--blue)';
+        el.style.boxShadow='0 0 0 4px rgba(10,132,255,.18)';
+        setTimeout(()=>{el.style.outline='';el.style.boxShadow='';},2200);
+      }else{
+        toast('ℹ️ Meldung ist gespeichert, konnte aber in der Liste nicht fokussiert werden.');
+      }
+    });
+  },180);
 }
 
 // ── LIGHTBOX ──
@@ -1869,67 +1929,75 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 <script>
 /* Dynamische Browserleisten und Tastatur-Korrektur für Safari/Chrome mobil.
-   Sorgt dafür, dass Eingabefelder, Foto-Upload, Checkbox und Absenden-Button nicht verdeckt werden. */
+   Wichtig: Kein aggressives Springen mehr zum Absenden-Button. Nur das aktive Feld wird bei Bedarf sichtbar gehalten. */
 (function(){
-  var lastKeyboardOpen = false;
+  var lastKeyboardOpen=false;
+  var focusTimer=null;
+
+  function activeScrollContainer(el){
+    var p=el;
+    while(p && p!==document.body){
+      if(p.classList && p.classList.contains('scroll-body')) return p;
+      p=p.parentElement;
+    }
+    return document.scrollingElement || document.documentElement;
+  }
 
   function updateViewportSpace(){
-    var vv = window.visualViewport;
-    var layoutHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-    var visibleHeight = vv ? vv.height : layoutHeight;
-    var offsetTop = vv ? vv.offsetTop : 0;
-    var bottom = vv ? Math.max(0, layoutHeight - (visibleHeight + offsetTop)) : 0;
-    var keyboard = vv ? Math.max(0, layoutHeight - visibleHeight - offsetTop) : 0;
-    var keyboardOpen = keyboard > 120;
-
-    var gap = window.innerWidth >= 1024 ? 18 : (window.innerWidth >= 700 ? 12 : 6);
+    var vv=window.visualViewport;
+    var layoutHeight=window.innerHeight || document.documentElement.clientHeight || 0;
+    var visibleHeight=vv ? vv.height : layoutHeight;
+    var offsetTop=vv ? vv.offsetTop : 0;
+    var keyboard=Math.max(0, layoutHeight - visibleHeight - offsetTop);
+    var keyboardOpen=keyboard>120;
+    var bottom=vv ? Math.max(0, layoutHeight - (visibleHeight + offsetTop)) : 0;
+    var gap=window.innerWidth>=1024 ? 18 : (window.innerWidth>=700 ? 12 : 6);
     document.documentElement.style.setProperty('--app-height', Math.round(visibleHeight) + 'px');
     document.documentElement.style.setProperty('--browser-bottom', Math.round(bottom) + 'px');
     document.documentElement.style.setProperty('--keyboard-height', Math.round(keyboardOpen ? keyboard : 0) + 'px');
     document.documentElement.style.setProperty('--tabbar-gap', gap + 'px');
     document.body.classList.toggle('keyboard-open', keyboardOpen);
-
-    if(keyboardOpen && !lastKeyboardOpen){
-      setTimeout(scrollActiveFieldIntoView, 80);
-    }
-    lastKeyboardOpen = keyboardOpen;
+    lastKeyboardOpen=keyboardOpen;
   }
 
-  function scrollActiveFieldIntoView(){
-    var el = document.activeElement;
-    if(!el) return;
-    var tag = (el.tagName || '').toLowerCase();
-    if(!['input','textarea','select'].includes(tag)) return;
-    try{
-      el.scrollIntoView({block:'center', inline:'nearest', behavior:'smooth'});
-    }catch(e){
-      el.scrollIntoView(false);
+  function keepFocusedFieldVisible(){
+    var el=document.activeElement;
+    if(!el || !el.matches || !el.matches('input, textarea, select')) return;
+    var vv=window.visualViewport;
+    var visibleTop=vv ? vv.offsetTop : 0;
+    var visibleBottom=vv ? (vv.offsetTop + vv.height) : window.innerHeight;
+    var rect=el.getBoundingClientRect();
+    var marginTop=82;
+    var marginBottom=34;
+    var container=activeScrollContainer(el);
+
+    // Nur korrigieren, wenn das Feld wirklich verdeckt ist. Kein Springen zum Submit-Button.
+    if(rect.bottom > visibleBottom - marginBottom){
+      container.scrollBy({top: rect.bottom - (visibleBottom - marginBottom), behavior:'smooth'});
+    }else if(rect.top < visibleTop + marginTop){
+      container.scrollBy({top: rect.top - (visibleTop + marginTop), behavior:'smooth'});
     }
   }
 
   document.addEventListener('focusin', function(e){
     if(e.target && e.target.matches && e.target.matches('input, textarea, select')){
-      setTimeout(updateViewportSpace, 60);
-      setTimeout(scrollActiveFieldIntoView, 180);
-      setTimeout(scrollActiveFieldIntoView, 420);
+      clearTimeout(focusTimer);
+      focusTimer=setTimeout(function(){updateViewportSpace();keepFocusedFieldVisible();},220);
     }
-  });
+  }, true);
 
   document.addEventListener('input', function(e){
     if(e.target && e.target.matches && e.target.matches('input, textarea')){
-      setTimeout(scrollActiveFieldIntoView, 60);
+      clearTimeout(focusTimer);
+      focusTimer=setTimeout(keepFocusedFieldVisible,180);
     }
-  });
-
-  document.addEventListener('focusout', function(){
-    setTimeout(updateViewportSpace, 160);
-  });
+  }, true);
 
   updateViewportSpace();
   window.addEventListener('resize', updateViewportSpace, {passive:true});
-  window.addEventListener('orientationchange', function(){setTimeout(updateViewportSpace, 250);}, {passive:true});
+  window.addEventListener('orientationchange', function(){setTimeout(updateViewportSpace,250);}, {passive:true});
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', updateViewportSpace, {passive:true});
+    window.visualViewport.addEventListener('resize', function(){updateViewportSpace();setTimeout(keepFocusedFieldVisible,120);}, {passive:true});
     window.visualViewport.addEventListener('scroll', updateViewportSpace, {passive:true});
   }
 })();
