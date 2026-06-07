@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- BUILD: FINAL_RATTENMELDER_FIX5_STABLE -->
+<!-- BUILD: FINAL_RATTENMELDER_FIX6_STABLE -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX5_STABLE</title>
+<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX6_STABLE</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX5_STABLE');
+console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX6_STABLE');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -509,16 +509,19 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
 
 
 
-/* === FIX5: stabile Fotos, Karte und Mobile Keyboard === */
-.r-photo,.pu-photo{background:#252535;display:block;}
-.r-photo.broken,.pu-photo.broken{display:flex!important;align-items:center;justify-content:center;color:#ff9500;font-size:11px;text-align:center;padding:6px;}
-#page-melden-rat .tab-bar,#page-melden-action .tab-bar{display:none!important;}
+/* === FIX6: stabile Bedienung, Fotos, Karte, Tastatur === */
 body.keyboard-open .tab-bar{display:none!important;}
-body.keyboard-open .scroll-body{padding-bottom:42vh!important;}
-body.keyboard-open .photo-zone,body.keyboard-open .form-check,body.keyboard-open .submit-btn{scroll-margin-bottom:42vh;}
-#page-karte .map-wrap{height:calc(100dvh - 260px - var(--bottom-nav-height,92px))!important;min-height:360px!important;padding-bottom:0!important;margin-bottom:0!important;}
-#map{height:100%!important;min-height:360px!important;}
-@media(max-width:480px){#page-karte .map-wrap{min-height:390px!important;height:calc(100dvh - 245px - var(--bottom-nav-height,92px))!important;}}
+body.keyboard-open .scroll-body{padding-bottom:48px!important;}
+body.keyboard-open .page[id="page-melden-rat"] .scroll-body,
+body.keyboard-open .page[id="page-melden-action"] .scroll-body{padding-bottom:64px!important;}
+#map{height:100%!important;min-height:420px!important;}
+#page-karte .map-wrap{height:calc(100dvh - 250px - var(--bottom-nav-height,92px))!important;min-height:420px!important;padding-bottom:0!important;margin-bottom:calc(var(--bottom-nav-height,92px) + env(safe-area-inset-bottom,0px))!important;}
+.r-photos,.pu-photos{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0;}
+.r-photo,.pu-photo{display:block;background:#222;object-fit:cover;border:1px solid var(--border);cursor:pointer;}
+.r-photo{width:78px;height:78px;border-radius:10px;}
+.pu-photo{width:100%;max-width:240px;height:135px;border-radius:10px;}
+.r-photo.broken,.pu-photo.broken{display:none;}
+@media (max-width:420px){#page-karte .map-wrap{min-height:390px;height:calc(100dvh - 260px - var(--bottom-nav-height,92px))!important;}}
 
 </style>
 <!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
@@ -987,9 +990,8 @@ function ensurePrivacyOk(){if(privacyAccepted)return true;showPrivacyConsentIfNe
 function hasSupabase(){return !!supabaseClient;}
 function dbStatusToUi(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'bearbeitung',resolved:'erledigt',rejected:'neu'})[s]||s||'neu';}
 function uiStatusToDb(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',bearbeitung:'in_progress',erledigt:'resolved'})[s]||'new';}
-function normalizePhotoUrls(r){let photos=[]; if(Array.isArray(r?.photo_urls)) photos=r.photo_urls.filter(Boolean); else if(typeof r?.photo_urls==='string'&&r.photo_urls.trim()){try{const parsed=JSON.parse(r.photo_urls);photos=Array.isArray(parsed)?parsed.filter(Boolean):[r.photo_urls];}catch(e){photos=[r.photo_urls];}} if(r?.image_url && !photos.includes(r.image_url)) photos.unshift(r.image_url); return photos.filter(Boolean);} 
-function dbReportToEntry(r){const photos=normalizePhotoUrls(r);return {id:String(r.id),kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};}
-function entryToDb(e){const photos=Array.isArray(e.photoUrls)?e.photoUrls.filter(Boolean):[];return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,image_url:photos.length?photos[0]:null,photo_urls:photos,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};}
+function dbReportToEntry(r){const photos=Array.isArray(r.photo_urls)?r.photo_urls:(r.image_url?[r.image_url]:[]);return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};}
+function entryToDb(e){const photos=Array.isArray(e.photoUrls)?e.photoUrls.filter(Boolean):[];return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,accuracy:e.accuracy||null,gps_source:e.gpsSource||null,gps_exact:!!e.gpsExact,image_url:photos.length?photos[0]:null,photo_urls:photos,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',event_time:e.time||new Date().toISOString(),admin_note:e.stadtAntwort||null,history:e.history||[],authority_notified:!!e.authorityNotifiedAt,authority_notified_at:e.authorityNotifiedAt||null,authority_email:e.authorityRecipient||null,authority_by:e.authorityBy||null,created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};}
 async function loadSupabaseData(){
   if(!hasSupabase()){toast('⚠️ Supabase konnte nicht geladen werden');return;}
   try{
@@ -1026,7 +1028,7 @@ async function uploadPhotoDataUrls(reportId,arr){
       if(error) throw error;
       const {data}=supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path);
       urls.push(data.publicUrl);
-    }catch(e){console.error('Foto Upload fehlgeschlagen',e); if(arr[i]) urls.push(arr[i]);}
+    }catch(e){console.error('Foto Upload fehlgeschlagen',e);}
   }
   return urls;
 }
@@ -1086,13 +1088,12 @@ function goPage(name){
   if(name==='liste') { syncDateInputs(); renderList(); }
   if(name==='karte') syncDateInputs();
   if(name==='abo')   checkAboStatus();
-  const active=document.querySelector('.page.active .scroll-body'); if(active && !document.body.classList.contains('keyboard-open')) active.scrollTop=0;
+  if(!document.body.classList.contains('keyboard-open')) window.scrollTo(0,0);
 }
 
 
 // ── TYPE / KANAL ──
 function pickType(el, kind){
-  if(document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) document.activeElement.blur();
   const grid = kind==='rat' ? document.getElementById('rat-type-grid') : document.getElementById('action-type-grid');
   grid.querySelectorAll('.tc').forEach(t=>{t.classList.remove('sel','sel-green');});
   el.classList.add(kind==='rat'?'sel':'sel-green');
@@ -1207,7 +1208,6 @@ async function closeLocationPicker(save){
       hint.innerHTML=`✅ Genauer Kartenpunkt und nächste Adresse gespeichert<br><span class="gps-exact">${finalLabel}<br>Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}${locPickerCoord.accuracy?` · Genauigkeit ca. ${Math.round(locPickerCoord.accuracy)} m`:''}</span>`;
       hint.className='hint ok';
     }
-    const inp=document.getElementById(locPickerTarget.inputId); if(inp) inp.blur();
     toast('✅ Punkt und Adresse übernommen');
   }
   if(bg) bg.classList.remove('open');
@@ -1242,7 +1242,6 @@ function pickAC(i,inputId,listId){
   if(inputId==='fr-street') coordsRat=coords; else coordsAction=coords;
   const hintId=inputId==='fr-street'?'fr-hint':'fa-hint';
   const hint=document.getElementById(hintId); hint.textContent='✅ Adresse übernommen (ungefähre Position)'; hint.className='hint ok';
-  const activeInput=document.getElementById(inputId); if(activeInput) activeInput.blur();
   closeAC(listId);
 }
 function acKey(e,listId){
@@ -1414,8 +1413,9 @@ async function renderList(){
     const isAuth=isAuthorityEntry(r);
     const typeBadgeCls=r.kind==='rat'?'rat-badge':'action-badge';
     const cardCls=(r.kind==='action'||isAuth)?'r-card action-card':'r-card';
-    const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
-    const photoHtml=photoArr.length?`<div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${u}" onclick="openLightbox('${String(r.id).replace(/'/g,\"\\'\")}',${i})" onerror="this.classList.add('broken');this.removeAttribute('src');this.alt='Foto konnte nicht geladen werden';" />`).join('')}</div>`:'';
+    const photoArr=photoList(r).length?photoList(r):(r.hasPhotos?await loadPhotosDB(r.id):[]);
+    const rid=jsStr(r.id);
+    const photoHtml=photoArr.length?`<div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" loading="lazy" src="${u}" onclick="openLightbox('${rid}',${i})" onerror="imgErr(this)" />`).join('')}</div>`:'';
     const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
     const hist=formatHistory(r);
     html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${hist}</div>`;
@@ -1423,10 +1423,13 @@ async function renderList(){
   el.innerHTML=html;
 }
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function jsStr(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');}
+function photoList(e){return Array.isArray(e&&e.photoUrls)?e.photoUrls.filter(Boolean):[];}
+function imgErr(el){try{el.classList.add('broken');el.removeAttribute('src');el.alt='Foto konnte nicht geladen werden';}catch(_){}}
 
 // ── MAP ──
 function initMap(){
-  if(map) { setTimeout(()=>{ map.invalidateSize(); refreshMarkers(); }, 100); return; }
+  if(map) { [50,200,500].forEach(ms=>setTimeout(()=>{ try{map.invalidateSize(); refreshMarkers();}catch(e){} }, ms)); return; }
   // Karte Container muss sichtbar sein
   const container = document.getElementById('map');
   container.style.height = '100%';
@@ -1464,7 +1467,7 @@ function initMap(){
   ).addTo(map);
 
   L.control.attribution({prefix: false}).addTo(map);
-  setTimeout(() => { map.invalidateSize(true); refreshMarkers(); }, 150);setTimeout(() => { map.invalidateSize(true); refreshMarkers(); }, 600);
+  [100,300,700,1200].forEach(ms=>setTimeout(() => { try{map.invalidateSize(); refreshMarkers();}catch(e){} }, ms));
 }
 function setMapFilter(f){
   mapFilter=f;
@@ -1510,27 +1513,31 @@ async function refreshMarkers(){
     const d=new Date(r.time||r.createdAt);
     const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
     const typeCls=isRat?'pu-rat':'pu-action';
-    const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
-    const photoHtml=photoArr.length?`<img class="pu-photo" src="${photoArr[0]}" onclick="openLightbox('${String(r.id).replace(/'/g,\"\\'\")}',0)" onerror="this.classList.add('broken');this.removeAttribute('src');this.alt='Foto nicht ladbar';" />`:'';
+    const photoArr=photoList(r).length?photoList(r):(r.hasPhotos?await loadPhotosDB(r.id):[]);
+    const rid=jsStr(r.id);
+    const photoHtml=photoArr.length?`<img class="pu-photo" loading="lazy" src="${photoArr[0]}" onclick="openLightbox('${rid}',0)" onerror="imgErr(this)" />`:'';
     const gpsLine=r.lat?`<div class="pu-coords">${r.gpsExact?'Exakt gesetzter Kartenpunkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}</div>`:'';
     const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
-    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap('${String(r.id).replace(/'/g,\"\\'\")}')">Meldung öffnen</button>`);
+    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap('${rid}')">Meldung öffnen</button>`);
     mapMarkers.push(m);
   }
   if(filtered.length) map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3));
 }
 function openEntryFromMap(id){
   if(map){map.closePopup();}
+  listFilter='all';
   goPage('liste');
   setTimeout(()=>{
-    const el=document.getElementById('entry-'+id);
+    setListFilter('all');
+    const el=document.getElementById('entry-'+String(id));
     if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--blue)';setTimeout(()=>el.style.outline='',1800);}
   },250);
 }
 
 // ── LIGHTBOX ──
 async function openLightbox(id,idx){
-  const arr=await loadPhotosDB(id); if(!arr.length)return;
+  const entry=entries.find(e=>String(e.id)===String(id));
+  const arr=(entry&&photoList(entry).length)?photoList(entry):await loadPhotosDB(id); if(!arr.length)return;
   document.getElementById('lb-img').src=arr[idx];
   document.getElementById('lb-cap').textContent=`Foto ${idx+1} von ${arr.length}`;
   document.getElementById('lightbox').classList.add('open');
@@ -1709,11 +1716,11 @@ function renderAdminList(){
     const isRat=r.kind==='rat';
     const isAuth=isAuthorityEntry(r);
     const st=r.status||'neu';
-    const statusBtns=Object.entries(ST).map(([k,v])=>`<button class="st-btn st-${k} ${st===k?'on':''}" onclick="setStatus(${r.id},'${k}')">${v.lbl}</button>`).join('');
+    const statusBtns=Object.entries(ST).map(([k,v])=>`<button class="st-btn st-${k} ${st===k?'on':''}" onclick="setStatus('${jsStr(r.id)}','${k}')">${v.lbl}</button>`).join('');
     const replyVal=r.stadtAntwort?esc(r.stadtAntwort):'';
     const replyDisplay=r.stadtAntwort?`<div class="city-reply" style="margin-top:8px"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
-    const actions=`<div class="workflow-actions"><button class="workflow-btn status" onclick="setStatus(${r.id},'geprueft')">👀 Geprüft</button><button class="workflow-btn mail" onclick="informAuthority(${r.id})">📧 Behörde informieren</button><button class="workflow-btn mail" onclick="notifyEntryEmail(${r.id})">📧 Update E-Mail</button><button class="workflow-btn whatsapp" onclick="notifyEntryWhatsApp(${r.id})">💬 WhatsApp</button></div>`;
-    return`<div class="a-card ${isRat?'':'action'}" id="ac${r.id}">
+    const actions=`<div class="workflow-actions"><button class="workflow-btn status" onclick="setStatus('${jsStr(r.id)}','geprueft')">👀 Geprüft</button><button class="workflow-btn mail" onclick="informAuthority('${jsStr(r.id)}')">📧 Behörde informieren</button><button class="workflow-btn mail" onclick="notifyEntryEmail('${jsStr(r.id)}')">📧 Update E-Mail</button><button class="workflow-btn whatsapp" onclick="notifyEntryWhatsApp('${jsStr(r.id)}')">💬 WhatsApp</button></div>`;
+    return`<div class="a-card ${isRat?'':'action'}" id="ac${jsStr(r.id)}">
       <div class="a-card-top">
         <div class="a-card-body">
           <div class="a-loc">📍 ${esc(r.street)}</div>
@@ -1725,25 +1732,25 @@ function renderAdminList(){
           ${formatHistory(r)}
           ${replyDisplay}
           <div class="reply-wrap">
-            <input class="reply-inp" id="reply-${r.id}" placeholder="Antwort, Aktenzeichen oder Hinweis eintragen…" value="${replyVal}" />
-            <button class="reply-save" onclick="saveReply(${r.id})">💾</button>
+            <input class="reply-inp" id="reply-${jsStr(r.id)}" placeholder="Antwort, Aktenzeichen oder Hinweis eintragen…" value="${replyVal}" />
+            <button class="reply-save" onclick="saveReply('${jsStr(r.id)}')">💾</button>
           </div>
         </div>
-        <button class="a-del" onclick="delEntry(${r.id})">🗑️</button>
+        <button class="a-del" onclick="delEntry('${jsStr(r.id)}')">🗑️</button>
       </div>
     </div>`;
   }).join('');
 }
 
 function setStatus(id,status){
-  const e=entries.find(e=>e.id===id); if(!e)return;
+  const e=entries.find(e=>String(e.id)===String(id)); if(!e)return;
   e.status=status; if(status==='gesendet')e.gesendet=true; addHistory(e,`Status gesetzt: ${ST[status]?.lbl||status}`);
   saveEntries(); renderAdminList();
   if(curPage==='liste')renderList();
   toast(`Status: ${ST[status].lbl}`);
 }
 function saveReply(id){
-  const e=entries.find(e=>e.id===id); if(!e)return;
+  const e=entries.find(e=>String(e.id)===String(id)); if(!e)return;
   const val=document.getElementById('reply-'+id).value.trim();
   e.stadtAntwort=val;
   if(val){addHistory(e,'Rückmeldung/Aktenzeichen gespeichert');}
@@ -1752,7 +1759,7 @@ function saveReply(id){
   if(curPage==='liste')renderList();
   toast(val?'✅ Antwort gespeichert!':'🗑️ Antwort gelöscht');
 }
-async function delEntry(id){if(!confirm('Löschen?'))return;if(hasSupabase())await supabaseClient.from('reports').delete().eq('id',String(id));entries=entries.filter(e=>String(e.id)!==String(id));delPhotosDB(id);updateStats();const c=document.getElementById('ac'+id);if(c){c.style.opacity='0';c.style.transition='opacity .2s';setTimeout(()=>{c.remove();renderAdminList();},200);}if(map)refreshMarkers();}
+async function delEntry(id){if(!confirm('Löschen?'))return;if(hasSupabase())await supabaseClient.from('reports').delete().eq('id',String(id));entries=entries.filter(e=>String(e.id)!==String(id));delPhotosDB(id);updateStats();const c=document.getElementById('ac'+String(id));if(c){c.style.opacity='0';c.style.transition='opacity .2s';setTimeout(()=>{c.remove();renderAdminList();},200);}if(map)refreshMarkers();}
 async function clearAll(){if(!confirm(`Alle ${entries.length} Einträge löschen?`))return;if(hasSupabase())for(const e of entries){await supabaseClient.from('reports').delete().eq('id',String(e.id));}entries.forEach(e=>delPhotosDB(e.id));entries=[];localStorage.removeItem('rattenEntries');updateStats();renderAdminList();if(map)refreshMarkers();}
 
 function renderVerwalterList(){const el=document.getElementById('a-v-list');el.innerHTML=`<div class="a-v-card"><span class="a-v-email">${esc(ADMIN_EMAIL)}</span><span class="a-v-badge">Haupt-Admin</span></div>`+verwalter.map((v,i)=>`<div class="a-v-card"><span class="a-v-email">${esc(v.email)}</span><button class="a-v-rm" onclick="rmVerwalter(${i})">Entfernen</button></div>`).join('');}
@@ -1789,20 +1796,31 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX5 Keyboard: nur Klasse setzen, kein aggressives Scrollen */
+/* FIX6 keyboard stabilizer: hide bottom nav while keyboard is open and keep the active field visible, without jumping to the submit button. */
 (function(){
-  function updateKeyboardState(){
+  var lastFocus=0;
+  function setKeyboardState(){
     var vv=window.visualViewport;
-    var keyboard=vv && (window.innerHeight - vv.height) > 160;
-    document.body.classList.toggle('keyboard-open', !!keyboard);
+    var open=false;
+    if(vv){ open=(window.innerHeight-vv.height)>150; }
+    document.body.classList.toggle('keyboard-open', open);
   }
+  document.addEventListener('focusin', function(e){
+    var t=e.target;
+    if(!t || !/INPUT|TEXTAREA|SELECT/.test(t.tagName)) return;
+    lastFocus=Date.now();
+    setKeyboardState();
+    setTimeout(function(){
+      try{ t.scrollIntoView({block:'center', inline:'nearest', behavior:'smooth'}); }catch(_){}
+    }, 250);
+  }, true);
+  document.addEventListener('focusout', function(){ setTimeout(setKeyboardState, 250); }, true);
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', updateKeyboardState, {passive:true});
-    window.visualViewport.addEventListener('scroll', updateKeyboardState, {passive:true});
+    window.visualViewport.addEventListener('resize', setKeyboardState, {passive:true});
+    window.visualViewport.addEventListener('scroll', setKeyboardState, {passive:true});
   }
-  window.addEventListener('resize', updateKeyboardState, {passive:true});
+  window.addEventListener('resize', setKeyboardState, {passive:true});
 })();
 </script>
-
 </body>
 </html>
