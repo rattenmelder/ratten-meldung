@@ -542,7 +542,7 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
       </div>
     </div>
     <div class="info-card">
-      <div class="ic-row"><span class="ic-icon">🔒</span><div><div class="ic-title">Datenschutz</div><div class="ic-text">Anonym melden möglich. Standort, Beschreibung und Fotos werden im Browser gespeichert. Abonnements und Behördenmails laufen nur nach bewusster Aktion.</div></div></div>
+      <div class="ic-row"><span class="ic-icon">🔒</span><div><div class="ic-title">Datenschutz</div><div class="ic-text">Anonym melden möglich. Standort, Beschreibung und optionale Fotos werden in Supabase gespeichert. Abonnements und Behördenmails laufen nur nach bewusster Aktion.</div></div></div>
     </div>
     <div class="legal-links"><button onclick="goPage('datenschutz')">Datenschutz</button><button onclick="goPage('impressum')">Impressum</button><button onclick="openAdmin()">Verwalter-Login</button></div>
   </div>
@@ -688,7 +688,7 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
   </div>
   <div class="list-bar">
     <span class="list-count" id="list-count"></span>
-    <button class="city-btn" onclick="openEmailSheet()">✉️ An Stadt</button>
+    
   </div>
   <div class="list-filter">
     <button class="lf-btn act" id="lf-all" onclick="setListFilter('all')">Alle</button>
@@ -974,8 +974,8 @@ function ensurePrivacyOk(){if(privacyAccepted)return true;showPrivacyConsentIfNe
 function hasSupabase(){return !!supabaseClient;}
 function dbStatusToUi(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'bearbeitung',resolved:'erledigt',rejected:'neu'})[s]||s||'neu';}
 function uiStatusToDb(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',bearbeitung:'in_progress',erledigt:'resolved'})[s]||'new';}
-function dbReportToEntry(r){return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.address||'',type:r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:!!(r.photo_urls&&r.photo_urls.length),photoUrls:r.photo_urls||[],status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};}
-function entryToDb(e){return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',status:uiStatusToDb(e.status||'neu'),title:e.type||'',description:e.desc||'',address:e.street||'',latitude:e.lat||null,longitude:e.lon||null,accuracy:e.accuracy||null,gps_source:e.gpsSource||null,gps_exact:!!e.gpsExact,photo_urls:e.photoUrls||[],reporter_name:e.name||'Anonym',event_time:e.time||new Date().toISOString(),admin_note:e.stadtAntwort||null,history:e.history||[],authority_notified:!!e.authorityNotifiedAt,authority_notified_at:e.authorityNotifiedAt||null,authority_email:e.authorityRecipient||null,authority_by:e.authorityBy||null};}
+function dbReportToEntry(r){const photos=Array.isArray(r.photo_urls)?r.photo_urls:(r.image_url?[r.image_url]:[]);return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};}
+function entryToDb(e){return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,image_url:(e.photoUrls&&e.photoUrls.length)?e.photoUrls[0]:null,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};}
 async function loadSupabaseData(){
   if(!hasSupabase()){toast('⚠️ Supabase konnte nicht geladen werden');return;}
   try{
@@ -1261,7 +1261,7 @@ async function submitReport(kind){
   const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoUrls.length>0,photoUrls,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null,accuracy:coords?coords.accuracy:null,gpsSource:coords?coords.source:null,gpsExact:coords?!!coords.exact:false,history:[]};
   if(hasSupabase()){
     const {data,error}=await supabaseClient.from('reports').insert(entryToDb(entry)).select('*').single();
-    if(error){console.error(error);toast('❌ Speichern in Supabase fehlgeschlagen');return;}
+    if(error){console.error('Supabase INSERT Fehler:',error);const msg=error.message||error.details||error.hint||'Unbekannter Fehler';toast('❌ Supabase: '+msg.slice(0,90));alert('Supabase Fehler beim Speichern:\n\n'+msg+'\n\nDetails: '+(error.details||'-')+'\nHint: '+(error.hint||'-'));return;}
     entries.unshift(dbReportToEntry(data));
   }else{
     entries.unshift(entry); await saveEntries(); if(photoArr.length) savePhotoDB(id,[...photoArr]);
