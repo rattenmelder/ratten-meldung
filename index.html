@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- BUILD: FINAL_RATTENMELDER_FIX4_FOTOS_KEYBOARD_2026-06-07 -->
+<!-- BUILD: FINAL_RATTENMELDER_FIX5_STABLE -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX4_FOTOS_KEYBOARD_2026-06-07</title>
+<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX5_STABLE</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX4_FOTOS_KEYBOARD_2026-06-07');
+console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX5_STABLE');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -509,19 +509,16 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
 
 
 
-/* === FIX 4: Fotos, Karte, Tastatur und Formularsprung === */
-.r-photos{display:flex!important;gap:8px!important;flex-wrap:wrap!important;margin:10px 0!important;}
-.r-photo{width:86px!important;height:86px!important;border-radius:12px!important;object-fit:cover!important;border:1px solid var(--border)!important;background:var(--surface2)!important;display:block!important;}
-.photo-count-badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:rgba(10,132,255,.10);border:1px solid rgba(10,132,255,.25);color:var(--blue);}
-.r-photo-broken,.pu-photo-broken{display:flex;align-items:center;justify-content:center;text-align:center;background:var(--surface2);border:1px dashed var(--border);color:var(--text2);font-size:11px;border-radius:10px;}
-.r-photo-broken{width:86px;height:86px;}
-.pu-photo-broken{width:100%;max-width:230px;height:120px;margin:8px 0 2px;}
-#page-karte .map-wrap{height:calc(100dvh - 315px)!important;min-height:360px!important;padding-bottom:0!important;margin-bottom:calc(var(--bottom-nav-height,92px) + env(safe-area-inset-bottom,0px))!important;}
-#map{height:100%!important;min-height:360px!important;}
+/* === FIX5: stabile Fotos, Karte und Mobile Keyboard === */
+.r-photo,.pu-photo{background:#252535;display:block;}
+.r-photo.broken,.pu-photo.broken{display:flex!important;align-items:center;justify-content:center;color:#ff9500;font-size:11px;text-align:center;padding:6px;}
+#page-melden-rat .tab-bar,#page-melden-action .tab-bar{display:none!important;}
 body.keyboard-open .tab-bar{display:none!important;}
-body.keyboard-open .scroll-body{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 42px)!important;}
-body.keyboard-open .type-grid .tc{min-height:120px;}
-@media (max-height:740px){#page-karte .map-wrap{height:calc(100dvh - 285px)!important;min-height:300px!important}.r-photo{width:76px!important;height:76px!important}}
+body.keyboard-open .scroll-body{padding-bottom:42vh!important;}
+body.keyboard-open .photo-zone,body.keyboard-open .form-check,body.keyboard-open .submit-btn{scroll-margin-bottom:42vh;}
+#page-karte .map-wrap{height:calc(100dvh - 260px - var(--bottom-nav-height,92px))!important;min-height:360px!important;padding-bottom:0!important;margin-bottom:0!important;}
+#map{height:100%!important;min-height:360px!important;}
+@media(max-width:480px){#page-karte .map-wrap{min-height:390px!important;height:calc(100dvh - 245px - var(--bottom-nav-height,92px))!important;}}
 
 </style>
 <!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
@@ -990,31 +987,9 @@ function ensurePrivacyOk(){if(privacyAccepted)return true;showPrivacyConsentIfNe
 function hasSupabase(){return !!supabaseClient;}
 function dbStatusToUi(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'bearbeitung',resolved:'erledigt',rejected:'neu'})[s]||s||'neu';}
 function uiStatusToDb(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',bearbeitung:'in_progress',erledigt:'resolved'})[s]||'new';}
-function normalizePhotoList(v){
-  if(!v) return [];
-  if(Array.isArray(v)) return v.filter(Boolean);
-  if(typeof v==='string'){
-    const s=v.trim();
-    if(!s) return [];
-    if(s.startsWith('data:image/') || s.startsWith('http')) return [s];
-    try{const parsed=JSON.parse(s); if(Array.isArray(parsed)) return parsed.filter(Boolean);}catch(e){}
-    if(s.startsWith('{') && s.endsWith('}')) return s.slice(1,-1).split(',').map(x=>x.replace(/^"|"$/g,'').trim()).filter(Boolean);
-  }
-  return [];
-}
-function getEntryPhotos(e){
-  if(!e) return [];
-  return [...normalizePhotoList(e.photoUrls), ...normalizePhotoList(e.photo_urls), ...normalizePhotoList(e.image_url), ...normalizePhotoList(e.imageUrl)]
-    .filter((v,i,a)=>v && a.indexOf(v)===i);
-}
-function dbReportToEntry(r){
-  const photos=[...normalizePhotoList(r.photo_urls), ...normalizePhotoList(r.image_url)].filter((v,i,a)=>v&&a.indexOf(v)===i);
-  return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};
-}
-function entryToDb(e){
-  const photos=getEntryPhotos(e);
-  return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,image_url:photos[0]||null,photo_urls:photos,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};
-};}
+function normalizePhotoUrls(r){let photos=[]; if(Array.isArray(r?.photo_urls)) photos=r.photo_urls.filter(Boolean); else if(typeof r?.photo_urls==='string'&&r.photo_urls.trim()){try{const parsed=JSON.parse(r.photo_urls);photos=Array.isArray(parsed)?parsed.filter(Boolean):[r.photo_urls];}catch(e){photos=[r.photo_urls];}} if(r?.image_url && !photos.includes(r.image_url)) photos.unshift(r.image_url); return photos.filter(Boolean);} 
+function dbReportToEntry(r){const photos=normalizePhotoUrls(r);return {id:String(r.id),kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};}
+function entryToDb(e){const photos=Array.isArray(e.photoUrls)?e.photoUrls.filter(Boolean):[];return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,image_url:photos.length?photos[0]:null,photo_urls:photos,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};}
 async function loadSupabaseData(){
   if(!hasSupabase()){toast('⚠️ Supabase konnte nicht geladen werden');return;}
   try{
@@ -1037,12 +1012,11 @@ async function loadAdminDataIfAllowed(){
   return isHaupt;
 }
 async function uploadPhotoDataUrls(reportId,arr){
-  if(!arr||!arr.length)return [];
+  if(!hasSupabase()||!arr||!arr.length)return [];
   const urls=[];
   for(let i=0;i<arr.length;i++){
-    const dataUrl=arr[i];
     try{
-      if(!hasSupabase()) throw new Error('Supabase nicht geladen');
+      const dataUrl=arr[i];
       const mime=(dataUrl.match(/^data:(.*?);/)||[])[1]||'image/jpeg';
       const ext=mime.includes('png')?'png':(mime.includes('webp')?'webp':'jpg');
       const bin=atob(dataUrl.split(',')[1]);
@@ -1051,12 +1025,8 @@ async function uploadPhotoDataUrls(reportId,arr){
       const {error}=await supabaseClient.storage.from(PHOTO_BUCKET).upload(path,new Blob([bytes],{type:mime}),{upsert:false,contentType:mime});
       if(error) throw error;
       const {data}=supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path);
-      if(data&&data.publicUrl) urls.push(data.publicUrl);
-      else urls.push(dataUrl);
-    }catch(e){
-      console.error('Foto Upload fehlgeschlagen, speichere Fallback in photo_urls',e);
-      urls.push(dataUrl);
-    }
+      urls.push(data.publicUrl);
+    }catch(e){console.error('Foto Upload fehlgeschlagen',e); if(arr[i]) urls.push(arr[i]);}
   }
   return urls;
 }
@@ -1116,12 +1086,13 @@ function goPage(name){
   if(name==='liste') { syncDateInputs(); renderList(); }
   if(name==='karte') syncDateInputs();
   if(name==='abo')   checkAboStatus();
-  window.scrollTo(0,0);
+  const active=document.querySelector('.page.active .scroll-body'); if(active && !document.body.classList.contains('keyboard-open')) active.scrollTop=0;
 }
+
 
 // ── TYPE / KANAL ──
 function pickType(el, kind){
-  if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
+  if(document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) document.activeElement.blur();
   const grid = kind==='rat' ? document.getElementById('rat-type-grid') : document.getElementById('action-type-grid');
   grid.querySelectorAll('.tc').forEach(t=>{t.classList.remove('sel','sel-green');});
   el.classList.add(kind==='rat'?'sel':'sel-green');
@@ -1236,7 +1207,7 @@ async function closeLocationPicker(save){
       hint.innerHTML=`✅ Genauer Kartenpunkt und nächste Adresse gespeichert<br><span class="gps-exact">${finalLabel}<br>Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}${locPickerCoord.accuracy?` · Genauigkeit ca. ${Math.round(locPickerCoord.accuracy)} m`:''}</span>`;
       hint.className='hint ok';
     }
-    if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
+    const inp=document.getElementById(locPickerTarget.inputId); if(inp) inp.blur();
     toast('✅ Punkt und Adresse übernommen');
   }
   if(bg) bg.classList.remove('open');
@@ -1264,7 +1235,6 @@ async function fetchAC(val,inputId,listId){
   }catch(e){list.innerHTML='<div class="ac-msg">⚠️ Keine Verbindung – manuell eingeben</div>';}
 }
 function pickAC(i,inputId,listId){
-  if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
   const item=acDataMap[listId]?.[i]; if(!item) return;
   const a=item.address||{};const s=[a.road,a.house_number].filter(Boolean).join(' ')||item.display_name.split(',')[0];const c=[a.postcode,a.city||a.town||a.village||a.suburb].filter(Boolean).join(' ');
   document.getElementById(inputId).value=[s,c].filter(Boolean).join(', ');
@@ -1272,6 +1242,7 @@ function pickAC(i,inputId,listId){
   if(inputId==='fr-street') coordsRat=coords; else coordsAction=coords;
   const hintId=inputId==='fr-street'?'fr-hint':'fa-hint';
   const hint=document.getElementById(hintId); hint.textContent='✅ Adresse übernommen (ungefähre Position)'; hint.className='hint ok';
+  const activeInput=document.getElementById(inputId); if(activeInput) activeInput.blur();
   closeAC(listId);
 }
 function acKey(e,listId){
@@ -1284,35 +1255,7 @@ function acKey(e,listId){
 function closeAC(listId){const l=document.getElementById(listId);if(l){l.classList.remove('open');l.innerHTML='';acDataMap[listId]=[];acIdxMap[listId]=-1;}}
 
 // ── FOTOS ──
-function resizeImageFile(file,maxSide=1280,quality=.78){
-  return new Promise((resolve)=>{
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      const img=new Image();
-      img.onload=()=>{
-        let w=img.width,h=img.height;
-        const scale=Math.min(1,maxSide/Math.max(w,h));
-        w=Math.round(w*scale); h=Math.round(h*scale);
-        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
-        canvas.getContext('2d').drawImage(img,0,0,w,h);
-        resolve(canvas.toDataURL('image/jpeg',quality));
-      };
-      img.onerror=()=>resolve(ev.target.result);
-      img.src=ev.target.result;
-    };
-    reader.onerror=()=>resolve('');
-    reader.readAsDataURL(file);
-  });
-}
-async function handleFiles(e,kind){
-  const files=Array.from(e.target.files||[]).slice(0,4);
-  for(const f of files){
-    const dataUrl=await resizeImageFile(f);
-    if(!dataUrl) continue;
-    if(kind==='rat'){photosRat.push(dataUrl);renderPhotos('fr-photo-row',photosRat,'rat');}
-    else{photosAction.push(dataUrl);renderPhotos('fa-photo-row',photosAction,'action');}
-  }
-}
+function handleFiles(e,kind){Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{if(kind==='rat'){photosRat.push(ev.target.result);renderPhotos('fr-photo-row',photosRat,'rat');}else{photosAction.push(ev.target.result);renderPhotos('fa-photo-row',photosAction,'action');}};r.readAsDataURL(f);});}
 function renderPhotos(rowId,arr,kind){document.getElementById(rowId).innerHTML=arr.map((u,i)=>`<div class="photo-item"><img class="photo-thumb" src="${u}"/><button class="photo-del" onclick="removePhoto(${i},'${kind}')">×</button></div>`).join('');}
 function removePhoto(i,kind){if(kind==='rat'){photosRat.splice(i,1);renderPhotos('fr-photo-row',photosRat,'rat');}else{photosAction.splice(i,1);renderPhotos('fa-photo-row',photosAction,'action');}}
 
@@ -1471,24 +1414,15 @@ async function renderList(){
     const isAuth=isAuthorityEntry(r);
     const typeBadgeCls=r.kind==='rat'?'rat-badge':'action-badge';
     const cardCls=(r.kind==='action'||isAuth)?'r-card action-card':'r-card';
-    const photoArr=getEntryPhotos(r);
-    const safeId=JSON.stringify(String(r.id));
-    const photoHtml=photoArr.length?`<div class="r-badges"><span class="photo-count-badge">📷 ${photoArr.length} Foto${photoArr.length>1?'s':''}</span></div><div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${escAttr(u)}" loading="lazy" title="Foto öffnen" onclick='openLightbox(${safeId},${i})' onerror="imgFallback(this,'Foto nicht ladbar')" />`).join('')}</div>`:'';
+    const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
+    const photoHtml=photoArr.length?`<div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${u}" onclick="openLightbox('${String(r.id).replace(/'/g,\"\\'\")}',${i})" onerror="this.classList.add('broken');this.removeAttribute('src');this.alt='Foto konnte nicht geladen werden';" />`).join('')}</div>`:'';
     const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
     const hist=formatHistory(r);
-    html+=`<div class="${cardCls}" id="entry-${escAttr(String(r.id))}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${hist}</div>`;
+    html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${hist}</div>`;
   }
   el.innerHTML=html;
 }
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function imgFallback(img,label){
-  if(!img)return;
-  const div=document.createElement('div');
-  div.className=img.classList.contains('pu-photo')?'pu-photo-broken':'r-photo-broken';
-  div.textContent=label||'Foto nicht ladbar';
-  img.replaceWith(div);
-}
 
 // ── MAP ──
 function initMap(){
@@ -1530,7 +1464,7 @@ function initMap(){
   ).addTo(map);
 
   L.control.attribution({prefix: false}).addTo(map);
-  setTimeout(() => { map.invalidateSize(); refreshMarkers(); }, 200);
+  setTimeout(() => { map.invalidateSize(true); refreshMarkers(); }, 150);setTimeout(() => { map.invalidateSize(true); refreshMarkers(); }, 600);
 }
 function setMapFilter(f){
   mapFilter=f;
@@ -1576,40 +1510,29 @@ async function refreshMarkers(){
     const d=new Date(r.time||r.createdAt);
     const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
     const typeCls=isRat?'pu-rat':'pu-action';
-    const photoArr=getEntryPhotos(r);
-    const safeId=JSON.stringify(String(r.id));
-    const photoHtml=photoArr.length?`<img class="pu-photo" src="${escAttr(photoArr[0])}" loading="lazy" title="Foto öffnen" onclick='openLightbox(${safeId},0)' onerror="imgFallback(this,'Foto nicht ladbar')" />`:'';
+    const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
+    const photoHtml=photoArr.length?`<img class="pu-photo" src="${photoArr[0]}" onclick="openLightbox('${String(r.id).replace(/'/g,\"\\'\")}',0)" onerror="this.classList.add('broken');this.removeAttribute('src');this.alt='Foto nicht ladbar';" />`:'';
     const gpsLine=r.lat?`<div class="pu-coords">${r.gpsExact?'Exakt gesetzter Kartenpunkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}</div>`:'';
     const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
-    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick='openEntryFromMap(${safeId})'>Meldung öffnen</button>`);
+    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap('${String(r.id).replace(/'/g,\"\\'\")}')">Meldung öffnen</button>`);
     mapMarkers.push(m);
   }
-  if(filtered.length){
-    setTimeout(()=>{try{map.invalidateSize({pan:false});map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.35));}catch(e){}},80);
-  }
+  if(filtered.length) map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3));
 }
 function openEntryFromMap(id){
   if(map){map.closePopup();}
-  listFilter='all';
   goPage('liste');
   setTimeout(()=>{
-    renderList();
-    requestAnimationFrame(()=>{
-      const el=document.getElementById('entry-'+String(id));
-      if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.style.outline='2px solid var(--blue)';setTimeout(()=>el.style.outline='',1800);}
-      else toast('ℹ️ Meldung ist gespeichert, konnte aber nicht fokussiert werden.');
-    });
-  },160);
+    const el=document.getElementById('entry-'+id);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--blue)';setTimeout(()=>el.style.outline='',1800);}
+  },250);
 }
 
 // ── LIGHTBOX ──
-function openLightbox(id,idx){
-  const entry=entries.find(e=>String(e.id)===String(id));
-  const arr=getEntryPhotos(entry);
-  if(!arr.length)return;
-  const safeIdx=Math.max(0,Math.min(idx||0,arr.length-1));
-  document.getElementById('lb-img').src=arr[safeIdx];
-  document.getElementById('lb-cap').textContent=`Foto ${safeIdx+1} von ${arr.length}`;
+async function openLightbox(id,idx){
+  const arr=await loadPhotosDB(id); if(!arr.length)return;
+  document.getElementById('lb-img').src=arr[idx];
+  document.getElementById('lb-cap').textContent=`Foto ${idx+1} von ${arr.length}`;
   document.getElementById('lightbox').classList.add('open');
 }
 function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
@@ -1840,30 +1763,44 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 </script>
 
 <script>
-/* FIX 4: Tastatur stabilisieren. Keine automatische Sprungbewegung im Formular. */
+/* Dynamische Browserleisten-Korrektur für Safari/Chrome mobil.
+   Nutzt VisualViewport, damit die Navigation direkt über der URL-Leiste bleibt. */
 (function(){
-  function updateMobileViewport(){
-    var vv=window.visualViewport;
-    var bottom=0;
-    var keyboardOpen=false;
+  function updateBottomNavigationSpace(){
+    var vv = window.visualViewport;
+    var bottom = 0;
     if(vv){
-      bottom=Math.max(0, window.innerHeight - (vv.height + vv.offsetTop));
-      keyboardOpen=(window.innerHeight - vv.height) > 140;
+      bottom = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop));
     }
-    var gap=window.innerWidth>=1024 ? 18 : (window.innerWidth>=700 ? 12 : 6);
-    document.documentElement.style.setProperty('--browser-bottom', Math.round(bottom)+'px');
-    document.documentElement.style.setProperty('--tabbar-gap', gap+'px');
-    document.body.classList.toggle('keyboard-open', keyboardOpen);
+    // Ein kleiner Mindestabstand hält die Leiste optisch sauber, ohne mitten im Bild zu stehen.
+    var gap = window.innerWidth >= 1024 ? 18 : (window.innerWidth >= 700 ? 12 : 6);
+    document.documentElement.style.setProperty('--browser-bottom', Math.round(bottom) + 'px');
+    document.documentElement.style.setProperty('--tabbar-gap', gap + 'px');
   }
-  function blurActive(){ if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); }
-  document.addEventListener('touchstart',function(e){ if(e.target.closest && (e.target.closest('.tc')||e.target.closest('.tab-item')||e.target.closest('.nav-back')||e.target.closest('.gps-btn'))) blurActive(); },{passive:true});
-  updateMobileViewport();
-  window.addEventListener('resize', updateMobileViewport, {passive:true});
-  window.addEventListener('orientationchange', function(){setTimeout(updateMobileViewport,250);}, {passive:true});
+  updateBottomNavigationSpace();
+  window.addEventListener('resize', updateBottomNavigationSpace, {passive:true});
+  window.addEventListener('orientationchange', function(){setTimeout(updateBottomNavigationSpace, 250);}, {passive:true});
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', updateMobileViewport, {passive:true});
-    window.visualViewport.addEventListener('scroll', updateMobileViewport, {passive:true});
+    window.visualViewport.addEventListener('resize', updateBottomNavigationSpace, {passive:true});
+    window.visualViewport.addEventListener('scroll', updateBottomNavigationSpace, {passive:true});
   }
+})();
+</script>
+
+
+<script>
+/* FIX5 Keyboard: nur Klasse setzen, kein aggressives Scrollen */
+(function(){
+  function updateKeyboardState(){
+    var vv=window.visualViewport;
+    var keyboard=vv && (window.innerHeight - vv.height) > 160;
+    document.body.classList.toggle('keyboard-open', !!keyboard);
+  }
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateKeyboardState, {passive:true});
+    window.visualViewport.addEventListener('scroll', updateKeyboardState, {passive:true});
+  }
+  window.addEventListener('resize', updateKeyboardState, {passive:true});
 })();
 </script>
 
