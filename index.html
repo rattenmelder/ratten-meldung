@@ -16,15 +16,15 @@
   --text:#f5f5f7;--text2:#86868b;--text3:#48484a;
   --r:18px;--r-sm:12px;
 }
-html,body{height:100%;overflow:hidden;}
+html,body{height:100%;height:100dvh;overflow:hidden;}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
 
 /* ── PAGES ── */
-.page{display:none;flex-direction:column;height:100vh;overflow:hidden;}
+.page{display:none;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
 .page.active{display:flex;}
 
 /* ── TAB BAR ── */
-.tab-bar{flex-shrink:0;display:flex;background:rgba(19,19,26,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom,0px);}
+.tab-bar{flex-shrink:0;display:flex;background:rgba(19,19,26,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom,0px);margin-bottom:72px;}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 6px;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:10px;font-weight:600;letter-spacing:.2px;transition:color .15s;}
 .tab-item.active{color:var(--red);}
 .ti{font-size:20px;line-height:1;}
@@ -294,109 +294,28 @@ textarea.inp{resize:none;min-height:85px;line-height:1.5;}
 .adc-sub{font-size:13px;color:var(--text2);margin-bottom:14px;}
 .unsub-btn{padding:9px 18px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;}
 
-/* ── MOBILE FIX: sichtbares unteres Menü auf iPhone/Safari/Chrome ── */
-html, body {
-  min-height: 100%;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-.page {
-  height: 100dvh;
-  min-height: 100dvh;
-  padding-bottom: 0;
-}
-
-@supports (height: 100svh) {
-  .page {
-    height: 100svh;
-    min-height: 100svh;
-  }
-}
-
-/* Das Menü bleibt im sichtbaren Bereich und wird nicht von der Browserleiste verdeckt */
-.tab-bar {
-  min-height: 64px;
-  padding-top: 6px;
-  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-  z-index: 1000;
-}
-
-/* Scrollbereiche bekommen extra Platz, damit nichts hinter dem Menü verschwindet */
-.scroll-body {
-  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
-}
-
-/* Startseite etwas kompakter, damit Menü und Inhalt auf kleinen iPhones sichtbar bleiben */
-#page-home .scroll-body {
-  padding-top: 34px;
-  padding-bottom: calc(108px + env(safe-area-inset-bottom, 0px));
-}
-
-#page-home .home-title {
-  font-size: clamp(30px, 8vw, 36px);
-}
-
-#page-home .rat-ani {
-  font-size: clamp(54px, 14vw, 72px);
-  margin-bottom: 10px;
-}
-
-#page-home .home-sub {
-  margin-bottom: 22px;
-}
-
-#page-home .cta-group {
-  margin-bottom: 18px;
-}
-
-/* Bei sehr kleinen Viewports noch etwas enger setzen */
-@media (max-height: 740px) {
-  #page-home .scroll-body {
-    padding-top: 22px;
-  }
-  #page-home .rat-ani {
-    font-size: 48px;
-    margin-bottom: 8px;
-  }
-  #page-home .home-title {
-    font-size: 30px;
-  }
-  #page-home .home-sub {
-    font-size: 14px;
-    margin-bottom: 16px;
-  }
-  .cta-main, .cta-sec {
-    padding: 14px;
-  }
-  .stats-row {
-    margin-bottom: 12px;
-  }
-  .info-card {
-    margin-bottom: 8px;
-  }
+/* Mobile browser fix: hebt die untere Navigation über die iPhone-Safari-Leiste. */
+@media (max-width: 768px){
+  .scroll-body{padding-bottom:96px;}
+  .page[id="page-melden-rat"] .scroll-body,
+  .page[id="page-melden-action"] .scroll-body,
+  #page-abo .scroll-body{padding-bottom:120px!important;}
+  .tab-bar{margin-bottom:72px;}
 }
 
 
-
-/* ── MAP MARKER & POPUP DETAILS ── */
-.map-emoji-marker{
-  width:34px;height:34px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:21px;line-height:1;
-  background:rgba(19,19,26,.96);
-  border:2px solid #fff;
-  box-shadow:0 4px 14px rgba(0,0,0,.55);
-  transform:translateY(-2px);
-}
-.map-emoji-marker.rat{border-color:var(--red);background:rgba(255,59,59,.20);}
-.map-emoji-marker.dead{border-color:#8e8e93;background:rgba(142,142,147,.24);}
-.map-emoji-marker.action{border-color:var(--green);background:rgba(48,209,88,.18);}
-.pu-photo{width:100%;max-width:210px;height:116px;object-fit:cover;border-radius:10px;border:1px solid var(--border);margin:8px 0;display:block;cursor:pointer;}
-.pu-btn{width:100%;margin-top:9px;padding:8px 10px;border-radius:9px;border:1px solid rgba(255,59,59,.35);background:rgba(255,59,59,.12);color:var(--red);font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
-.pu-btn.action{border-color:rgba(48,209,88,.35);background:rgba(48,209,88,.12);color:var(--green);}
-.r-card.map-focus{outline:2px solid var(--orange);box-shadow:0 0 0 4px rgba(255,149,0,.15);}
+/* ── MAP IMPROVEMENTS ── */
+.leaflet-container{background:#e9eef3!important;color:#1f2937!important;}
+.leaflet-control-zoom a{background:#fff!important;color:#111827!important;border-color:#d1d5db!important;}
+.map-symbol{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;background:#fff;border:3px solid #111827;box-shadow:0 4px 14px rgba(0,0,0,.35);transform:translate(-50%,-50%);}
+.map-symbol.rat{border-color:#ff3b3b;background:#fff0f0;}
+.map-symbol.dead{border-color:#48484a;background:#f2f2f7;}
+.map-symbol.action{border-color:#30d158;background:#ecfff1;}
+.map-symbol.small{font-size:19px;}
+.pu-photo{width:100%;max-width:230px;height:130px;object-fit:cover;border-radius:10px;border:1px solid var(--border);margin:8px 0 2px;display:block;}
+.pu-btn{width:100%;margin-top:9px;padding:9px 11px;border:none;border-radius:10px;background:var(--blue);color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+.pu-coords{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.35;}
+.gps-exact{font-size:11px;color:var(--green);margin-top:5px;line-height:1.4;}
 
 </style>
 </head>
@@ -710,7 +629,7 @@ html, body {
 const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
 const ADMIN_EMAIL = 'Saschakitschke@gmx.net';
 const ADMIN_HASH  = '61b7e976eddc704c57cfb195cd0c27e6ad553bc4b3b803d1b56e5b275e9339f7';
-// Passwort-Hinweis aus Sicherheitsgründen entfernt.
+// Passwort: Nachbar2024!
 
 let entries    = JSON.parse(localStorage.getItem('rattenEntries')    || '[]'); // alles: rats + actions
 let verwalter  = JSON.parse(localStorage.getItem('rattenVerwalter')  || '[]');
@@ -785,18 +704,32 @@ function pickKanal(el){document.querySelectorAll('.kc').forEach(t=>t.classList.r
 function getGPS(inputId, hintId){
   const hint=document.getElementById(hintId);
   if(!navigator.geolocation){hint.textContent='⚠️ GPS nicht verfügbar';hint.className='hint err';return;}
-  hint.textContent='📡 Standort wird ermittelt…';hint.className='hint';
+  hint.textContent='📡 Exakter GPS-Standort wird ermittelt…';hint.className='hint';
   navigator.geolocation.getCurrentPosition(async pos=>{
-    const {latitude:lat,longitude:lon}=pos.coords;
-    if(inputId==='fr-street') coordsRat={lat,lon};
-    else coordsAction={lat,lon};
+    const {latitude:lat,longitude:lon,accuracy}=pos.coords;
+    const coordObj={lat,lon,accuracy:accuracy||null,source:'gps',exact:true};
+    if(inputId==='fr-street') coordsRat=coordObj;
+    else coordsAction=coordObj;
+    let label=`GPS: ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
     try{
-      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=de`);
+      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=de&zoom=18&addressdetails=1`);
       const d=await r.json();
-      if(d?.address){const a=d.address;const s=[a.road,a.house_number].filter(Boolean).join(' ');const c=[a.postcode,a.city||a.town||a.village].filter(Boolean).join(' ');document.getElementById(inputId).value=[s,c].filter(Boolean).join(', ');}
-      hint.textContent='✅ Standort erkannt'; hint.className='hint ok';
-    }catch(e){hint.textContent='✅ GPS-Koordinaten gespeichert';hint.className='hint ok';}
-  },err=>{hint.textContent=['','⚠️ GPS verweigert','⚠️ Nicht ermittelbar','⚠️ Zeitüberschreitung'][err.code]||'⚠️ GPS-Fehler';hint.className='hint err';},{enableHighAccuracy:true,timeout:10000});
+      if(d?.address){
+        const a=d.address;
+        const s=[a.road,a.house_number].filter(Boolean).join(' ');
+        const c=[a.postcode,a.city||a.town||a.village||a.suburb].filter(Boolean).join(' ');
+        const near=[s,c].filter(Boolean).join(', ');
+        if(near) label=near;
+      }
+      document.getElementById(inputId).value=label;
+      hint.innerHTML=`✅ Exakter GPS-Punkt gespeichert<br><span class="gps-exact">Koordinaten: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · Genauigkeit ca. ${Math.round(accuracy)} m`:''}</span>`;
+      hint.className='hint ok';
+    }catch(e){
+      document.getElementById(inputId).value=label;
+      hint.innerHTML=`✅ Exakter GPS-Punkt gespeichert<br><span class="gps-exact">Koordinaten: ${lat.toFixed(6)}, ${lon.toFixed(6)}${accuracy?` · Genauigkeit ca. ${Math.round(accuracy)} m`:''}</span>`;
+      hint.className='hint ok';
+    }
+  },err=>{hint.textContent=['','⚠️ GPS verweigert','⚠️ Nicht ermittelbar','⚠️ Zeitüberschreitung'][err.code]||'⚠️ GPS-Fehler';hint.className='hint err';},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
 }
 
 // ── AUTOCOMPLETE ──
@@ -824,10 +757,10 @@ function pickAC(i,inputId,listId){
   const item=acDataMap[listId]?.[i]; if(!item) return;
   const a=item.address||{};const s=[a.road,a.house_number].filter(Boolean).join(' ')||item.display_name.split(',')[0];const c=[a.postcode,a.city||a.town||a.village||a.suburb].filter(Boolean).join(' ');
   document.getElementById(inputId).value=[s,c].filter(Boolean).join(', ');
-  const coords={lat:parseFloat(item.lat),lon:parseFloat(item.lon)};
+  const coords={lat:parseFloat(item.lat),lon:parseFloat(item.lon),accuracy:null,source:'address',exact:false};
   if(inputId==='fr-street') coordsRat=coords; else coordsAction=coords;
   const hintId=inputId==='fr-street'?'fr-hint':'fa-hint';
-  const hint=document.getElementById(hintId); hint.textContent='✅ Adresse übernommen'; hint.className='hint ok';
+  const hint=document.getElementById(hintId); hint.textContent='✅ Adresse übernommen (ungefähre Position)'; hint.className='hint ok';
   closeAC(listId);
 }
 function acKey(e,listId){
@@ -856,7 +789,7 @@ function submitReport(kind){
   const id=Date.now();
   const coords = isRat?coordsRat:coordsAction;
   const photoArr = isRat?photosRat:photosAction;
-  const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoArr.length>0,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null};
+  const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoArr.length>0,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null,accuracy:coords?coords.accuracy:null,gpsSource:coords?coords.source:null,gpsExact:coords?!!coords.exact:false};
   entries.unshift(entry); saveEntries(); updateStats(); syncSheets(entry);
   if(photoArr.length) savePhotoDB(id,[...photoArr]);
   toast(isRat?'✅ Meldung gespeichert!':'✅ Maßnahme gespeichert!');
@@ -914,7 +847,7 @@ async function renderList(){
     const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
     const photoHtml=photoArr.length?`<div class="r-photos">${photoArr.map((u,i)=>`<img class="r-photo" src="${u}" onclick="openLightbox(${r.id},${i})" />`).join('')}</div>`:'';
     const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort der Stadt Hamburg</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
-    html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${r.kind==='rat'?'🐀':'🟢'} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?'<span>📍 Karte</span>':''}</div></div>`;
+    html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${r.kind==='rat'?'🐀':'🟢'} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div></div>`;
   }
   el.innerHTML=html;
 }
@@ -928,7 +861,7 @@ function initMap(){
   container.style.height = '100%';
   map = L.map('map', { zoomControl: true, attributionControl: false })
     .setView([53.55, 10.0], 13);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 19, attribution: '© OpenStreetMap © CARTO'
   }).addTo(map);
   L.control.attribution({prefix: false}).addTo(map);
@@ -941,24 +874,27 @@ function setMapFilter(f){
   document.getElementById('mf-action').className='mf-btn'+(f==='action'?' active-green':'');
   refreshMarkers();
 }
-function markerInfo(r){
-  const type=(r.type||'').toLowerCase();
+function markerEmoji(r){
+  const t=(r.type||'').toLowerCase();
   if(r.kind==='action'){
-    if(type.includes('köderbox aufgestellt')) return {emoji:'📦', cls:'action'};
-    if(type.includes('schädlingsbekämpfer')) return {emoji:'👷', cls:'action'};
-    if(type.includes('bau verschlossen')) return {emoji:'🧱', cls:'action'};
-    if(type.includes('hinweisschild')) return {emoji:'⚠️', cls:'action'};
-    if(type.includes('kontrolliert')) return {emoji:'🔍', cls:'action'};
-    return {emoji:'🔧', cls:'action'};
+    if(t.includes('köderbox')) return '📦';
+    if(t.includes('bekämpfer')) return '👷';
+    if(t.includes('verschlossen')) return '🧱';
+    if(t.includes('hinweisschild')) return '⚠️';
+    if(t.includes('kontrolliert')) return '🔍';
+    return '🟢';
   }
-  if(type.includes('tote')) return {emoji:'☠️🐀', cls:'dead'};
-  if(type.includes('mehrere')) return {emoji:'🐀🐀', cls:'rat'};
-  if(type.includes('bau')) return {emoji:'🕳️', cls:'rat'};
-  if(type.includes('kot')) return {emoji:'💩', cls:'rat'};
-  if(type.includes('fraß')) return {emoji:'🦷', cls:'rat'};
-  return {emoji:'🐀', cls:'rat'};
+  if(t.includes('tote')) return '☠️🐀';
+  if(t.includes('mehrere')) return '🐀🐀';
+  if(t.includes('bau')) return '🕳️';
+  if(t.includes('kot')) return '💩';
+  if(t.includes('fraß')||t.includes('frass')) return '🦷';
+  return '🐀';
 }
-
+function markerClass(r){
+  if(r.kind==='action') return 'action';
+  return (r.type||'').toLowerCase().includes('tote') ? 'dead' : 'rat';
+}
 async function refreshMarkers(){
   if(!map)return;
   mapMarkers.forEach(m=>map.removeLayer(m));mapMarkers=[];
@@ -966,35 +902,28 @@ async function refreshMarkers(){
   document.getElementById('map-empty').style.display=filtered.length?'none':'flex';
   for(const r of filtered){
     const isRat=r.kind==='rat';
-    const mi=markerInfo(r);
-    const icon=L.divIcon({
-      className:'',
-      html:`<div class="map-emoji-marker ${mi.cls}">${mi.emoji}</div>`,
-      iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-33]
-    });
+    const emoji=markerEmoji(r);
+    const cls=markerClass(r)+(emoji.length>2?' small':'');
+    const icon=L.divIcon({className:'',html:`<div class="map-symbol ${cls}">${emoji}</div>`,iconSize:[38,38],iconAnchor:[19,19],popupAnchor:[0,-18]});
     const d=new Date(r.time||r.createdAt);
     const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
     const typeCls=isRat?'pu-rat':'pu-action';
     const photoArr=r.hasPhotos?await loadPhotosDB(r.id):[];
     const photoHtml=photoArr.length?`<img class="pu-photo" src="${photoArr[0]}" onclick="openLightbox(${r.id},0)" />`:'';
-    const detailsBtn=`<button class="pu-btn ${isRat?'':'action'}" onclick="openEntryFromMap(${r.id})">Meldung öffnen</button>`;
-    const popup=`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${mi.emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${detailsBtn}`;
+    const gpsLine=r.lat?`<div class="pu-coords">${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}</div>`:'';
     const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
-    m.bindPopup(popup);
+    m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap(${r.id})">Meldung öffnen</button>`);
     mapMarkers.push(m);
   }
   if(filtered.length) map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3));
 }
-
 function openEntryFromMap(id){
+  if(map){map.closePopup();}
   goPage('liste');
   setTimeout(()=>{
     const el=document.getElementById('entry-'+id);
-    if(!el)return;
-    el.scrollIntoView({behavior:'smooth',block:'center'});
-    el.classList.add('map-focus');
-    setTimeout(()=>el.classList.remove('map-focus'),2200);
-  },150);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--blue)';setTimeout(()=>el.style.outline='',1800);}
+  },250);
 }
 
 // ── LIGHTBOX ──
