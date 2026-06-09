@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- BUILD: FINAL_RATTENMELDER_FIX10_ADMIN_STABIL -->
+<!-- BUILD: FINAL_RATTENMELDER_FIX13_ADMIN_CLEAN_WORKFLOW -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX10_ADMIN_STABIL</title>
+<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX13_ADMIN_CLEAN_WORKFLOW</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX10_ADMIN_STABIL');
+console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX13_ADMIN_CLEAN_WORKFLOW');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -1916,5 +1916,392 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
   window.addEventListener('resize', setKeyboardState, {passive:true});
 })();
 </script>
+
+
+<style id="fix13-admin-clean-css">
+/* === FIX13: Admin Workflow stark vereinfacht === */
+#mf-done,#lf-done{display:none!important;}
+.workflow-stats .stat-card:nth-child(4) .stat-lbl{font-size:0!important;}
+.workflow-stats .stat-card:nth-child(4) .stat-lbl::after{content:'Geprüft';font-size:10px;color:var(--text2);font-weight:600;}
+.a-del-all{display:none!important;}
+.fix13-admin-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 18px 14px;}
+.fix13-admin-stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;}
+.fix13-admin-stat strong{display:block;font-size:22px;color:var(--orange);line-height:1;margin-bottom:4px;}
+.fix13-admin-stat span{font-size:10px;color:var(--text2);font-weight:800;text-transform:uppercase;letter-spacing:.03em;}
+.fix13-status{display:inline-block;font-size:10px;font-weight:900;padding:4px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;}
+.fix13-status.neu{background:rgba(255,149,0,.12);border:1px solid rgba(255,149,0,.35);color:var(--orange);}
+.fix13-status.geprueft{background:rgba(10,132,255,.12);border:1px solid rgba(10,132,255,.35);color:var(--blue);}
+.fix13-status.gesendet{background:rgba(48,209,88,.12);border:1px solid rgba(48,209,88,.35);color:var(--green);}
+.fix13-status.abgelehnt{background:rgba(255,59,59,.12);border:1px solid rgba(255,59,59,.35);color:var(--red);}
+.fix13-card-new{border-color:rgba(255,149,0,.35)!important;box-shadow:0 0 0 1px rgba(255,149,0,.08);}
+.fix13-card-ok{border-color:rgba(10,132,255,.25)!important;}
+.fix13-card-sent{border-color:rgba(48,209,88,.25)!important;}
+.fix13-card-rejected{opacity:.72;border-color:rgba(255,59,59,.25)!important;}
+.fix13-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.fix13-btn{border:none;border-radius:12px;padding:12px 10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:900;cursor:pointer;touch-action:manipulation;}
+.fix13-btn.approve{background:rgba(48,209,88,.14);border:1px solid rgba(48,209,88,.38);color:var(--green);}
+.fix13-btn.reject{background:rgba(255,59,59,.12);border:1px solid rgba(255,59,59,.35);color:var(--red);}
+.fix13-btn.mail{background:rgba(10,132,255,.12);border:1px solid rgba(10,132,255,.35);color:var(--blue);}
+.fix13-btn.gps{background:rgba(255,149,0,.12);border:1px solid rgba(255,149,0,.35);color:var(--orange);}
+.fix13-btn.note{background:var(--surface2);border:1px solid var(--border);color:var(--text2);}
+.fix13-btn:disabled{opacity:.55;pointer-events:none;}
+.fix13-admin-photo-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.fix13-admin-photo{width:92px;height:92px;border-radius:12px;object-fit:cover;border:1px solid var(--border);background:#222;cursor:pointer;}
+.fix13-photo-private{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--orange);background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.22);border-radius:10px;padding:8px 10px;margin:8px 0;}
+.fix13-admin-note{margin-top:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:10px;font-size:12px;color:var(--text2);line-height:1.45;}
+.fix13-filter-note{font-size:12px;color:var(--text2);padding:0 18px 12px;line-height:1.45;}
+.a-filter-row #af-erledigt{display:none!important;}
+.status-row,.workflow-actions.admin-actions{display:none!important;}
+@media(max-width:430px){.fix13-actions{grid-template-columns:1fr}.fix13-admin-summary{grid-template-columns:repeat(3,1fr);padding-left:12px;padding-right:12px}.fix13-admin-stat strong{font-size:19px}.fix13-admin-stat span{font-size:9px}}
+</style>
+
+<script id="fix13-admin-clean-js">
+/* FIX13: vereinfachter Admin Workflow, Fotofreigabe gekoppelt an Prüfung, GPS per Karte */
+(function(){
+  const FIX13_MAX_SESSION_MS = 8 * 60 * 60 * 1000;
+  const FIX13_IDLE_MS = 30 * 60 * 1000;
+  const FIX13_WARN_MS = 28 * 60 * 1000;
+  let fix13AdminGpsTargetId = null;
+  let fix13IdleTimer = null;
+  let fix13WarnTimer = null;
+  let fix13MaxTimer = null;
+  let fix13SubmitLock = false;
+
+  function metaOf(e){
+    if(!e) return {};
+    if(!Array.isArray(e.history)) e.history=[];
+    let m=e.history.find(x=>x&&x.__meta==='rattenmelder');
+    if(!m){m={__meta:'rattenmelder'};e.history.unshift(m);}return m;
+  }
+  window.fix13MetaOf = metaOf;
+  window.fix13IsRejected = function(e){return !!(e&&(e.status==='abgelehnt'||e.status==='rejected'||metaOf(e).deleted||metaOf(e).rejected));};
+  window.fix13PhotoApproved = function(e){return !!(e&&(isHaupt||metaOf(e).photoApproved===true));};
+  window.fix13PublicPhotoApproved = function(e){return !!(e&&metaOf(e).photoApproved===true);};
+  window.fix13StatusLabel = function(s){return ({neu:'🟠 Neu',geprueft:'🔵 Geprüft',gesendet:'🏛 Behörde informiert',abgelehnt:'🔴 Abgelehnt'})[s]||'🟠 Neu';};
+  window.fix13StatusClass = function(s){return (['neu','geprueft','gesendet','abgelehnt'].includes(s)?s:'neu');};
+
+  if(typeof dbStatusToUi==='function'){
+    dbStatusToUi = function(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',rejected:'abgelehnt',in_progress:'geprueft',resolved:'gesendet'})[s]||s||'neu';};
+  }
+  if(typeof uiStatusToDb==='function'){
+    uiStatusToDb = function(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',abgelehnt:'rejected',bearbeitung:'in_review',erledigt:'forwarded'})[s]||'new';};
+  }
+  if(typeof isDoneEntry==='function'){
+    isDoneEntry = function(e){return (e&&e.status)==='geprueft';};
+  }
+  if(typeof ST==='object'){
+    Object.keys(ST).forEach(k=>delete ST[k]);
+    Object.assign(ST,{neu:{cls:'sn',lbl:'🟠 Neu'},geprueft:{cls:'ss',lbl:'🔵 Geprüft'},gesendet:{cls:'se',lbl:'🏛 Behörde informiert'},abgelehnt:{cls:'sn',lbl:'🔴 Abgelehnt'}});
+  }
+
+  const oldEntryToDb = typeof entryToDb==='function' ? entryToDb : null;
+  if(oldEntryToDb){
+    entryToDb = function(e){
+      if(e&&e.status==='bearbeitung') e.status='geprueft';
+      if(e&&e.status==='erledigt') e.status='gesendet';
+      const p=oldEntryToDb(e);
+      if(e&&e.status==='abgelehnt') p.status='rejected';
+      if(e&&e.status==='geprueft') p.status='in_review';
+      if(e&&e.status==='gesendet') p.status='forwarded';
+      p.history=(e&&Array.isArray(e.history))?e.history:[];
+      return p;
+    };
+  }
+
+  const oldDbReportToEntry = typeof dbReportToEntry==='function' ? dbReportToEntry : null;
+  if(oldDbReportToEntry){
+    dbReportToEntry = function(r){
+      const e=oldDbReportToEntry(r);
+      if(r&&r.status==='rejected') e.status='abgelehnt';
+      if(e.status==='bearbeitung') e.status='geprueft';
+      if(e.status==='erledigt') e.status='gesendet';
+      if(!Array.isArray(e.history)) e.history=[];
+      return e;
+    };
+  }
+
+  function visibleEntries(){return entries.filter(e=>!fix13IsRejected(e));}
+  function visiblePhotos(e){return fix13PublicPhotoApproved(e)?photoList(e):[];}
+  async function visiblePhotosAsync(e){
+    let arr=visiblePhotos(e);
+    if(arr.length) return arr;
+    if(e&&e.hasPhotos&&fix13PublicPhotoApproved(e)) return await loadPhotosDB(e.id);
+    return [];
+  }
+  function photoWaitHtml(e){
+    return (photoList(e).length||e.hasPhotos)?'<div class="fix13-photo-private">🔒 Foto wartet auf Admin-Prüfung</div>':'';
+  }
+  function statusBadgeHtml(e){
+    const s=fix13StatusClass(e.status||'neu');
+    return `<span class="fix13-status ${s}">${fix13StatusLabel(s)}</span>`;
+  }
+
+  updateStats = function(){
+    const active=visibleEntries();
+    const byId=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+    byId('s-rat',active.filter(e=>e.kind==='rat').length);
+    byId('s-action',active.filter(e=>e.kind==='action'&&!isAuthorityEntry(e)).length);
+    byId('s-authority',active.filter(e=>e.status==='gesendet'||isAuthorityEntry(e)).length);
+    byId('s-done',active.filter(e=>e.status==='geprueft').length);
+    document.querySelectorAll('.workflow-stats .stat-card:nth-child(4) .stat-lbl').forEach(el=>{el.textContent='Geprüft';});
+  };
+
+  openStatList = function(kind){
+    if(kind==='rat') listFilter='rat';
+    else if(kind==='action') listFilter='action';
+    else if(kind==='authority') listFilter='authority';
+    else if(kind==='done') listFilter='done';
+    else listFilter='all';
+    dateFilterFrom='';dateFilterTo='';goPage('liste');
+    setTimeout(()=>{setListFilter(listFilter);syncDateInputs();},80);
+  };
+
+  setListFilter = function(f){
+    listFilter=f;
+    ['all','rat','action','authority','done'].forEach(id=>{const el=document.getElementById('lf-'+id);if(el)el.className='lf-btn';});
+    const act=document.getElementById('lf-'+f); if(act)act.className='lf-btn act';
+    renderList();
+  };
+
+  renderList = async function(){
+    const el=document.getElementById('list-body'); if(!el)return;
+    const base=visibleEntries();
+    const filtered=base.filter(e=>{
+      if(listFilter==='rat'&&e.kind!=='rat')return false;
+      if(listFilter==='action'&&(e.kind!=='action'||isAuthorityEntry(e)))return false;
+      if(listFilter==='authority'&&!(e.status==='gesendet'||isAuthorityEntry(e)))return false;
+      if(listFilter==='done'&&e.status!=='geprueft')return false;
+      return entryInDateRange(e);
+    });
+    const rats=base.filter(e=>e.kind==='rat').length;
+    const actions=base.filter(e=>e.kind==='action'&&!isAuthorityEntry(e)).length;
+    const auth=base.filter(e=>e.status==='gesendet'||isAuthorityEntry(e)).length;
+    const checked=base.filter(e=>e.status==='geprueft').length;
+    const lc=document.getElementById('list-count'); if(lc)lc.textContent=`${filtered.length} angezeigt · ${rats} Sichtungen · ${actions} Maßnahmen · ${auth} Behörden · ${checked} geprüft`;
+    if(!filtered.length){el.innerHTML=`<div class="empty-state"><div class="ei">🔍</div><div class="et">Keine Einträge für diese Auswahl</div></div>`;return;}
+    let html='';
+    for(const r of filtered){
+      const d=new Date(r.time||r.createdAt);
+      const ts=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';
+      const isAuth=isAuthorityEntry(r);
+      const typeBadgeCls=r.kind==='rat'?'rat-badge':'action-badge';
+      const cardCls=(r.kind==='action'||isAuth)?'r-card action-card':'r-card';
+      const arr=await visiblePhotosAsync(r);
+      const rid=jsStr(r.id);
+      const photoHtml=arr.length?`<div class="r-photos">${arr.map((u,i)=>`<img class="r-photo" loading="lazy" src="${u}" onclick="openLightbox('${rid}',${i})" onerror="imgErr(this)" />`).join('')}</div>`:photoWaitHtml(r);
+      const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
+      html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span>${statusBadgeHtml(r)}</div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${formatHistory(r)}</div>`;
+    }
+    el.innerHTML=html;
+  };
+
+  markerEmoji = function(r){
+    const t=(r.type||'').toLowerCase();
+    if(r.status==='gesendet'||isAuthorityEntry(r)) return '🏛️';
+    if(r.kind==='action') return '🟢';
+    if(t.includes('tote')) return '☠️';
+    if(t.includes('mehrere')) return '🐀🐀';
+    if(t.includes('bau')) return '🕳️';
+    if(t.includes('kot')) return '💩';
+    if(t.includes('fraß')||t.includes('frass')) return '🦷';
+    return '🐀';
+  };
+
+  refreshMarkers = async function(){
+    if(!map)return;
+    mapMarkers.forEach(m=>map.removeLayer(m));mapMarkers=[];
+    const filtered=visibleEntries().filter(e=>e.lat&&e.lon&&entryInDateRange(e)&&((mapFilter==='all')||(mapFilter==='rat'&&e.kind==='rat')||(mapFilter==='action'&&e.kind==='action'&&!isAuthorityEntry(e))||(mapFilter==='authority'&&(e.status==='gesendet'||isAuthorityEntry(e)))||(mapFilter==='done'&&e.status==='geprueft')));
+    const empty=document.getElementById('map-empty'); if(empty) empty.style.display=filtered.length?'none':'flex';
+    for(const r of filtered){
+      const emoji=markerEmoji(r); const cls=markerClass(r)+(emoji.length>2?' small':'');
+      const icon=L.divIcon({className:'',html:`<div class="map-symbol ${cls}">${emoji}</div>`,iconSize:[38,38],iconAnchor:[19,19],popupAnchor:[0,-18]});
+      const d=new Date(r.time||r.createdAt); const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+      const arr=await visiblePhotosAsync(r); const rid=jsStr(r.id);
+      const photoHtml=arr.length?`<img class="pu-photo" loading="lazy" src="${arr[0]}" onclick="openLightbox('${rid}',0)" onerror="imgErr(this)" />`:photoWaitHtml(r);
+      const gpsLine=`<div class="pu-coords">${r.gpsExact?'Exakt gesetzter Kartenpunkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}</div>`;
+      const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
+      m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${r.kind==='rat'?'pu-rat':'pu-action'}">${emoji} ${esc(r.type)} ${statusBadgeHtml(r)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap('${rid}')">Meldung öffnen</button>`);
+      mapMarkers.push(m);
+    }
+    if(filtered.length){try{map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3));}catch(e){}}
+  };
+
+  openLightbox = async function(id,idx){
+    const entry=entries.find(e=>String(e.id)===String(id));
+    if(!entry)return;
+    let arr=[];
+    if(isHaupt) arr=photoList(entry).length?photoList(entry):(entry.hasPhotos?await loadPhotosDB(id):[]);
+    else arr=await visiblePhotosAsync(entry);
+    if(!arr.length)return;
+    document.getElementById('lb-img').src=arr[idx];
+    document.getElementById('lb-cap').textContent=`Foto ${idx+1} von ${arr.length}`;
+    document.getElementById('lightbox').classList.add('open');
+  };
+
+  function adminPhotosHtml(r){
+    const arr=photoList(r);
+    if(!arr.length && !r.hasPhotos)return '<div class="fix13-photo-private">Keine Fotos vorhanden</div>';
+    if(!arr.length && r.hasPhotos)return '<div class="fix13-photo-private">📷 Foto vorhanden, wird geladen</div>';
+    const rid=jsStr(r.id);
+    const approved=fix13PublicPhotoApproved(r);
+    return `<div class="fix13-admin-photo-row">${arr.map((u,i)=>`<img class="fix13-admin-photo" loading="lazy" src="${u}" onclick="openLightbox('${rid}',${i})" onerror="imgErr(this)" />`).join('')}</div><div class="fix13-photo-private">${approved?'✅ Foto öffentlich freigegeben':'🔒 Foto nur für Admin sichtbar, noch nicht öffentlich'}</div>`;
+  }
+
+  function adminCardClass(r){
+    if(fix13IsRejected(r))return 'fix13-card-rejected';
+    if(r.status==='gesendet')return 'fix13-card-sent';
+    if(r.status==='geprueft')return 'fix13-card-ok';
+    return 'fix13-card-new';
+  }
+
+  renderAdminList = function(){
+    const el=document.getElementById('a-rep-list'); if(!el)return;
+    const all=entries.slice();
+    const active=all.filter(e=>!fix13IsRejected(e));
+    const neu=active.filter(e=>(e.status||'neu')==='neu').length;
+    const ok=active.filter(e=>e.status==='geprueft').length;
+    const sent=active.filter(e=>e.status==='gesendet').length;
+    const count=document.getElementById('a-count'); if(count)count.textContent=`${neu} neu · ${ok} geprüft · ${sent} Behörde`;
+    const head=`<div class="fix13-admin-summary"><div class="fix13-admin-stat"><strong>${neu}</strong><span>Neu</span></div><div class="fix13-admin-stat"><strong>${ok}</strong><span>Geprüft</span></div><div class="fix13-admin-stat"><strong>${sent}</strong><span>Behörde</span></div></div><div class="fix13-filter-note">Workflow: Neue Meldung prüfen. Mit „Freigeben“ wird die Meldung geprüft und das Foto öffentlich freigegeben. Abgelehnte Meldungen bleiben aus der öffentlichen Ansicht verschwunden.</div>`;
+    const list=all.filter(r=>adminFilter==='all'||(adminFilter==='neu'&&(r.status||'neu')==='neu')||(adminFilter==='geprueft'&&r.status==='geprueft')||(adminFilter==='gesendet'&&r.status==='gesendet')||(adminFilter==='ausgeblendet'&&fix13IsRejected(r))||(adminFilter==='foto'&&!fix13PublicPhotoApproved(r)&&(photoList(r).length||r.hasPhotos)));
+    if(!list.length){el.innerHTML=head+'<div class="empty-state" style="padding:20px 0"><div class="ei" style="font-size:30px">✅</div><div class="et">Keine Einträge in diesem Filter</div></div>';return;}
+    el.innerHTML=head+list.map(r=>{
+      const d=new Date(r.time||r.createdAt); const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+      const isRat=r.kind==='rat'; const isAuth=isAuthorityEntry(r); const rid=jsStr(r.id);
+      const replyVal=r.stadtAntwort?esc(r.stadtAntwort):'';
+      const replyDisplay=r.stadtAntwort?`<div class="city-reply" style="margin-top:8px"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
+      const canMail=!fix13IsRejected(r)&&r.status!=='gesendet';
+      return `<div class="a-card ${isRat?'':'action'} ${adminCardClass(r)}" id="ac${rid}"><div class="a-card-top"><div class="a-card-body"><div class="a-loc">📍 ${esc(r.street)} ${statusBadgeHtml(r)}</div><div class="a-type ${isRat?'a-rat-type':'a-action-type'}">${isRat?'🐀 Sichtung':(isAuth?'🏛 Behörde/Verwaltung':'🟢 Maßnahme')} · ${esc(r.type)}</div><div class="a-desc">${esc(r.desc)}</div>${adminPhotosHtml(r)}<div class="a-meta">👤 ${esc(r.name||'Anonym')} · ⏰ ${ts}${r.lat?` · GPS ${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}`:' · kein GPS'}</div><div class="fix13-actions"><button class="fix13-btn approve" onclick="approveReportFix13('${rid}')">✅ Freigeben</button><button class="fix13-btn reject" onclick="rejectReportFix13('${rid}')">❌ Ablehnen</button><button class="fix13-btn mail" ${canMail?'':'disabled'} onclick="informAuthorityFix13('${rid}')">🏛 Behörde informiert</button><button class="fix13-btn gps" onclick="editGps('${rid}')">📍 GPS korrigieren</button><button class="fix13-btn note" onclick="notifyEntryEmail('${rid}')">📧 Update E-Mail</button><button class="fix13-btn note" onclick="notifyEntryWhatsApp('${rid}')">💬 WhatsApp</button></div>${formatHistory(r)}${replyDisplay}<div class="reply-wrap"><input class="reply-inp" id="reply-${rid}" placeholder="Interne Notiz oder Rückmeldung" value="${replyVal}" /><button class="reply-save" onclick="saveReply('${rid}')">💾</button></div></div><button class="a-del" onclick="rejectReportFix13('${rid}')">❌</button></div></div>`;
+    }).join('');
+  };
+
+  window.approveReportFix13 = async function(id){
+    const e=entries.find(x=>String(x.id)===String(id)); if(!e)return;
+    e.status='geprueft'; const m=metaOf(e); m.photoApproved=true; m.rejected=false; m.deleted=false; addHistory(e,'Meldung geprüft und Foto öffentlich freigegeben');
+    const ok=await updateEntryRemote(e,'fix13_report_approved'); if(!ok)return;
+    updateStats(); renderAdminList(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); toast('✅ Meldung freigegeben');
+  };
+
+  window.rejectReportFix13 = async function(id){
+    const e=entries.find(x=>String(x.id)===String(id)); if(!e)return;
+    const reason=prompt('Ablehnungsgrund optional', metaOf(e).rejectReason||''); if(reason===null)return;
+    e.status='abgelehnt'; const m=metaOf(e); m.rejected=true; m.deleted=true; m.photoApproved=false; m.rejectReason=reason||''; addHistory(e, reason?`Meldung abgelehnt: ${reason}`:'Meldung abgelehnt');
+    const ok=await updateEntryRemote(e,'fix13_report_rejected'); if(!ok)return;
+    updateStats(); renderAdminList(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); toast('❌ Meldung abgelehnt');
+  };
+
+  window.informAuthorityFix13 = async function(id){
+    const e=entries.find(x=>String(x.id)===String(id)); if(!e)return;
+    if((e.status||'neu')==='neu'){
+      const yes=confirm('Diese Meldung ist noch nicht freigegeben. Jetzt prüfen, Foto freigeben und als Behörde informiert markieren?');
+      if(!yes)return;
+      metaOf(e).photoApproved=true;
+    }
+    e.status='gesendet'; e.authorityNotifiedAt=new Date().toISOString(); e.authorityBy=adminLabel(); addHistory(e,'Behörde/Verwaltung informiert');
+    const ok=await updateEntryRemote(e,'fix13_authority_informed'); if(!ok)return;
+    updateStats(); renderAdminList(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); toast('🏛 Behörde informiert gespeichert');
+  };
+
+  setStatus = async function(id,status){
+    if(status==='bearbeitung')status='geprueft'; if(status==='erledigt')status='gesendet';
+    if(status==='geprueft')return approveReportFix13(id);
+    if(status==='gesendet')return informAuthorityFix13(id);
+    if(status==='abgelehnt')return rejectReportFix13(id);
+    const e=entries.find(x=>String(x.id)===String(id)); if(!e)return;
+    e.status='neu'; addHistory(e,'Status auf Neu gesetzt');
+    const ok=await updateEntryRemote(e,'fix13_status_new'); if(!ok)return;
+    updateStats(); renderAdminList(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); toast('🟠 Status: Neu');
+  };
+
+  saveReply = async function(id){
+    const e=entries.find(x=>String(x.id)===String(id)); if(!e)return;
+    const inp=document.getElementById('reply-'+id); const val=inp?inp.value.trim():'';
+    e.stadtAntwort=val; if(val)addHistory(e,'Interne Notiz/Rückmeldung gespeichert');
+    const ok=await updateEntryRemote(e,'fix13_note_saved'); if(!ok)return;
+    renderAdminList(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); toast(val?'✅ Notiz gespeichert':'🗑️ Notiz gelöscht');
+  };
+
+  delEntry = async function(id){return rejectReportFix13(id);};
+  clearAll = async function(){toast('Aus Sicherheitsgründen deaktiviert. Bitte einzelne Meldungen ablehnen.');};
+
+  editGps = function(id){
+    const e=entries.find(x=>String(x.id)===String(id)); if(!e)return;
+    fix13AdminGpsTargetId=String(id);
+    const coord={lat:Number(e.lat)||53.55,lon:Number(e.lon)||10.0,accuracy:e.accuracy||null,source:'admin-map',exact:true};
+    locPickerTarget={mode:'adminGps',entryId:String(id),inputId:null,hintId:null,label:e.street||''};
+    locPickerCoord={...coord};
+    const bg=document.getElementById('loc-picker-bg'); if(!bg)return;
+    const title=bg.querySelector('.loc-picker-title'); if(title)title.textContent='📍 GPS Standort der Meldung korrigieren';
+    const sub=bg.querySelector('.loc-picker-sub'); if(sub)sub.textContent='Tippe auf die Karte oder verschiebe die Nadel. Danach Punkt übernehmen.';
+    bg.classList.add('open');
+    setTimeout(()=>{
+      if(!locPickerMap){
+        const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,attribution:'© OpenStreetMap'});
+        const aerial=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Luftbild © Esri'});
+        locPickerMap=L.map('loc-map',{layers:[street],zoomControl:true,attributionControl:false}).setView([coord.lat,coord.lon],19);
+        L.control.layers({'Straßenkarte mit Hausnummern':street,'Luftbild / Häuseransicht':aerial},null,{collapsed:true,position:'topright'}).addTo(locPickerMap);
+        locPickerMap.on('click',ev=>setPickerPoint(ev.latlng.lat,ev.latlng.lng,null,'admin-map'));
+      }
+      locPickerMap.invalidateSize(); locPickerMap.setView([coord.lat,coord.lon], e.lat&&e.lon?19:13); setPickerPoint(coord.lat,coord.lon,coord.accuracy,'admin-map');
+    },200);
+  };
+
+  const oldCloseLocationPicker = typeof closeLocationPicker==='function' ? closeLocationPicker : null;
+  closeLocationPicker = async function(save){
+    if(save&&locPickerTarget&&locPickerTarget.mode==='adminGps'&&locPickerCoord){
+      const e=entries.find(x=>String(x.id)===String(locPickerTarget.entryId));
+      if(e){
+        e.lat=locPickerCoord.lat; e.lon=locPickerCoord.lon; e.accuracy=locPickerCoord.accuracy||null; e.gpsExact=true; e.gpsSource='admin-map';
+        try{const adr=await reverseAddressFromCoords(e.lat,e.lon); if(adr) e.street=adr;}catch(_){ }
+        addHistory(e,`GPS Standort per Karte korrigiert: ${Number(e.lat).toFixed(6)}, ${Number(e.lon).toFixed(6)}`);
+        const ok=await updateEntryRemote(e,'fix13_gps_map_corrected'); if(ok){updateStats();renderAdminList();if(curPage==='liste')renderList();if(map)refreshMarkers();toast('📍 GPS per Karte gespeichert');}
+      }
+      const bg=document.getElementById('loc-picker-bg'); if(bg)bg.classList.remove('open'); locPickerTarget=null; fix13AdminGpsTargetId=null; return;
+    }
+    return oldCloseLocationPicker?oldCloseLocationPicker(save):undefined;
+  };
+
+  const oldSubmitReport = typeof submitReport==='function' ? submitReport : null;
+  if(oldSubmitReport){
+    submitReport = async function(kind){
+      if(fix13SubmitLock){toast('⏳ Speichern läuft bereits');return;}
+      fix13SubmitLock=true;
+      const btn=document.getElementById(kind==='rat'?'fr-submit':'fa-submit');
+      if(btn){btn.disabled=true;btn.classList.add('busy');}
+      try{return await oldSubmitReport(kind);}finally{setTimeout(()=>{fix13SubmitLock=false;if(btn){btn.disabled=false;btn.classList.remove('busy');}},1200);}
+    };
+  }
+
+  function sessionTouch(){
+    if(!isHaupt)return;
+    localStorage.setItem('rattenAdminLastActivity',String(Date.now()));
+    resetSessionTimers();
+  }
+  function resetSessionTimers(){
+    clearTimeout(fix13IdleTimer);clearTimeout(fix13WarnTimer);clearTimeout(fix13MaxTimer);
+    if(!isHaupt)return;
+    const start=Number(localStorage.getItem('rattenAdminSessionStart')||Date.now());
+    const elapsed=Date.now()-start;
+    if(elapsed>=FIX13_MAX_SESSION_MS){toast('🔒 Admin Sitzung abgelaufen');adminLogout();return;}
+    fix13WarnTimer=setTimeout(()=>{if(isHaupt)toast('⏳ Admin Logout in ca. 2 Minuten bei Inaktivität');},FIX13_WARN_MS);
+    fix13IdleTimer=setTimeout(()=>{if(isHaupt){toast('🔒 Automatisch ausgeloggt');adminLogout();}},FIX13_IDLE_MS);
+    fix13MaxTimer=setTimeout(()=>{if(isHaupt){toast('🔒 Maximale Sitzungsdauer erreicht');adminLogout();}},FIX13_MAX_SESSION_MS-elapsed);
+  }
+  ['click','touchstart','keydown','scroll'].forEach(ev=>document.addEventListener(ev,()=>{if(isHaupt)sessionTouch();},{passive:true}));
+  const oldShowPanel=typeof showPanel==='function'?showPanel:null;
+  if(oldShowPanel){showPanel=function(){localStorage.setItem('rattenAdminSessionStart',String(Date.now()));localStorage.setItem('rattenAdminLastActivity',String(Date.now()));oldShowPanel();resetSessionTimers();};}
+  const oldAdminLogout=typeof adminLogout==='function'?adminLogout:null;
+  if(oldAdminLogout){adminLogout=async function(){clearTimeout(fix13IdleTimer);clearTimeout(fix13WarnTimer);clearTimeout(fix13MaxTimer);localStorage.removeItem('rattenAdminSessionStart');localStorage.removeItem('rattenAdminLastActivity');return oldAdminLogout();};}
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('#mf-done,#lf-done').forEach(el=>el.style.display='none');
+    document.querySelectorAll('.workflow-stats .stat-card:nth-child(4) .stat-lbl').forEach(el=>el.textContent='Geprüft');
+    const sec=document.querySelector('#a-panel .a-sec'); if(sec)sec.textContent='📋 Neue Meldungen prüfen';
+    const hint=document.querySelector('#a-panel .a-hint'); if(hint)hint.textContent='Einfacher Workflow: Neue Meldung prüfen, freigeben oder ablehnen. Fotos werden erst mit der Freigabe öffentlich sichtbar. Danach kann optional „Behörde informiert“ gesetzt werden.';
+    updateStats();
+  });
+})();
+</script>
+
 </body>
 </html>
