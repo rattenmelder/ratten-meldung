@@ -999,11 +999,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!e.target.closest('.ac-wrap')) { closeAC('fr-ac'); closeAC('fa-ac'); }
   });
   await loadSupabaseData(); updateStats(); checkAboStatus(); showPrivacyConsentIfNeeded();
-  const shouldReopenAdmin = sessionStorage.getItem('rattenAdminOpen') === 'yes';
-  if(shouldReopenAdmin && currentAdminEmail && isHaupt){
-    openAdmin();
-    showPanel();
-  }
   const initialPage = pageFromHash();
   if(initialPage !== 'home') goPage(initialPage);
   window.addEventListener('hashchange', () => {
@@ -1012,15 +1007,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-if(hasSupabase()){
-  supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    if(session?.user?.email){
-      currentAdminEmail=session.user.email||'';
-      currentAdminName=currentAdminEmail.split('@')[0];
-      await loadAdminDataIfAllowed();
-    }
-  });
-}
 
 function showPrivacyConsentIfNeeded(){
   const layer=document.getElementById('privacy-consent');
@@ -1747,8 +1733,8 @@ Viele Grüße
 ${adminLabel()}`;window.location.href=`mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;rememberAuthoritySent(e,recipient);toast('📧 Behördenmail vorbereitet und Verlauf gespeichert');}
 
 // ── ADMIN ──
-function openAdmin(){try{sessionStorage.setItem('rattenAdminOpen','yes');}catch(e){}document.body.classList.add('admin-open');document.getElementById('admin-page').classList.add('open');if(isHaupt)renderAdminList();}
-function closeAdmin(){try{sessionStorage.removeItem('rattenAdminOpen');}catch(e){}document.getElementById('admin-page').classList.remove('open');document.body.classList.remove('admin-open');}
+function openAdmin(){document.body.classList.add('admin-open');document.getElementById('admin-page').classList.add('open');if(isHaupt)renderAdminList();}
+function closeAdmin(){document.getElementById('admin-page').classList.remove('open');document.body.classList.remove('admin-open');}
 async function hashPw(pw){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
 async function adminLogin(){
   const email=document.getElementById('a-email').value.trim().toLowerCase();
@@ -1764,7 +1750,7 @@ async function adminLogin(){
   showPanel();
 }
 function showPanel(){document.getElementById('a-login').style.display='none';document.getElementById('a-panel').style.display='block';document.getElementById('v-section').style.display=isHaupt?'block':'none';renderAdminList();renderAboList();if(isHaupt){renderVerwalterList();checkSheetsBar();}}
-async function adminLogout(){try{sessionStorage.removeItem('rattenAdminOpen');}catch(e){}if(hasSupabase())await supabaseClient.auth.signOut();isHaupt=false;currentAdminEmail='';currentAdminName='';document.getElementById('a-login').style.display='flex';document.getElementById('a-panel').style.display='none';['a-email','a-pw'].forEach(id=>document.getElementById(id).value='');closeAdmin();}
+async function adminLogout(){if(hasSupabase())await supabaseClient.auth.signOut();isHaupt=false;currentAdminEmail='';currentAdminName='';document.getElementById('a-login').style.display='flex';document.getElementById('a-panel').style.display='none';['a-email','a-pw'].forEach(id=>document.getElementById(id).value='');closeAdmin();}
 function pwReset(e){e.preventDefault();window.location.href=`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Ratten-App: Passwort vergessen')}&body=${encodeURIComponent('Hallo,\n\nPasswort bitte zurücksetzen.\n\nDanke!')}`;}
 
 
