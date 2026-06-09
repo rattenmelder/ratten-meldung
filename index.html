@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- BUILD: FINAL_RATTENMELDER_FIX20_PRODUCTION_CLEAN -->
+<!-- BUILD: FINAL_RATTENMELDER_FIX21_ADMIN_STABIL_MODERATION -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX20_PRODUCTION_CLEAN</title>
+<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX21_ADMIN_STABIL_MODERATION</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX20_PRODUCTION_CLEAN');
+console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX21_ADMIN_STABIL_MODERATION');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -1943,7 +1943,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
    Ziel: öffentliche Freigabe erst nach Admin Prüfung, einfache Admin-Statuslogik,
    Supabase Diagnose, Session Timeout, Papierkorb und Admin Benachrichtigungs-Hook. */
 (function(){
-  const RM_BUILD = 'FIX20_PRODUCTION_CLEAN_2026-06-09';
+  const RM_BUILD = 'FIX21_ADMIN_STABIL_MODERATION_2026-06-09';
   const RM_SESSION_MAX_MS = 8 * 60 * 60 * 1000;
   const RM_IDLE_MAX_MS = 30 * 60 * 1000;
   const RM_IDLE_WARN_MS = 28 * 60 * 1000;
@@ -2293,6 +2293,146 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
   // Erste Diagnose nach dem Laden aktualisieren.
   document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{checkSupabaseStatus(); updateStats();},700);});
+})();
+</script>
+
+
+<style>
+/* === FIX21: Admin Navigation, Version, Moderation sichtbar stabil === */
+.rm-version-strip{margin:0 18px 10px;padding:10px 12px;border:1px solid rgba(10,132,255,.28);background:rgba(10,132,255,.08);border-radius:12px;color:var(--text2);font-size:12px;line-height:1.45;}
+.rm-version-strip strong{color:var(--text);} 
+.admin-page.open{display:flex!important;z-index:15000!important;pointer-events:auto!important;}
+.admin-page.open *{pointer-events:auto!important;}
+body.admin-open .page{pointer-events:none!important;}
+body.admin-open .admin-page,body.admin-open .admin-page *{pointer-events:auto!important;}
+body.admin-open .tab-bar{display:none!important;}
+.rm-hidden-public-note{font-size:12px;color:var(--orange);background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.22);padding:8px 10px;border-radius:10px;margin:8px 0;}
+</style>
+<script>
+/* === FIX21: stabile Admin-Navigation, Reload-Verhalten, öffentliche Freigabe erst nach Prüfung === */
+(function(){
+  const RM_BUILD_21 = 'FIX21_ADMIN_STABIL_MODERATION_2026-06-09';
+  function metaOf(e){try{return (typeof getMeta==='function'?getMeta(e):((Array.isArray(e&&e.history)?e.history:[]).find(x=>x&&x.__meta==='rattenmelder')||{}));}catch(_){return {};}}
+  function esc21(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function publicApproved21(e){const m=metaOf(e);return !!e && !m.trashed && !m.rejected && e.status!=='papierkorb' && e.status!=='abgelehnt' && (e.status==='geprueft'||e.status==='gesendet') && !!m.approved;}
+  function publicPhotos21(e){const arr=Array.isArray(e&&e.photoUrls)?e.photoUrls.filter(Boolean):[];return (publicApproved21(e)&&metaOf(e).photoApproved)?arr:[];}
+  function statusLabel21(e){if(!e)return '🟠 Neu'; if(e.status==='gesendet')return '🏛 Behörde informiert'; if(e.status==='geprueft')return '✅ Freigegeben'; if(e.status==='abgelehnt')return '❌ Abgelehnt'; if(e.status==='papierkorb')return '🗑 Papierkorb'; return '🟠 Neu';}
+  function injectVersion21(){
+    const panel=document.getElementById('a-panel'); if(!panel)return;
+    let strip=document.getElementById('rm-version-strip');
+    if(!strip){strip=document.createElement('div');strip.id='rm-version-strip';strip.className='rm-version-strip';panel.insertBefore(strip,panel.firstChild);}
+    const online=(typeof hasSupabase==='function'&&hasSupabase())?'🟢 Supabase SDK geladen':'🔴 Supabase SDK nicht geladen';
+    const mail=currentAdminEmail||'nicht angemeldet';
+    strip.innerHTML='<strong>Version:</strong> '+RM_BUILD_21+'<br><strong>Status:</strong> '+online+' · Admin: '+esc21(mail)+'<br><span style="color:var(--text3)">Öffentlich sichtbar sind nur Meldungen nach Admin Freigabe. Neue Meldungen erscheinen ausschließlich hier im Adminbereich.</span>';
+  }
+  window.rmCurrentBuild = RM_BUILD_21;
+  try{console.log('Rattenmelder Version:', RM_BUILD_21);}catch(_){ }
+
+  // Admin öffnen/schließen zuverlässig, ohne auszuloggen. Reload merkt sich den geöffneten Adminbereich.
+  const oldOpenAdmin21 = window.openAdmin;
+  window.openAdmin = async function(){
+    try{localStorage.setItem('rattenAdminOpen','yes');}catch(_){ }
+    document.body.classList.add('admin-open');
+    const ap=document.getElementById('admin-page'); if(ap)ap.classList.add('open');
+    try{
+      if(typeof hasSupabase==='function'&&hasSupabase()&&!isHaupt){
+        const {data:{session}} = await supabaseClient.auth.getSession();
+        if(session){currentAdminEmail=session.user.email||'';currentAdminName=(currentAdminEmail||'').split('@')[0]; const ok=await loadAdminDataIfAllowed(); if(ok && typeof showPanel==='function')showPanel();}
+      }
+    }catch(e){console.warn('Admin Session Restore fehlgeschlagen',e);}
+    if(isHaupt && typeof showPanel==='function')showPanel();
+    else {const l=document.getElementById('a-login'), p=document.getElementById('a-panel'); if(l)l.style.display='flex'; if(p)p.style.display='none';}
+    injectVersion21();
+  };
+  window.closeAdmin = function(){
+    try{localStorage.removeItem('rattenAdminOpen');}catch(_){ }
+    const ap=document.getElementById('admin-page'); if(ap)ap.classList.remove('open');
+    document.body.classList.remove('admin-open');
+  };
+  const oldLogout21=window.adminLogout;
+  window.adminLogout=async function(){try{localStorage.removeItem('rattenAdminOpen');}catch(_){ } if(oldLogout21)return oldLogout21.apply(this,arguments);};
+
+  document.addEventListener('click',function(ev){
+    const back=ev.target.closest&&ev.target.closest('#admin-page .nav-back');
+    if(back){ev.preventDefault();ev.stopPropagation();window.closeAdmin();return false;}
+  },true);
+
+  const oldShowPanel21=window.showPanel;
+  window.showPanel=function(){if(oldShowPanel21)oldShowPanel21.apply(this,arguments);injectVersion21();};
+  const oldRenderAdmin21=window.renderAdminList;
+  window.renderAdminList=function(){if(oldRenderAdmin21)oldRenderAdmin21.apply(this,arguments);injectVersion21();};
+
+  // Nach Reload Adminbereich wieder öffnen, wenn er vorher geöffnet war.
+  const oldLoadSupabase21=window.loadSupabaseData;
+  if(oldLoadSupabase21){
+    window.loadSupabaseData=async function(){await oldLoadSupabase21.apply(this,arguments); setTimeout(()=>{try{if(localStorage.getItem('rattenAdminOpen')==='yes')window.openAdmin();}catch(_){ }},150);};
+  }
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{try{if(localStorage.getItem('rattenAdminOpen')==='yes')window.openAdmin();}catch(_){ }},900);});
+
+  // Öffentliche Liste: NIE neue, abgelehnte oder Papierkorb Meldungen anzeigen, auch nicht wenn Admin eingeloggt ist.
+  window.renderList = async function(){
+    const el=document.getElementById('list-body'); if(!el)return;
+    const base=(Array.isArray(entries)?entries:[]).filter(publicApproved21);
+    const filtered=base.filter(e=>{
+      if(typeof entryInDateRange==='function' && !entryInDateRange(e))return false;
+      if(listFilter==='rat'&&e.kind!=='rat')return false;
+      if(listFilter==='action'&&(e.kind!=='action'||(typeof isAuthorityEntry==='function'&&isAuthorityEntry(e))))return false;
+      if(listFilter==='authority'&&e.status!=='gesendet')return false;
+      return true;
+    });
+    const cnt=document.getElementById('list-count'); if(cnt)cnt.textContent=`${filtered.length} freigegeben · ${base.filter(e=>e.kind==='rat').length} Sichtungen · ${base.filter(e=>e.kind==='action').length} Maßnahmen · ${base.filter(e=>e.status==='gesendet').length} Behörden`;
+    if(!filtered.length){el.innerHTML='<div class="empty-state"><div class="ei">🔒</div><div class="et">Noch keine freigegebenen Meldungen vorhanden</div></div>';return;}
+    let html='';
+    for(const r of filtered){
+      const d=new Date(r.time||r.createdAt||Date.now());
+      const ts=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';
+      const typeBadgeCls=r.kind==='rat'?'rat-badge':'action-badge';
+      const cardCls=(r.kind==='action')?'r-card action-card':'r-card';
+      const arr=publicPhotos21(r); const rid=String(r.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      const photoHtml=arr.length?`<div class="r-photos">${arr.map((u,i)=>`<img class="r-photo" loading="lazy" src="${u}" onclick="openLightbox('${rid}',${i})" onerror="imgErr(this)" />`).join('')}</div>`:'';
+      const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc21(r.stadtAntwort)}</div></div>`:'';
+      const emoji=(typeof markerEmoji==='function')?markerEmoji(r):(r.kind==='rat'?'🐀':'🟢');
+      html+=`<div class="${cardCls}" id="entry-${rid}"><div class="r-head"><div class="r-loc">📍 ${esc21(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${emoji} ${esc21(r.type)}</span><span class="status-badge ss">${statusLabel21(r)}</span></div><div class="r-desc">${esc21(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc21(r.name||'Anonym')}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}</div></div>`;
+    }
+    el.innerHTML=html;
+  };
+
+  // Öffentliche Karte: Admin sieht weiterhin alle zur Bearbeitung, normale Nutzer nur freigegebene.
+  const oldRefresh21=window.refreshMarkers;
+  window.refreshMarkers=async function(){
+    if(isHaupt){return oldRefresh21?oldRefresh21.apply(this,arguments):undefined;}
+    if(!map)return; mapMarkers.forEach(m=>map.removeLayer(m)); mapMarkers=[];
+    const base=(Array.isArray(entries)?entries:[]).filter(publicApproved21);
+    const filtered=base.filter(e=>e.lat&&e.lon&&(!entryInDateRange||entryInDateRange(e))&&((mapFilter==='all')||(mapFilter==='rat'&&e.kind==='rat')||(mapFilter==='action'&&e.kind==='action')||(mapFilter==='authority'&&e.status==='gesendet')));
+    const empty=document.getElementById('map-empty'); if(empty)empty.style.display=filtered.length?'none':'flex';
+    for(const r of filtered){
+      const emoji=(typeof markerEmoji==='function')?markerEmoji(r):(r.kind==='rat'?'🐀':'🟢');
+      const cls=(typeof markerClass==='function'?markerClass(r):(r.kind==='rat'?'rat':'action'))+(emoji.length>2?' small':'');
+      const icon=L.divIcon({className:'',html:`<div class="map-symbol ${cls}">${emoji}</div>`,iconSize:[38,38],iconAnchor:[19,19],popupAnchor:[0,-18]});
+      const d=new Date(r.time||r.createdAt||Date.now()); const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+      const arr=publicPhotos21(r); const rid=String(r.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      const photoHtml=arr.length?`<img class="pu-photo" loading="lazy" src="${arr[0]}" onclick="openLightbox('${rid}',0)" onerror="imgErr(this)" />`:'';
+      const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
+      m.bindPopup(`<div class="pu-loc">📍 ${esc21(r.street)}</div><div class="pu-type ${r.kind==='rat'?'pu-rat':'pu-action'}">${emoji} ${esc21(r.type)} · ${statusLabel21(r)}</div>${photoHtml}<div class="pu-desc">${esc21(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc21(r.name||'Anonym')}</div><button class="pu-btn" onclick="openEntryFromMap('${rid}')">Meldung öffnen</button>`);
+      mapMarkers.push(m);
+    }
+    if(filtered.length){try{map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3));}catch(_){}}
+  };
+
+  // Neue Meldung bleibt strikt intern, bis Admin freigibt. Meta wird auch bei alten Browsern sicher gesetzt.
+  const oldSubmit21=window.submitReport;
+  if(oldSubmit21){
+    window.submitReport=async function(kind){
+      const before=(Array.isArray(entries)?entries.length:0);
+      await oldSubmit21.apply(this,arguments);
+      try{
+        if(Array.isArray(entries)&&entries.length>before){
+          const e=entries[0]; if(e&&e.status==='neu'&&typeof setMeta==='function'){setMeta(e,{approved:false,photoApproved:false,statusOverride:'neu'});}
+          updateStats&&updateStats(); if(curPage==='liste')renderList(); if(map)refreshMarkers();
+        }
+      }catch(_){ }
+    };
+  }
 })();
 </script>
 
