@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- BUILD: FINAL_RATTENMELDER_FIX22_ADMIN_CLICK_STABLE -->
+<!-- BUILD: FINAL_RATTENMELDER_FIX23_ADMIN_TOUCH_SAFE -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX22_ADMIN_CLICK_STABLE</title>
+<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX23_ADMIN_TOUCH_SAFE</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX22_ADMIN_CLICK_STABLE');
+console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX23_ADMIN_TOUCH_SAFE');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -2560,6 +2560,102 @@ body.admin-open .page:not(#admin-page){pointer-events:none!important;}
   const oldShow=window.showPanel;
   window.showPanel=function(){ if(oldShow) oldShow.apply(this,arguments); ensureSystem22(); try{renderAdminList();}catch(_){ } };
   document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{if(document.getElementById('admin-page')?.classList.contains('open')){ensureSystem22();try{renderAdminList();}catch(_){}}},500));
+})();
+</script>
+
+
+
+<style>
+/* === FIX23: Admin Touch Safe, keine doppelte Statusanzeige === */
+.rm-version-strip{display:none!important;}
+#rm-system-panel{display:block!important;margin:0 18px 12px!important;padding:14px 16px!important;border:1px solid rgba(10,132,255,.32)!important;background:rgba(10,132,255,.08)!important;border-radius:16px!important;color:var(--text2)!important;font-size:13px!important;line-height:1.45!important;position:relative!important;z-index:200010!important;pointer-events:auto!important;}
+#rm-dashboard{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;margin:0 18px 14px!important;position:relative!important;z-index:200010!important;pointer-events:auto!important;}
+.rm-dash-card{background:var(--surface)!important;border:1px solid var(--border)!important;border-radius:14px!important;text-align:center!important;padding:12px 8px!important;}
+.rm-dash-num{display:block!important;color:var(--orange)!important;font-size:22px!important;font-weight:900!important;}
+.rm-dash-lbl{font-size:10px!important;color:var(--text2)!important;font-weight:800!important;text-transform:uppercase!important;}
+.admin-page.open{display:flex!important;position:fixed!important;inset:0!important;z-index:2147483000!important;pointer-events:auto!important;touch-action:auto!important;}
+.admin-page.open *{pointer-events:auto!important;touch-action:auto!important;}
+body.admin-open>.page{pointer-events:none!important;}
+body.admin-open #admin-page{pointer-events:auto!important;}
+#admin-page .nav-back,#admin-page button,#admin-page input,#admin-page textarea,#admin-page a{position:relative!important;z-index:2147483001!important;pointer-events:auto!important;touch-action:manipulation!important;}
+.rm-admin-actions{display:flex!important;gap:8px!important;flex-wrap:wrap!important;margin-top:12px!important;}
+.rm-btn{border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:12px;padding:11px 13px;font-family:'Inter',sans-serif;font-size:13px;font-weight:900;cursor:pointer;min-height:44px;}
+.rm-btn.approve{color:var(--green);background:rgba(48,209,88,.10);border-color:rgba(48,209,88,.35)}
+.rm-btn.reject,.rm-btn.trash,.rm-btn.delete{color:var(--red);background:rgba(255,59,59,.10);border-color:rgba(255,59,59,.35)}
+.rm-btn.forward,.rm-btn.edit{color:var(--blue);background:rgba(10,132,255,.10);border-color:rgba(10,132,255,.35)}
+.rm-btn.gps,.rm-btn.restore{color:var(--orange);background:rgba(255,149,0,.10);border-color:rgba(255,149,0,.35)}
+.rm-btn:disabled{opacity:.55;filter:grayscale(.4)}
+.rm-small-input{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:11px 12px;font-family:'Inter',sans-serif;font-size:13px;min-width:0;flex:1;}
+.rm-settings-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.rm-online{color:var(--green);font-weight:900}.rm-offline{color:var(--red);font-weight:900}
+.rm-admin-photo-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}.rm-admin-photo{width:82px;height:82px;border-radius:10px;object-fit:cover;border:1px solid var(--border);background:#222;}
+.rm-badge{display:inline-block;font-size:10px;font-weight:900;border-radius:20px;padding:3px 8px;margin-left:6px}.rm-badge-new{color:var(--orange);border:1px solid rgba(255,149,0,.35);background:rgba(255,149,0,.10)}.rm-badge-ok{color:var(--green);border:1px solid rgba(48,209,88,.35);background:rgba(48,209,88,.10)}.rm-badge-forward{color:var(--blue);border:1px solid rgba(10,132,255,.35);background:rgba(10,132,255,.10)}.rm-badge-rejected,.rm-badge-trash{color:var(--red);border:1px solid rgba(255,59,59,.35);background:rgba(255,59,59,.10)}
+</style>
+<script>
+/* === FIX23: Admin Click/Touch Controller ohne widersprüchliche Alt-Handler === */
+(function(){
+  const BUILD23='FIX23_ADMIN_TOUCH_SAFE_2026-06-09';
+  window.rmCurrentBuild=BUILD23;
+  try{console.log('Rattenmelder Version:',BUILD23);}catch(_){ }
+  function esc23(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function safe23(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');} 
+  function meta23(e){try{return (typeof getMeta==='function'?getMeta(e):((Array.isArray(e&&e.history)?e.history:[]).find(x=>x&&x.__meta==='rattenmelder')||{}));}catch(_){return {};}}
+  function photoArr23(e){return Array.isArray(e&&e.photoUrls)?e.photoUrls.filter(Boolean):[];}
+  function badge23(e){const m=meta23(e);if(e.status==='papierkorb'||m.trashed)return '<span class="rm-badge rm-badge-trash">🗑 Papierkorb</span>';if(e.status==='abgelehnt'||m.rejected)return '<span class="rm-badge rm-badge-rejected">❌ Abgelehnt</span>';if(e.status==='gesendet')return '<span class="rm-badge rm-badge-forward">🏛 Behörde informiert</span>';if(e.status==='geprueft')return '<span class="rm-badge rm-badge-ok">✅ Freigegeben</span>';return '<span class="rm-badge rm-badge-new">🟠 Neu</span>';}
+  function ensurePanel23(){
+    const panel=document.getElementById('a-panel'); if(!panel)return;
+    document.querySelectorAll('#rm-version-strip,.rm-version-strip').forEach(x=>x.remove());
+    let sys=document.getElementById('rm-system-panel'); if(!sys){sys=document.createElement('div');sys.id='rm-system-panel';panel.insertBefore(sys,panel.firstChild);}
+    let dash=document.getElementById('rm-dashboard'); if(!dash){dash=document.createElement('div');dash.id='rm-dashboard';sys.insertAdjacentElement('afterend',dash);}
+    const arr=Array.isArray(entries)?entries:[];
+    const neu=arr.filter(e=>e.status==='neu').length, frei=arr.filter(e=>e.status==='geprueft').length, beh=arr.filter(e=>e.status==='gesendet').length, pap=arr.filter(e=>e.status==='papierkorb'||meta23(e).trashed).length;
+    const online=(typeof hasSupabase==='function'&&hasSupabase());
+    sys.innerHTML=`<div><strong>Version:</strong> ${BUILD23}</div><div><strong>Status:</strong> ${online?'<span class="rm-online">🟢 Supabase SDK geladen</span>':'<span class="rm-offline">🔴 Supabase SDK nicht geladen</span>'} · Meldungen: ${arr.length}</div><div>Admin: ${esc23(window.currentAdminEmail||currentAdminEmail||'nicht angemeldet')}</div><div style="color:var(--text3);margin-top:5px">Öffentlich sichtbar sind nur durch Admin freigegebene Meldungen.</div><div class="rm-settings-row"><input class="rm-small-input" id="rm-webhook-input" value="${esc23(localStorage.getItem('rattenAdminNotifyWebhook')||'')}" placeholder="Webhook URL für Admin Mail/SMS/WhatsApp"><button class="rm-btn" onclick="return rmAdminAction('saveWebhook',null,this,event)">Webhook speichern</button><button class="rm-btn" onclick="return rmAdminAction('checkSupabase',null,this,event)">Verbindung prüfen</button></div>`;
+    dash.innerHTML=`<div class="rm-dash-card"><span class="rm-dash-num">${neu}</span><div class="rm-dash-lbl">Neue Meldungen</div></div><div class="rm-dash-card"><span class="rm-dash-num">${frei}</span><div class="rm-dash-lbl">Freigegeben</div></div><div class="rm-dash-card"><span class="rm-dash-num">${beh}</span><div class="rm-dash-lbl">Behörde</div></div><div class="rm-dash-card"><span class="rm-dash-num">${pap}</span><div class="rm-dash-lbl">Papierkorb</div></div>`;
+  }
+  window.rmAdminAction=async function(action,id,btn,ev){
+    if(ev){ev.preventDefault();ev.stopPropagation(); if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();}
+    if(btn&&btn.dataset.busy==='1')return false;
+    if(btn){btn.dataset.busy='1';btn.disabled=true;}
+    try{
+      if(action==='closeAdmin'){ window.closeAdmin23(); return false; }
+      if(action==='approve'&&window.approveEntry) await window.approveEntry(id);
+      else if(action==='reject'&&window.rejectEntry) await window.rejectEntry(id);
+      else if(action==='trash'&&window.trashEntry) await window.trashEntry(id);
+      else if(action==='restore'&&window.restoreEntry) await window.restoreEntry(id);
+      else if(action==='delete'&&window.permanentDeleteEntry) await window.permanentDeleteEntry(id);
+      else if(action==='authority'&&window.informAuthority) await window.informAuthority(id);
+      else if(action==='edit'&&window.editEntry) await window.editEntry(id);
+      else if(action==='gps'&&window.editGps) await window.editGps(id);
+      else if(action==='email'&&window.notifyEntryEmail) await window.notifyEntryEmail(id);
+      else if(action==='whatsapp'&&window.notifyEntryWhatsApp) await window.notifyEntryWhatsApp(id);
+      else if(action==='saveReply'&&window.saveReply) await window.saveReply(id);
+      else if(action==='photo'&&window.openLightboxAdmin) await window.openLightboxAdmin(id,Number(btn&&btn.dataset.index||0));
+      else if(action==='saveWebhook'){const v=(document.getElementById('rm-webhook-input')?.value||'').trim();localStorage.setItem('rattenAdminNotifyWebhook',v); if(typeof toast==='function')toast(v?'✅ Webhook gespeichert':'ℹ️ Webhook entfernt');}
+      else if(action==='checkSupabase'&&window.checkSupabaseStatus) await window.checkSupabaseStatus();
+      else { if(typeof toast==='function')toast('⚠️ Aktion nicht verfügbar: '+action); }
+      ensurePanel23(); try{ if(action!=='photo'&&window.renderAdminList) window.renderAdminList(); }catch(_){ }
+    }catch(e){console.error(e);alert('Aktion fehlgeschlagen:\n\n'+(e&&e.message?e.message:String(e)));}
+    finally{ if(btn){btn.disabled=false;btn.dataset.busy='0';} }
+    return false;
+  };
+  window.closeAdmin23=function(){try{localStorage.removeItem('rattenAdminOpen');}catch(_){ } const ap=document.getElementById('admin-page'); if(ap)ap.classList.remove('open'); document.body.classList.remove('admin-open'); return false;};
+  window.closeAdmin=window.closeAdmin23;
+  const oldOpen23=window.openAdmin;
+  window.openAdmin=async function(){try{localStorage.setItem('rattenAdminOpen','yes');}catch(_){ } document.body.classList.add('admin-open'); const ap=document.getElementById('admin-page'); if(ap)ap.classList.add('open'); try{if(oldOpen23)await oldOpen23.apply(this,arguments);}catch(e){console.warn(e);} document.body.classList.add('admin-open'); if(ap)ap.classList.add('open'); ensurePanel23(); try{if(isHaupt&&typeof showPanel==='function')showPanel();}catch(_){ } try{window.renderAdminList();}catch(_){ }};
+  window.renderAdminList=function(){
+    ensurePanel23();
+    const el=document.getElementById('a-rep-list'); if(!el)return;
+    const list=(Array.isArray(entries)?entries:[]).filter(e=>e&&e.status!=='deleted').slice().sort((a,b)=>{const pr={neu:0,geprueft:1,gesendet:2,abgelehnt:3,papierkorb:4};return (pr[a.status]??9)-(pr[b.status]??9)||new Date(b.createdAt||b.time||0)-new Date(a.createdAt||a.time||0);});
+    const cnt=document.getElementById('a-count'); if(cnt)cnt.textContent=`${list.length} Einträge`;
+    if(!list.length){el.innerHTML='<div class="empty-state" style="padding:20px 0"><div class="ei" style="font-size:30px">✅</div><div class="et">Keine Einträge</div></div>';return;}
+    el.innerHTML=list.map(r=>{const id=safe23(r.id);const d=new Date(r.time||r.createdAt||Date.now());const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});const photos=photoArr23(r);const photoHtml=photos.length?`<div class="rm-admin-photo-row">${photos.map((u,i)=>`<img class="rm-admin-photo" loading="lazy" src="${u}" data-index="${i}" onclick="return rmAdminAction('photo','${id}',this,event)" onerror="imgErr(this)">`).join('')}</div><div class="a-meta">📷 Foto Status: ${meta23(r).photoApproved?'freigegeben':'nur intern sichtbar'}</div>`:'<div class="a-meta">📷 Kein Foto vorhanden</div>';let actions='';if(r.status==='papierkorb'||meta23(r).trashed){actions=`<button class="rm-btn restore" onclick="return rmAdminAction('restore','${id}',this,event)">↩️ Wiederherstellen</button><button class="rm-btn delete" onclick="return rmAdminAction('delete','${id}',this,event)">Endgültig löschen</button>`;}else if(r.status==='abgelehnt'||meta23(r).rejected){actions=`<button class="rm-btn approve" onclick="return rmAdminAction('approve','${id}',this,event)">✅ Doch freigeben</button><button class="rm-btn trash" onclick="return rmAdminAction('trash','${id}',this,event)">🗑 Papierkorb</button>`;}else{actions=`${r.status==='neu'?`<button class="rm-btn approve" onclick="return rmAdminAction('approve','${id}',this,event)">✅ Prüfen & freigeben</button><button class="rm-btn reject" onclick="return rmAdminAction('reject','${id}',this,event)">❌ Ablehnen</button>`:''}<button class="rm-btn forward" onclick="return rmAdminAction('authority','${id}',this,event)">🏛 Behörde informiert</button><button class="rm-btn edit" onclick="return rmAdminAction('edit','${id}',this,event)">✏️ Bearbeiten</button><button class="rm-btn gps" onclick="return rmAdminAction('gps','${id}',this,event)">📍 Standort ändern</button><button class="rm-btn trash" onclick="return rmAdminAction('trash','${id}',this,event)">🗑 Papierkorb</button><button class="rm-btn forward" onclick="return rmAdminAction('email','${id}',this,event)">📧 Update</button><button class="rm-btn forward" onclick="return rmAdminAction('whatsapp','${id}',this,event)">💬 WhatsApp</button>`;}
+      return `<div class="a-card ${r.kind==='rat'?'':'action'}" id="ac${id}"><div class="a-card-top"><div class="a-card-body"><div class="a-loc">📍 ${esc23(r.street)} ${badge23(r)}</div><div class="a-type ${r.kind==='rat'?'a-rat-type':'a-action-type'}">${r.kind==='rat'?'🐀 Sichtung':'🟢 Maßnahme'} · ${esc23(r.type)}</div><div class="a-desc">${esc23(r.desc)}</div>${photoHtml}<div class="a-meta">👤 ${esc23(r.name||'Anonym')} · ⏰ ${ts}${r.lat?` · GPS ${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}`:' · kein GPS'}</div><div class="rm-admin-actions">${actions}</div>${typeof formatHistory==='function'?formatHistory(r):''}${r.stadtAntwort?`<div class="city-reply" style="margin-top:8px"><div class="cr-label">📝 Interne Notiz / Rückmeldung</div><div class="cr-text">${esc23(r.stadtAntwort)}</div></div>`:''}<div class="reply-wrap"><input class="reply-inp" id="reply-${id}" placeholder="Interne Notiz, Aktenzeichen oder Rückmeldung…" value="${esc23(r.stadtAntwort||'')}"><button class="reply-save" onclick="return rmAdminAction('saveReply','${id}',this,event)">💾</button></div></div></div></div>`;}).join('');
+    ensurePanel23();
+  };
+  document.addEventListener('click',function(ev){const back=ev.target.closest&&ev.target.closest('#admin-page .nav-back');if(back)return window.rmAdminAction('closeAdmin',null,back,ev);},true);
+  document.addEventListener('touchend',function(ev){const back=ev.target.closest&&ev.target.closest('#admin-page .nav-back');if(back)return window.rmAdminAction('closeAdmin',null,back,ev);},true);
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{const b=document.querySelector('#admin-page .nav-back'); if(b)b.setAttribute('onclick',"return rmAdminAction('closeAdmin',null,this,event)"); if(document.getElementById('admin-page')?.classList.contains('open')){ensurePanel23();try{renderAdminList();}catch(e){console.warn(e);}}},600));
 })();
 </script>
 
