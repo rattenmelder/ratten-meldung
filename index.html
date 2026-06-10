@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: FIX26_SAFARI_ADMIN_MODAL_GPS_LOGOUT_2026-06-10 -->
+<!-- BUILD: FIX29_UI_ADMIN_STABLE_2026-06-10 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -7,11 +7,11 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Rattenmelder Hamburg · FIX26_SAFARI_ADMIN_MODAL_GPS_LOGOUT_2026-06-10</title>
+<title>Rattenmelder Hamburg · FIX29_UI_ADMIN_STABLE_2026-06-10</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FIX26_SAFARI_ADMIN_MODAL_GPS_LOGOUT_2026-06-10');
+console.log('Rattenmelder Version: FIX29_UI_ADMIN_STABLE_2026-06-10');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -1946,7 +1946,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
    Ziel: öffentliche Freigabe erst nach Admin Prüfung, einfache Admin-Statuslogik,
    Supabase Diagnose, Session Timeout, Papierkorb und Admin Benachrichtigungs-Hook. */
 (function(){
-  const RM_BUILD = 'FIX26_SAFARI_ADMIN_MODAL_GPS_LOGOUT_2026-06-10';
+  const RM_BUILD = 'FIX29_UI_ADMIN_STABLE_2026-06-10';
   const RM_SESSION_MAX_MS = 8 * 60 * 60 * 1000;
   const RM_IDLE_MAX_MS = 30 * 60 * 1000;
   const RM_IDLE_WARN_MS = 28 * 60 * 1000;
@@ -2314,7 +2314,7 @@ body.admin-open .tab-bar{display:none!important;}
 <script>
 /* === FIX21: stabile Admin-Navigation, Reload-Verhalten, öffentliche Freigabe erst nach Prüfung === */
 (function(){
-  const RM_BUILD_21 = 'FIX26_SAFARI_ADMIN_MODAL_GPS_LOGOUT_2026-06-10';
+  const RM_BUILD_21 = 'FIX29_UI_ADMIN_STABLE_2026-06-10';
   function metaOf(e){try{return (typeof getMeta==='function'?getMeta(e):((Array.isArray(e&&e.history)?e.history:[]).find(x=>x&&x.__meta==='rattenmelder')||{}));}catch(_){return {};}}
   function esc21(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function publicApproved21(e){const m=metaOf(e);return !!e && !m.trashed && !m.rejected && e.status!=='papierkorb' && e.status!=='abgelehnt' && (e.status==='geprueft'||e.status==='gesendet') && !!m.approved;}
@@ -2457,7 +2457,7 @@ body.admin-open .page:not(#admin-page){pointer-events:none!important;}
 <script>
 /* === FIX22: Admin Buttons funktionieren per Event Delegation, Statusanzeige nicht doppelt === */
 (function(){
-  const BUILD22='FIX26_SAFARI_ADMIN_MODAL_GPS_LOGOUT_2026-06-10';
+  const BUILD22='FIX29_UI_ADMIN_STABLE_2026-06-10';
   window.rmCurrentBuild=BUILD22;
   function esc22(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function safe22(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');}
@@ -2597,7 +2597,7 @@ body.admin-open #admin-page{pointer-events:auto!important;}
 <script>
 /* === FIX23: Admin Click/Touch Controller ohne widersprüchliche Alt-Handler === */
 (function(){
-  const BUILD23='FIX26_SAFARI_ADMIN_MODAL_GPS_LOGOUT_2026-06-10';
+  const BUILD23='FIX29_UI_ADMIN_STABLE_2026-06-10';
   window.rmCurrentBuild=BUILD23;
   try{console.log('Rattenmelder Version:',BUILD23);}catch(_){ }
   function esc23(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -2668,7 +2668,7 @@ body.admin-open #admin-page{pointer-events:auto!important;}
    Dieser Block liegt ganz am Ende und überstimmt ältere Handler.
    Ziel: Admin-Buttons per Event Delegation, Zurück sicher, keine doppelte Statusbox, klare Version. */
 (function(){
-  const BUILD24='FIX26_SAFARI_ADMIN_MODAL_GPS_LOGOUT_2026-06-10';
+  const BUILD24='FIX29_UI_ADMIN_STABLE_2026-06-10';
   window.rmFix20Build=BUILD24;
   window.rmFix24Build=BUILD24;
 
@@ -2855,7 +2855,7 @@ body.admin-open > .page{pointer-events:none!important;}
 <script>
 /* === FIX25: eigenes Safari-sicheres Admin Rendering und Pointerdown Aktionen === */
 (function(){
-  const BUILD25='FIX26_SAFARI_ADMIN_MODAL_GPS_LOGOUT_2026-06-10';
+  const BUILD25='FIX29_UI_ADMIN_STABLE_2026-06-10';
   window.rmCurrentBuild=BUILD25;
   try{console.log('Rattenmelder Version:',BUILD25);}catch(_){ }
   function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -3008,7 +3008,7 @@ body.admin-open > .page{pointer-events:none!important;}
 <script>
 /* === FIX26: Admin Logout, GPS-Karte sofort sichtbar, Foto sofort sichtbar, vollständiges Bearbeiten === */
 (function(){
-  const BUILD26='FIX26_SAFARI_ADMIN_MODAL_GPS_LOGOUT_2026-06-10';
+  const BUILD26='FIX29_UI_ADMIN_STABLE_2026-06-10';
   window.rmCurrentBuild=BUILD26;
   try{console.log('Rattenmelder Version:',BUILD26);}catch(_){ }
   function $(id){return document.getElementById(id);}
@@ -3417,7 +3417,7 @@ body.admin-open > .page{pointer-events:none!important;}
 <script>
 /* === FIX28: Admin-Bearbeitung nur mit echten Meldemaske-Feldern === */
 (function(){
-  const BUILD28='FIX28_ADMIN_EDIT_ORIGINAL_FIELDS_2026-06-10';
+  const BUILD28='FIX29_UI_ADMIN_STABLE_2026-06-10';
   window.rmCurrentBuild=BUILD28;
   try{console.log('Rattenmelder Version:',BUILD28);}catch(_){ }
   let edit28Photos=[];
@@ -3514,6 +3514,271 @@ body.admin-open > .page{pointer-events:none!important;}
     document.querySelectorAll('[id*="version"], .rm-build-badge, .admin-version, #rm-admin-build').forEach(el=>{try{el.textContent=BUILD28;}catch(_){}});
   }
   document.addEventListener('DOMContentLoaded',stamp); setTimeout(stamp,500); setTimeout(stamp,1500);
+})();
+</script>
+
+
+
+<style>
+/* === FIX29: UI/Admin Stabilisierung, Lightbox, GPS, Behördenmail, Startzähler === */
+.rm-hidden-old-status{display:none!important;}
+.rm-system29{margin:0 18px 12px;padding:12px 14px;border-radius:14px;background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.24);color:var(--green);font-size:12px;line-height:1.45;}
+.rm-system29.bad{background:rgba(255,59,59,.08);border-color:rgba(255,59,59,.28);color:var(--red);}
+.rm-system29 b{color:var(--text);}
+.rm-admin29-dash{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 18px 14px;}
+.rm-admin29-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:10px 7px;text-align:center;}
+.rm-admin29-num{display:block;font-size:18px;font-weight:900;color:var(--orange);line-height:1;}
+.rm-admin29-lbl{font-size:9px;color:var(--text2);font-weight:800;margin-top:4px;line-height:1.15;}
+.rm-admin29-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+.rm-admin29-btn{border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:10px;padding:9px 10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:900;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+.rm-admin29-btn.green{background:rgba(48,209,88,.12);border-color:rgba(48,209,88,.35);color:var(--green);}
+.rm-admin29-btn.red{background:rgba(255,59,59,.12);border-color:rgba(255,59,59,.35);color:var(--red);}
+.rm-admin29-btn.blue{background:rgba(10,132,255,.12);border-color:rgba(10,132,255,.35);color:var(--blue);}
+.rm-admin29-btn.orange{background:rgba(255,149,0,.12);border-color:rgba(255,149,0,.35);color:var(--orange);}
+.rm-admin29-btn[disabled]{opacity:.55;pointer-events:none;}
+.rm-public-wait{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--orange);background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.22);border-radius:9px;padding:6px 8px;margin:6px 0;}
+.rm-modal29{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.82);z-index:2147483647!important;pointer-events:auto!important;}
+.rm-modal29.open{display:flex!important;}
+.rm-modal29-box{width:100%;max-width:760px;max-height:94vh;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-bottom:none;border-radius:24px 24px 0 0;padding:14px 18px calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 -18px 60px rgba(0,0,0,.68);pointer-events:auto!important;}
+.rm-modal29-handle{width:42px;height:5px;border-radius:5px;background:var(--border);margin:0 auto 13px;}
+.rm-modal29-title{font-size:19px;font-weight:900;margin-bottom:12px;letter-spacing:-.3px;}
+.rm-modal29-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+.rm-modal29-label{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);margin:2px 0 6px;}
+.rm-modal29-row{margin-bottom:12px;}
+.rm-modal29-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.rm-modal29-actions .rm-admin29-btn{flex:1;min-width:120px;text-align:center;}
+.rm-type29-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;}
+.rm-type29{border:1.5px solid var(--border);background:var(--surface2);border-radius:12px;padding:11px 8px;text-align:center;font-size:12px;font-weight:800;color:var(--text2);cursor:pointer;}
+.rm-type29.sel{border-color:var(--orange);color:var(--orange);background:rgba(255,149,0,.10);}
+.rm-photo29-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px;}
+.rm-photo29{position:relative;}
+.rm-photo29 img{width:76px;height:76px;border-radius:10px;object-fit:cover;border:1px solid var(--border);background:#222;}
+.rm-photo29 button{position:absolute;right:-6px;top:-6px;width:24px;height:24px;border:none;border-radius:50%;background:var(--red);color:#fff;font-weight:900;cursor:pointer;}
+.rm-photo29 .view{position:static;width:auto;height:auto;border-radius:8px;background:var(--surface2);border:1px solid var(--border);font-size:10px;margin-top:4px;padding:4px 6px;color:var(--text2);display:block;}
+.rm-lightbox29{position:fixed;inset:0;background:rgba(0,0,0,.96);display:none;align-items:center;justify-content:center;z-index:2147483647!important;pointer-events:auto!important;padding:24px;}
+.rm-lightbox29.open{display:flex!important;}
+.rm-lightbox29 img{max-width:100%;max-height:82vh;object-fit:contain;border-radius:12px;box-shadow:0 12px 50px rgba(0,0,0,.7);}
+.rm-lightbox29-close{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.14);color:#fff;font-size:28px;line-height:1;font-weight:900;cursor:pointer;z-index:2147483647!important;}
+.rm-gps29-map{height:62vh;min-height:360px;background:#e5e7eb;border-radius:14px;overflow:hidden;}
+.rm-authority29-pre{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text2);white-space:pre-wrap;max-height:42vh;overflow:auto;font-size:13px;line-height:1.55;}
+.leaflet-marker-icon,.leaflet-interactive{pointer-events:auto!important;}
+@media (min-width:768px){.rm-modal29{align-items:center}.rm-modal29-box{border-radius:24px;border-bottom:1px solid var(--border);}.rm-modal29-grid{grid-template-columns:1fr 1fr}.rm-modal29-row.full{grid-column:1/-1}.rm-admin29-dash{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:380px){.rm-admin29-dash{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<script>
+(function(){
+  'use strict';
+  const BUILD29='FIX29_UI_ADMIN_STABLE_2026-06-10';
+  const AUTHORITY_EMAIL='schaedlingsbekaempfung@hu.hamburg.de';
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const arr=()=>Array.isArray(entries)?entries:[];
+  const normStatus=e=>String((e&&e.status)||'neu').toLowerCase();
+  const isTrash=e=>['papierkorb','deleted','gelöscht','geloescht'].includes(normStatus(e));
+  const isRejected=e=>['abgelehnt','rejected','ausgeblendet'].includes(normStatus(e));
+  const isApproved=e=>['geprueft','geprüft','gesendet','forwarded','in_review'].includes(normStatus(e));
+  const isSent=e=>['gesendet','forwarded'].includes(normStatus(e)) || !!(e&&e.authorityNotifiedAt);
+  const kind=e=>(e&&e.kind==='action')?'action':'rat';
+  const publicVisible=e=>e && !isTrash(e) && !isRejected(e) && isApproved(e);
+  const photos=e=>Array.isArray(e&&e.photoUrls)?e.photoUrls.filter(Boolean):(e&&e.image_url?[e.image_url]:[]);
+  function findEntry(id){return arr().find(e=>String(e.id)===String(id));}
+  function stampBuild(){
+    document.title='Rattenmelder Hamburg · '+BUILD29;
+    document.querySelectorAll('.rm-build-badge,.admin-version,#rm-admin-build,[id*="version"],#rm-system-status b,#rm-status-build').forEach(el=>{try{el.textContent=BUILD29;}catch(_){}});
+    const sys=$('rm-system29'); if(sys){const ok=!!(window.supabaseClient||supabaseClient); const n=arr().length; sys.classList.toggle('bad',!ok); sys.innerHTML=(ok?'🟢':'🔴')+' <b>Supabase '+(ok?'verbunden':'nicht verbunden')+'</b><br>Build: '+BUILD29+'<br>Meldungen geladen: '+n+' · letzte Prüfung: '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+  }
+  function cleanupOldPanels(){
+    document.querySelectorAll('.rm-version-strip,#rm-version-strip,#rm-system-panel,#rm-system-status,#rm-status-panel,.rm-admin-system,.rm-supabase-status').forEach((el,i)=>{try{if(el.id!=='rm-system29')el.remove();}catch(_){}});
+  }
+  function ensureAdminHeader(){
+    const panel=$('a-panel'); if(!panel)return;
+    cleanupOldPanels();
+    if(!$('rm-system29')){
+      const div=document.createElement('div'); div.id='rm-system29'; div.className='rm-system29';
+      const first=panel.firstElementChild; panel.insertBefore(div,first||null);
+    }
+    if(!$('rm-admin29-dash')){
+      const d=document.createElement('div'); d.id='rm-admin29-dash'; d.className='rm-admin29-dash';
+      $('rm-system29').insertAdjacentElement('afterend',d);
+    }
+    updateAdminDash(); stampBuild();
+  }
+  function updateAdminDash(){
+    const d=$('rm-admin29-dash'); if(!d)return;
+    const list=arr();
+    const neu=list.filter(e=>!isTrash(e)&&!isRejected(e)&&!isApproved(e)).length;
+    const frei=list.filter(e=>!isTrash(e)&&!isRejected(e)&&isApproved(e)&&!isSent(e)).length;
+    const beh=list.filter(e=>!isTrash(e)&&!isRejected(e)&&isSent(e)).length;
+    const heute=list.filter(e=>!isTrash(e)&&!isRejected(e)&&localDate(e.createdAt||e.time)===localDate(new Date())).length;
+    d.innerHTML=`<div class="rm-admin29-card"><span class="rm-admin29-num">${neu}</span><div class="rm-admin29-lbl">Neu</div></div><div class="rm-admin29-card"><span class="rm-admin29-num">${frei}</span><div class="rm-admin29-lbl">Freigegeben</div></div><div class="rm-admin29-card"><span class="rm-admin29-num">${beh}</span><div class="rm-admin29-lbl">Behörde informiert</div></div><div class="rm-admin29-card"><span class="rm-admin29-num">${heute}</span><div class="rm-admin29-lbl">Heute</div></div>`;
+  }
+  function localDate(d){const x=d instanceof Date?d:new Date(d||Date.now()); if(isNaN(x))return ''; return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');}
+  
+  window.markerEmoji=function(r){
+    const t=String((r&&r.type)||'').toLowerCase();
+    if(isSent(r)) return '📧';
+    if(kind(r)==='action'){
+      if(t.includes('köderbox'))return '📦'; if(t.includes('bekämpfer'))return '👷'; if(t.includes('verschlossen'))return '🧱'; if(t.includes('hinweisschild'))return '⚠️'; if(t.includes('kontrolliert'))return '🔍'; return '🟢';
+    }
+    if(t.includes('tote'))return '☠️'; if(t.includes('mehrere'))return '🐀🐀'; if(t.includes('bau'))return '🕳️'; if(t.includes('kot'))return '💩'; if(t.includes('fraß')||t.includes('frass'))return '🦷'; return '🐀';
+  };
+  window.markerClass=function(r){ if(isSent(r))return 'action'; if(kind(r)==='action')return 'action'; const t=String((r&&r.type)||'').toLowerCase(); return t.includes('tote')?'dead':'rat'; };
+  
+  window.updateStats=function(){
+    const list=arr().filter(e=>!isTrash(e)&&!isRejected(e));
+    const by=(id,val)=>{const el=$(id); if(el)el.textContent=val;};
+    by('s-rat',list.filter(e=>kind(e)==='rat').length);
+    by('s-action',list.filter(e=>kind(e)==='action'&&!isAuthorityEntry29(e)).length);
+    by('s-authority',list.filter(e=>isSent(e)||isAuthorityEntry29(e)).length);
+    by('s-done',list.filter(e=>localDate(e.createdAt||e.time)===localDate(new Date())).length);
+    const authCard=document.querySelector('#s-authority')?.parentElement?.querySelector('.stat-lbl'); if(authCard)authCard.textContent='an Behörde gemeldet';
+    const todayCard=document.querySelector('#s-done')?.parentElement?.querySelector('.stat-lbl'); if(todayCard)todayCard.textContent='Heute';
+    const doneBtn=$('lf-done'); if(doneBtn)doneBtn.textContent='Heute';
+    const mfDone=$('mf-done'); if(mfDone)mfDone.textContent='Heute';
+    updateAdminDash(); stampBuild();
+  };
+  function isAuthorityEntry29(e){return e&&kind(e)==='authority';}
+  
+  window.renderList=async function(){
+    const el=$('list-body'); if(!el)return;
+    let filtered=arr().filter(publicVisible);
+    if(window.listFilter==='rat') filtered=filtered.filter(e=>kind(e)==='rat');
+    if(window.listFilter==='action') filtered=filtered.filter(e=>kind(e)==='action'&&!isAuthorityEntry29(e));
+    if(window.listFilter==='authority') filtered=filtered.filter(e=>isSent(e)||isAuthorityEntry29(e));
+    if(window.listFilter==='done') filtered=filtered.filter(e=>localDate(e.createdAt||e.time)===localDate(new Date()));
+    if(typeof entryInDateRange==='function') filtered=filtered.filter(entryInDateRange);
+    const cnt=$('list-count'); if(cnt)cnt.textContent=`${filtered.length} öffentlich angezeigt`;
+    if(!filtered.length){el.innerHTML='<div class="empty-state"><div class="ei">🔍</div><div class="et">Keine freigegebenen Meldungen für diese Auswahl</div></div>'; return;}
+    let html='';
+    for(const r of filtered){html+=cardPublic(r);} el.innerHTML=html;
+  };
+  function cardPublic(r){
+    const d=new Date(r.time||r.createdAt||Date.now()); const ts=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';
+    const ph=photos(r); const id=esc(r.id);
+    const photoHtml=ph.length?`<div class="r-photos">${ph.map((u,i)=>`<img class="r-photo" loading="lazy" src="${esc(u)}" data-rm29-lightbox="${id}" data-rm29-idx="${i}" />`).join('')}</div>`:'';
+    const st=isSent(r)?'📧 an Behörde gemeldet':'✅ freigegeben';
+    return `<div class="r-card ${kind(r)==='action'?'action-card':''}" id="entry-${id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${kind(r)==='rat'?'rat-badge':'action-badge'}">${window.markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ss">${st}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}<div class="r-meta"><span>👤 ${esc(r.name||'Anonym')}</span>${r.lat?`<span>📍 ${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div></div>`;
+  }
+  
+  window.refreshMarkers=async function(){
+    if(!window.map && typeof map!=='undefined')window.map=map;
+    const m=window.map||map; if(!m)return;
+    try{mapMarkers.forEach(x=>m.removeLayer(x)); mapMarkers=[];}catch(_){ }
+    let filtered=arr().filter(e=>e&&e.lat&&e.lon&&publicVisible(e));
+    if(window.mapFilter==='rat')filtered=filtered.filter(e=>kind(e)==='rat');
+    if(window.mapFilter==='action')filtered=filtered.filter(e=>kind(e)==='action'&&!isAuthorityEntry29(e));
+    if(window.mapFilter==='authority')filtered=filtered.filter(e=>isSent(e)||isAuthorityEntry29(e));
+    if(window.mapFilter==='done')filtered=filtered.filter(e=>localDate(e.createdAt||e.time)===localDate(new Date()));
+    if(typeof entryInDateRange==='function') filtered=filtered.filter(entryInDateRange);
+    const empty=$('map-empty'); if(empty)empty.style.display=filtered.length?'none':'flex';
+    for(const r of filtered){
+      const emoji=window.markerEmoji(r); const cls=window.markerClass(r)+(String(emoji).length>2?' small':'');
+      const icon=L.divIcon({className:'',html:`<div class="map-symbol ${cls}">${emoji}</div>`,iconSize:[38,38],iconAnchor:[19,19],popupAnchor:[0,-18]});
+      const marker=L.marker([Number(r.lat),Number(r.lon)],{icon}).addTo(m);
+      const ph=photos(r); const photoHtml=ph.length?`<img class="pu-photo" loading="lazy" src="${esc(ph[0])}" data-rm29-lightbox="${esc(r.id)}" data-rm29-idx="0" />`:'';
+      marker.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${kind(r)==='rat'?'pu-rat':'pu-action'}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">👤 ${esc(r.name||'Anonym')}</div><button class="pu-btn" onclick="openEntryFromMap('${esc(r.id)}')">Meldung öffnen</button>`);
+      mapMarkers.push(marker);
+    }
+    try{if(filtered.length)m.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3)); setTimeout(()=>m.invalidateSize(),100);}catch(_){ }
+  };
+  
+  function adminList(){return arr().filter(e=>e&&!['deleted'].includes(normStatus(e))).slice().sort((a,b)=>{const pr={neu:0,geprueft:1,gesendet:2,abgelehnt:3,papierkorb:4};return (pr[normStatus(a)]??9)-(pr[normStatus(b)]??9)||new Date(b.createdAt||b.time||0)-new Date(a.createdAt||a.time||0);});}
+  window.renderAdminList=function(){
+    ensureAdminHeader();
+    const el=$('a-rep-list'); if(!el)return;
+    const list=adminList(); const cnt=$('a-count'); if(cnt)cnt.textContent=`${list.length} Meldungen`;
+    if(!list.length){el.innerHTML='<div class="empty-state" style="padding:20px 0"><div class="ei" style="font-size:30px">📭</div><div class="et">Keine Meldungen geladen</div></div>';return;}
+    el.innerHTML=list.map(adminCard).join(''); stampBuild();
+  };
+  function statusLabel(r){if(isTrash(r))return '🗑 Papierkorb'; if(isRejected(r))return '❌ Abgelehnt'; if(isSent(r))return '📧 Behörde informiert'; if(isApproved(r))return '✅ Freigegeben'; return '🟠 Neu';}
+  function adminCard(r){
+    const id=esc(r.id); const d=new Date(r.time||r.createdAt||Date.now()); const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    const ph=photos(r); const photoHtml=ph.length?`<div class="a-photo-row">${ph.map((u,i)=>`<div class="a-photo-wrap"><img class="a-photo" src="${esc(u)}" loading="lazy" data-rm29-lightbox="${id}" data-rm29-idx="${i}"><span class="a-photo-tag">Foto ${i+1}</span></div>`).join('')}</div>`:'<div class="photo-wait">Keine Fotos vorhanden</div>';
+    const canApprove=!isApproved(r)||isRejected(r);
+    return `<div class="a-card ${kind(r)==='action'?'action':''}" id="admin-card-${id}"><div class="a-card-top"><div class="a-card-body"><div class="a-loc">📍 ${esc(r.street||'Ohne Ort')} <span class="review-badge ${isApproved(r)||isSent(r)?'ok':''}">${statusLabel(r)}</span></div><div class="a-type ${kind(r)==='rat'?'a-rat-type':'a-action-type'}">${kind(r)==='rat'?'🐀 Sichtung':'🟢 Maßnahme'} · ${esc(r.type||'')}</div><div class="a-desc">${esc(r.desc||'')}</div>${photoHtml}<div class="a-meta">👤 ${esc(r.name||'Anonym')} · ⏰ ${ts}${r.lat?` · GPS ${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}`:' · kein GPS'}</div><div class="rm-admin29-actions">${canApprove?`<button class="rm-admin29-btn green" data-rm29-action="approve" data-id="${id}">✅ Freigeben</button>`:''}<button class="rm-admin29-btn red" data-rm29-action="reject" data-id="${id}">❌ Ablehnen</button><button class="rm-admin29-btn blue" data-rm29-action="edit" data-id="${id}">✏️ Bearbeiten</button><button class="rm-admin29-btn orange" data-rm29-action="gps" data-id="${id}">📍 Standort ändern</button><button class="rm-admin29-btn blue" data-rm29-action="authority" data-id="${id}">📧 Behörde informieren</button><button class="rm-admin29-btn red" data-rm29-action="trash" data-id="${id}">🗑 Papierkorb</button></div></div></div></div>`;
+  }
+  async function persist(e,action){
+    try{ if(typeof updateEntryRemote==='function') await updateEntryRemote(e,action||'admin_update'); else if(typeof saveEntries==='function') await saveEntries(); }catch(err){console.error(err); alert('Speichern fehlgeschlagen:\n'+(err.message||err)); return false;}
+    try{window.updateStats();}catch(_){ } try{window.renderList();}catch(_){ } try{window.refreshMarkers();}catch(_){ } try{window.renderAdminList();}catch(_){ } return true;
+  }
+  async function approve(id){const e=findEntry(id); if(!e)return; e.status='geprueft'; setMeta29(e,{photoApproved:true,photoDenied:false}); addHist(e,'Meldung und Fotos freigegeben'); await persist(e,'approved');}
+  async function reject(id){const e=findEntry(id); if(!e)return; const reason=prompt('Grund für Ablehnung, optional',''); e.status='abgelehnt'; if(reason)e.stadtAntwort=reason; addHist(e,'Meldung abgelehnt'+(reason?': '+reason:'')); await persist(e,'rejected');}
+  async function trash(id){const e=findEntry(id); if(!e)return; if(!confirm('Meldung in den Papierkorb verschieben?'))return; e.status='papierkorb'; addHist(e,'In Papierkorb verschoben'); await persist(e,'trash');}
+  function addHist(e,text){try{ if(typeof addHistory==='function')addHistory(e,text); else {e.history=e.history||[];e.history.unshift({ts:new Date().toISOString(),by:'Admin',text});}}catch(_){ }}
+  function setMeta29(e,patch){try{if(typeof setMeta==='function')setMeta(e,patch);else{e.meta=Object.assign(e.meta||{},patch);}}catch(_){ }}
+
+  function ensureLightbox(){
+    if($('rm-lightbox29'))return;
+    const lb=document.createElement('div'); lb.id='rm-lightbox29'; lb.className='rm-lightbox29'; lb.innerHTML='<button class="rm-lightbox29-close" id="rm-lightbox29-close" type="button">×</button><img id="rm-lightbox29-img" alt="Foto">'; document.body.appendChild(lb);
+  }
+  window.openLightbox=function(id,idx){openLb(id,idx);}; window.openLightboxAdmin=function(id,idx){openLb(id,idx);};
+  function openLb(id,idx){ensureLightbox(); const e=findEntry(id); const ph=photos(e); const u=ph[Number(idx)||0]; if(!u)return; $('rm-lightbox29-img').src=''; setTimeout(()=>{$('rm-lightbox29-img').src=u; $('rm-lightbox29').classList.add('open');},0);}
+  window.closeLightbox=function(){const lb=$('rm-lightbox29'); if(lb){lb.classList.remove('open'); const img=$('rm-lightbox29-img'); if(img)img.src='';}}
+
+  const ratTypes=['Lebende Ratte gesehen','Mehrere Ratten gesehen','Tote Ratte gefunden','Rattenbau entdeckt','Rattenkot gefunden','Fraßspuren entdeckt'];
+  const actionTypes=['Köderbox aufgestellt','Schädlingsbekämpfer vor Ort','Rattenbau verschlossen','Hinweisschild aufgestellt','Köderbox kontrolliert','Sonstige Maßnahme'];
+  let editPhotos=[];
+  function ensureEdit(){
+    if($('rm-edit29'))return;
+    const div=document.createElement('div'); div.id='rm-edit29'; div.className='rm-modal29'; div.innerHTML=`<div class="rm-modal29-box" id="rm-edit29-box"><div class="rm-modal29-handle"></div><div class="rm-modal29-title">✏️ Meldung bearbeiten</div><input type="hidden" id="rm-edit29-id"><div class="rm-modal29-grid"><div class="rm-modal29-row full"><div class="rm-modal29-label">Ort / Adresse</div><input class="inp" id="rm-edit29-street"></div><div class="rm-modal29-row full"><div class="rm-modal29-label">Was wurde gesehen oder unternommen?</div><div class="rm-type29-grid" id="rm-edit29-types"></div></div><div class="rm-modal29-row full"><div class="rm-modal29-label">Beschreibung</div><textarea class="inp" id="rm-edit29-desc"></textarea></div><div class="rm-modal29-row"><div class="rm-modal29-label">Datum und Uhrzeit</div><input class="inp" type="datetime-local" id="rm-edit29-time"></div><div class="rm-modal29-row"><div class="rm-modal29-label">Spitzname</div><input class="inp" id="rm-edit29-name"></div><div class="rm-modal29-row full"><div class="rm-modal29-label">Fotos</div><div class="rm-photo29-row" id="rm-edit29-photos"></div></div></div><div class="rm-modal29-actions"><button class="rm-admin29-btn orange" id="rm-edit29-gps">📍 Standort ändern</button><button class="rm-admin29-btn green" id="rm-edit29-save">Speichern</button><button class="rm-admin29-btn" id="rm-edit29-cancel">Abbrechen</button></div></div>`; document.body.appendChild(div);
+  }
+  window.editEntry=function(id){openEdit29(id);};
+  function dtLocal(v){const d=new Date(v||Date.now()); if(isNaN(d))return ''; d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16);}
+  function openEdit29(id){const e=findEntry(id); if(!e)return; ensureEdit(); $('rm-edit29-id').value=id; $('rm-edit29-street').value=e.street||''; $('rm-edit29-desc').value=e.desc||''; $('rm-edit29-time').value=dtLocal(e.time||e.createdAt); $('rm-edit29-name').value=e.name||''; editPhotos=photos(e).slice(); renderEditTypes(kind(e),e.type); renderEditPhotos(); $('rm-edit29').classList.add('open');}
+  function renderEditTypes(k,current){const list=k==='rat'?ratTypes:actionTypes; $('rm-edit29-types').innerHTML=list.map(t=>`<button type="button" class="rm-type29 ${t===current?'sel':''}" data-rm29-type="${esc(t)}">${esc(t)}</button>`).join('');}
+  function renderEditPhotos(){const el=$('rm-edit29-photos'); if(!el)return; el.innerHTML=editPhotos.length?editPhotos.map((u,i)=>`<div class="rm-photo29"><img src="${esc(u)}"><button type="button" data-rm29-rmphoto="${i}">×</button><button type="button" class="view" data-rm29-viewphoto="${i}">Ansehen</button></div>`).join(''):'<div class="photo-wait">Keine Fotos vorhanden</div>';}
+  async function saveEdit29(){const id=$('rm-edit29-id').value; const e=findEntry(id); if(!e)return; const sel=$('rm-edit29-types').querySelector('.sel'); e.street=$('rm-edit29-street').value.trim(); e.type=sel?sel.dataset.rm29Type:e.type; e.desc=$('rm-edit29-desc').value.trim(); e.time=$('rm-edit29-time').value||e.time; e.name=$('rm-edit29-name').value.trim()||'Anonym'; e.photoUrls=editPhotos.slice(); e.hasPhotos=e.photoUrls.length>0; addHist(e,'Meldedaten bearbeitet'); $('rm-edit29').classList.remove('open'); await persist(e,'edited');}
+
+  let gpsMap=null,gpsMarker=null,gpsEntryId=null;
+  function ensureGps(){
+    if($('rm-gps29'))return;
+    const div=document.createElement('div'); div.id='rm-gps29'; div.className='rm-modal29'; div.innerHTML=`<div class="rm-modal29-box"><div class="rm-modal29-handle"></div><div class="rm-modal29-title">📍 Standort ändern</div><div class="rm-gps29-map" id="rm-gps29-map"></div><div class="submit-note" id="rm-gps29-note" style="margin-top:8px">Tippe auf die Karte oder verschiebe die Nadel.</div><div class="rm-modal29-actions"><button class="rm-admin29-btn green" id="rm-gps29-save">Punkt speichern</button><button class="rm-admin29-btn" id="rm-gps29-cancel">Abbrechen</button></div></div>`; document.body.appendChild(div);
+  }
+  window.editGps=function(id){openGps29(id);};
+  function setGpsPoint(lat,lon){ if(!gpsMap)return; const icon=L.divIcon({className:'',html:'<div class="loc-crosshair">📍</div>',iconSize:[42,42],iconAnchor:[21,21]}); if(!gpsMarker){gpsMarker=L.marker([lat,lon],{icon,draggable:true}).addTo(gpsMap);gpsMarker.on('dragend',ev=>{const p=ev.target.getLatLng();setGpsPoint(p.lat,p.lng);});}else gpsMarker.setLatLng([lat,lon]); $('rm-gps29-note').textContent=`Gewählter Punkt: ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}`;}
+  function openGps29(id){const e=findEntry(id); if(!e)return; ensureGps(); gpsEntryId=String(id); $('rm-gps29').classList.add('open'); setTimeout(()=>{const lat=Number(e.lat)||53.55, lon=Number(e.lon)||10.0; if(!gpsMap){const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,attribution:'© OpenStreetMap'}); const aerial=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Luftbild © Esri'}); gpsMap=L.map('rm-gps29-map',{layers:[street],zoomControl:true,attributionControl:false}).setView([lat,lon],18); L.control.layers({'Straßenkarte':street,'Luftbild':aerial},null,{collapsed:true,position:'topright'}).addTo(gpsMap); gpsMap.on('click',ev=>setGpsPoint(ev.latlng.lat,ev.latlng.lng)); } gpsMap.invalidateSize(); gpsMap.setView([lat,lon],e.lat?18:12); setGpsPoint(lat,lon);},120);}
+  async function saveGps29(){const e=findEntry(gpsEntryId); if(!e||!gpsMarker)return; const p=gpsMarker.getLatLng(); e.lat=p.lat; e.lon=p.lng; e.gpsExact=true; e.gpsSource='admin-map'; addHist(e,`Standort per Karte geändert: ${p.lat.toFixed(6)}, ${p.lng.toFixed(6)}`); $('rm-gps29').classList.remove('open'); await persist(e,'gps_changed');}
+
+  let authorityId=null,authorityPayload=null;
+  function ensureAuthority(){ if($('rm-authority29'))return; const div=document.createElement('div'); div.id='rm-authority29'; div.className='rm-modal29'; div.innerHTML=`<div class="rm-modal29-box"><div class="rm-modal29-handle"></div><div class="rm-modal29-title">📧 Behörde informieren</div><div class="rm-modal29-row"><div class="rm-modal29-label">Empfänger</div><input class="inp" id="rm-auth29-to" value="${AUTHORITY_EMAIL}"></div><div class="rm-modal29-row"><div class="rm-modal29-label">Betreff</div><input class="inp" id="rm-auth29-subject"></div><div class="rm-modal29-row"><div class="rm-modal29-label">Mailtext</div><div class="rm-authority29-pre" id="rm-auth29-body"></div></div><div class="rm-modal29-actions"><button class="rm-admin29-btn orange" id="rm-auth29-copy">Text kopieren</button><button class="rm-admin29-btn blue" id="rm-auth29-mail">Mail App öffnen</button><button class="rm-admin29-btn" id="rm-auth29-close">Schließen</button></div></div>`; document.body.appendChild(div); }
+  window.informAuthority=function(id){openAuthority29(id);}; window.openAuthoritySheet27=function(id){openAuthority29(id);};
+  function buildMail(e){return `Sehr geehrte Damen und Herren,\n\nhiermit leite ich eine geprüfte Rattenmeldung aus dem nachbarschaftlichen Rattenmelder Hamburg weiter.\n\nOrt: ${e.street||''}\nArt: ${e.type||''}\nDatum/Uhrzeit: ${new Date(e.time||e.createdAt||Date.now()).toLocaleString('de-DE')}\nGemeldet von: ${e.name||'Anonym'}\nGPS: ${e.lat?Number(e.lat).toFixed(6)+', '+Number(e.lon).toFixed(6):'nicht vorhanden'}\n\nBeschreibung:\n${e.desc||''}\n\nHinweis: Diese Meldung wurde vor der Weiterleitung durch einen Administrator geprüft.\n\nMit freundlichen Grüßen\nRattenmelder Hamburg`;}
+  function openAuthority29(id){const e=findEntry(id); if(!e)return; ensureAuthority(); authorityId=String(id); authorityPayload={to:AUTHORITY_EMAIL,subject:`Rattenmeldung Hamburg: ${e.street||''}`,body:buildMail(e)}; $('rm-auth29-to').value=authorityPayload.to; $('rm-auth29-subject').value=authorityPayload.subject; $('rm-auth29-body').textContent=authorityPayload.body; $('rm-authority29').classList.add('open');}
+  async function markAuthority29(){const e=findEntry(authorityId); if(!e)return; e.status='gesendet'; e.authorityNotifiedAt=new Date().toISOString(); e.authorityRecipient=$('rm-auth29-to').value||AUTHORITY_EMAIL; addHist(e,'Behörde informiert: '+e.authorityRecipient); await persist(e,'authority_sent');}
+  async function copyAuthority29(){const text=$('rm-auth29-body').textContent||''; try{await navigator.clipboard.writeText(text); if(typeof toast==='function')toast('📋 Mailtext kopiert');}catch(_){alert(text);} await markAuthority29(); $('rm-authority29').classList.remove('open');}
+  async function openMail29(){const to=$('rm-auth29-to').value||AUTHORITY_EMAIL, sub=$('rm-auth29-subject').value||'', body=$('rm-auth29-body').textContent||''; await markAuthority29(); $('rm-authority29').classList.remove('open'); const href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`; try{window.location.href=href;}catch(e){alert('Mail App konnte nicht geöffnet werden. Bitte Text kopieren.');}}
+
+  function route(ev){
+    const t=ev.target; if(!t||!t.closest)return;
+    const lbClose=t.closest('#rm-lightbox29-close'); if(lbClose){ev.preventDefault();ev.stopPropagation();window.closeLightbox();return false;}
+    if(t.id==='rm-lightbox29'){ev.preventDefault();ev.stopPropagation();window.closeLightbox();return false;}
+    const light=t.closest('[data-rm29-lightbox]'); if(light){ev.preventDefault();ev.stopPropagation();openLb(light.dataset.rm29Lightbox,light.dataset.rm29Idx||0);return false;}
+    const action=t.closest('[data-rm29-action]'); if(action){ev.preventDefault();ev.stopPropagation(); const id=action.dataset.id, a=action.dataset.rm29Action; if(action.disabled)return false; action.disabled=true; Promise.resolve((async()=>{if(a==='approve')await approve(id); else if(a==='reject')await reject(id); else if(a==='trash')await trash(id); else if(a==='edit')openEdit29(id); else if(a==='gps')openGps29(id); else if(a==='authority')openAuthority29(id);})()).finally(()=>{action.disabled=false;}); return false;}
+    const typ=t.closest('[data-rm29-type]'); if(typ){ev.preventDefault();ev.stopPropagation(); document.querySelectorAll('#rm-edit29-types .rm-type29').forEach(x=>x.classList.remove('sel')); typ.classList.add('sel'); return false;}
+    const rm=t.closest('[data-rm29-rmphoto]'); if(rm){ev.preventDefault();ev.stopPropagation(); editPhotos.splice(Number(rm.dataset.rm29Rmphoto),1); renderEditPhotos(); return false;}
+    const vp=t.closest('[data-rm29-viewphoto]'); if(vp){ev.preventDefault();ev.stopPropagation(); const id=$('rm-edit29-id')?.value; openLb(id,Number(vp.dataset.rm29Viewphoto)||0); return false;}
+    if(t.closest('#rm-edit29-save')){ev.preventDefault();ev.stopPropagation(); saveEdit29(); return false;}
+    if(t.closest('#rm-edit29-cancel')||t.id==='rm-edit29'){ev.preventDefault();ev.stopPropagation(); $('rm-edit29').classList.remove('open'); return false;}
+    if(t.closest('#rm-edit29-gps')){ev.preventDefault();ev.stopPropagation(); const id=$('rm-edit29-id').value; $('rm-edit29').classList.remove('open'); openGps29(id); return false;}
+    if(t.closest('#rm-gps29-save')){ev.preventDefault();ev.stopPropagation(); saveGps29(); return false;}
+    if(t.closest('#rm-gps29-cancel')||t.id==='rm-gps29'){ev.preventDefault();ev.stopPropagation(); $('rm-gps29').classList.remove('open'); return false;}
+    if(t.closest('#rm-auth29-copy')){ev.preventDefault();ev.stopPropagation(); copyAuthority29(); return false;}
+    if(t.closest('#rm-auth29-mail')){ev.preventDefault();ev.stopPropagation(); openMail29(); return false;}
+    if(t.closest('#rm-auth29-close')||t.id==='rm-authority29'){ev.preventDefault();ev.stopPropagation(); $('rm-authority29').classList.remove('open'); return false;}
+  }
+  document.addEventListener('click',route,true);
+  document.addEventListener('pointerdown',function(ev){const t=ev.target;if(t&&t.closest&& (t.closest('[data-rm29-action]')||t.closest('#rm-lightbox29-close')||t.closest('[data-rm29-lightbox]')||t.closest('#rm-auth29-copy')||t.closest('#rm-auth29-mail')||t.closest('#rm-auth29-close')||t.closest('#rm-edit29-save')||t.closest('#rm-edit29-cancel')||t.closest('#rm-edit29-gps')||t.closest('#rm-gps29-save')||t.closest('#rm-gps29-cancel'))){route(ev);}}, {capture:true,passive:false});
+  // Swipe down to close edit/gps/authority sheets
+  let sy=0; document.addEventListener('touchstart',ev=>{sy=ev.touches&&ev.touches[0]?ev.touches[0].clientY:0;},{passive:true,capture:true});
+  document.addEventListener('touchend',ev=>{const y=ev.changedTouches&&ev.changedTouches[0]?ev.changedTouches[0].clientY:0; if(sy&&y-sy>110){['rm-edit29','rm-gps29','rm-authority29'].forEach(id=>{const el=$(id); if(el&&el.classList.contains('open'))el.classList.remove('open');});}}, {passive:true,capture:true});
+
+  // Hook admin open/render/update
+  const oldOpen=window.openAdmin; window.openAdmin=function(){try{localStorage.setItem('rattenAdminOpen','yes');}catch(_){ } document.body.classList.add('admin-open'); const ap=$('admin-page'); if(ap)ap.classList.add('open'); try{oldOpen&&oldOpen.apply(this,arguments);}catch(_){ } setTimeout(()=>{ensureAdminHeader(); try{window.renderAdminList();}catch(_){ }},80);};
+  const oldClose=window.closeAdmin; window.closeAdmin=function(){try{localStorage.removeItem('rattenAdminOpen');}catch(_){ } const ap=$('admin-page'); if(ap)ap.classList.remove('open'); document.body.classList.remove('admin-open'); try{oldClose&&oldClose.apply(this,arguments);}catch(_){ } return false;};
+  const oldShow=window.showPanel; window.showPanel=function(){try{oldShow&&oldShow.apply(this,arguments);}catch(_){ } ensureAdminHeader(); try{window.renderAdminList();}catch(_){ }};
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{try{window.updateStats(); ensureAdminHeader(); if(localStorage.getItem('rattenAdminOpen')==='yes')window.openAdmin();}catch(_){ }},500); setTimeout(stampBuild,1500);});
+  setInterval(()=>{try{stampBuild();}catch(_){ }},8000);
 })();
 </script>
 
