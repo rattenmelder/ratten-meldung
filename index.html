@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10 -->
+<!-- BUILD: FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -7,11 +7,11 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Rattenmelder Hamburg · FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10</title>
+<title>Rattenmelder Hamburg · FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10');
+console.log('Rattenmelder Version: FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -615,6 +615,30 @@ body.admin-open .admin-page{pointer-events:auto!important;}
 .legal-preview-box{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:13px;color:var(--text2);line-height:1.5;margin-top:10px;}
 @media(max-width:520px){.legal-settings-grid.two{grid-template-columns:1fr}.legal-settings-panel{margin:14px 18px}}
 
+
+/* === FIX35: Globales Button Feedback und sichere Rechtsbereich Bedienung === */
+button,.s-btn,.nav-back,.tab-item,.city-btn,.df-btn,.mf-btn,.lf-btn,.workflow-btn,.a-del,.a-logout,.a-del-all,.reply-save,.gps-btn,.loc-btn,.cookie-btn,.unsub-btn{
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
+}
+button.fix35-pressed,.s-btn.fix35-pressed,.nav-back.fix35-pressed,.workflow-btn.fix35-pressed,.a-del.fix35-pressed,.a-logout.fix35-pressed,.gps-btn.fix35-pressed{
+  transform:scale(.96)!important;filter:brightness(1.18);transition:transform .08s ease,filter .08s ease,box-shadow .12s ease!important;
+}
+button.fix35-ok,.s-btn.fix35-ok,.workflow-btn.fix35-ok{
+  box-shadow:0 0 0 2px rgba(48,209,88,.95),0 0 18px rgba(48,209,88,.35)!important;
+}
+button.fix35-warn,.s-btn.fix35-warn,.workflow-btn.fix35-warn{
+  box-shadow:0 0 0 2px rgba(255,149,0,.95),0 0 18px rgba(255,149,0,.35)!important;
+}
+button.fix35-error,.s-btn.fix35-error,.workflow-btn.fix35-error{
+  box-shadow:0 0 0 2px rgba(255,59,59,.95),0 0 18px rgba(255,59,59,.35)!important;
+}
+.legal-save-pulse{animation:fix35Pulse .38s ease-out 1;}
+@keyframes fix35Pulse{0%{transform:scale(.98);box-shadow:0 0 0 0 rgba(48,209,88,.55)}100%{transform:scale(1);box-shadow:0 0 0 12px rgba(48,209,88,0)}}
+#legal-save-status.fix35-status-ok{color:var(--green)!important;font-weight:800;}
+#legal-save-status.fix35-status-warn{color:var(--orange)!important;font-weight:800;}
+#legal-save-status.fix35-status-error{color:var(--red)!important;font-weight:800;}
+.supabase-hint-sql{background:rgba(10,132,255,.08);border:1px solid rgba(10,132,255,.24);color:var(--blue);padding:10px 12px;border-radius:12px;font-size:12px;line-height:1.45;margin-top:10px;}
+
 </style>
 <!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
 </head>
@@ -898,7 +922,7 @@ body.admin-open .admin-page{pointer-events:auto!important;}
     </div>
     <div id="a-panel" style="display:none;padding-bottom:40px">
       <div class="sheets-bar" id="system-status-bar">🟡 <strong>Systemstatus wird geprüft…</strong></div>
-      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10</div>
+      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10</div>
       <div class="sheets-bar" id="sheets-bar">📊 <strong>Google Sheets nicht verbunden.</strong> <a href="#" onclick="openSheetsSheet(event)">→ Einrichten</a></div>
       <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Neue Meldungen sind erst nach Admin-Freigabe öffentlich sichtbar. Pro Meldung: prüfen, bearbeiten, Standort korrigieren oder Behörde informieren. Benachrichtigungen an Anwohner laufen später über einen eigenen sicheren Nutzerbereich mit Radius, Abmeldung und freiwilliger Kontaktangabe.</div>
       <div class="a-bar">
@@ -1023,7 +1047,7 @@ body.admin-open .admin-page{pointer-events:auto!important;}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const APP_BUILD = 'FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10';
+const APP_BUILD = 'FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
 const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
 const ADMIN_EMAIL = 'saschakitschke@gmx.net';
 const SUPABASE_URL = 'https://fholanhyuwapgrnhlsqq.supabase.co';
@@ -1993,7 +2017,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script>
 /* FIX31 careful integration: keine Komplett-Neuentwicklung, sondern gezielte stabile Overrides. */
 (function(){
-  const FIX31_BUILD = 'FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10';
+  const FIX31_BUILD = 'FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
   const RAT_TYPES = ['Lebende Ratte gesehen','Mehrere Ratten gesehen','Tote Ratte gefunden','Rattenbau entdeckt','Rattenkot gefunden','Fraßspuren entdeckt'];
   const ACTION_TYPES = ['Köderbox aufgestellt','Schädlingsbekämpfer vor Ort','Rattenbau verschlossen','Hinweisschild aufgestellt','Köderbox kontrolliert','Sonstige Maßnahme'];
   let editId = null;
@@ -2356,10 +2380,10 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10
+/* FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10
    Konservativer Patch auf Fix31: keine großen Umbauten, nur gezielte Korrekturen. */
 (function(){
-  const FIX32_BUILD='FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10';
+  const FIX32_BUILD='FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
   const ADMIN_CONTACT_EMAIL='saschakitschke@gmx.net';
   const SITE_RESPONSIBLE='Sascha von Kitschke';
   const AUTHORITY_MAIL='schaedlingsbekaempfung@hu.hamburg.de';
@@ -2607,12 +2631,12 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10
+/* FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10
    Entfernt den rechten Updates Tab aus der Navigation.
    Benachrichtigungen werden nicht mehr als halbfertiger Button angeboten,
    sondern bleiben als eigener sicherer Nutzerbereich geplant. */
 (function(){
-  const BUILD='FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10';
+  const BUILD='FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
   function hideUpdateTabs(){
     document.querySelectorAll('button').forEach(btn=>{
       const txt=(btn.textContent||'').trim();
@@ -2636,12 +2660,12 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10
+/* FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10
    Rechtliches im Adminbereich komplett bearbeitbar.
    Speichert zuerst lokal und versucht zusätzlich Supabase app_settings zu nutzen,
    damit die App auch ohne neue Datenbanktabelle stabil bleibt. */
 (function(){
-  const BUILD='FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10';
+  const BUILD='FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
   const LEGAL_KEY='rattenLegalSettings_v1';
   const DEFAULT_LEGAL={
     siteTitle:'Rattenmelder Hamburg',
@@ -2809,6 +2833,116 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initLegal); else initLegal();
   window.addEventListener('load',()=>setTimeout(initLegal,200));
+})();
+</script>
+
+
+<script>
+/* FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10
+   Ergänzt sichtbares und haptisches Feedback für Buttons, besonders Rechtliches speichern/Vorschau.
+   Greift konservativ ein und verändert keine Datenlogik. */
+(function(){
+  const FIX35_BUILD='FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
+  const q=(s,root=document)=>root.querySelector(s);
+  const qa=(s,root=document)=>Array.from(root.querySelectorAll(s));
+  function vibrate(ms){try{if(navigator.vibrate)navigator.vibrate(ms||12);}catch(_){}}
+  function pulse(el,cls,ms){
+    if(!el)return;
+    el.classList.remove('fix35-ok','fix35-warn','fix35-error');
+    el.classList.add(cls||'fix35-ok');
+    setTimeout(()=>{try{el.classList.remove(cls||'fix35-ok')}catch(_){ }},ms||850);
+  }
+  function setStatusLine(text,mode){
+    const st=document.getElementById('legal-save-status');
+    if(!st)return;
+    st.classList.remove('fix35-status-ok','fix35-status-warn','fix35-status-error');
+    if(mode)st.classList.add('fix35-status-'+mode);
+    st.textContent=text;
+  }
+  function attachGlobalButtonFeedback(){
+    qa('button,.s-btn,.nav-back,.tab-item,.city-btn,.df-btn,.mf-btn,.lf-btn,.workflow-btn,.a-del,.a-logout,.a-del-all,.reply-save,.gps-btn,.loc-btn,.cookie-btn,.unsub-btn').forEach(el=>{
+      if(el.dataset.fix35Feedback==='yes')return;
+      el.dataset.fix35Feedback='yes';
+      const down=()=>{el.classList.add('fix35-pressed');vibrate(8);};
+      const up=()=>{setTimeout(()=>el.classList.remove('fix35-pressed'),90);};
+      el.addEventListener('touchstart',down,{passive:true});
+      el.addEventListener('mousedown',down);
+      el.addEventListener('touchend',up,{passive:true});
+      el.addEventListener('mouseup',up);
+      el.addEventListener('mouseleave',up);
+      el.addEventListener('click',()=>{vibrate(10);},{passive:true});
+    });
+  }
+  const oldRenderLegalAdminSection=window.renderLegalAdminSection;
+  if(typeof oldRenderLegalAdminSection==='function'){
+    window.renderLegalAdminSection=function(){
+      const r=oldRenderLegalAdminSection.apply(this,arguments);
+      setTimeout(()=>{
+        attachGlobalButtonFeedback();
+        const panel=document.getElementById('legal-settings-panel');
+        if(panel && !panel.querySelector('.supabase-hint-sql')){
+          const note=document.createElement('div');
+          note.className='supabase-hint-sql';
+          note.innerHTML='ℹ️ Dauerhafte Speicherung in Supabase funktioniert, sobald die Tabelle <strong>app_settings</strong> angelegt ist. Ohne Tabelle speichert dieser Bereich nur im Browser dieses Geräts.';
+          const status=document.getElementById('legal-save-status');
+          if(status)status.after(note);
+        }
+      },40);
+      return r;
+    };
+  }
+  const oldSave=window.saveLegalSettingsFromAdmin;
+  if(typeof oldSave==='function'){
+    window.saveLegalSettingsFromAdmin=async function(ev){
+      if(ev&&ev.preventDefault)ev.preventDefault();
+      const btn=ev&&ev.currentTarget ? ev.currentTarget : qa('#legal-settings-panel button').find(b=>(b.textContent||'').includes('speichern'));
+      if(btn){btn.disabled=true;btn.classList.add('busy','legal-save-pulse');btn.dataset.oldText=btn.textContent;btn.textContent='💾 Speichere...';}
+      setStatusLine('Speichern läuft...',null);
+      vibrate(18);
+      try{
+        await oldSave.apply(this,arguments);
+        setStatusLine('✅ Gespeichert am '+new Date().toLocaleString('de-DE'), 'ok');
+        pulse(btn,'fix35-ok',1000);
+        if(typeof toast==='function')toast('✅ Rechtliches gespeichert');
+      }catch(e){
+        console.error(e);
+        setStatusLine('❌ Speichern fehlgeschlagen: '+(e&&e.message?e.message:'Unbekannter Fehler'), 'error');
+        pulse(btn,'fix35-error',1200);
+        if(typeof toast==='function')toast('❌ Speichern fehlgeschlagen');
+      }finally{
+        if(btn){btn.disabled=false;btn.classList.remove('busy','legal-save-pulse');btn.textContent=btn.dataset.oldText||'💾 Rechtliches speichern';}
+        attachGlobalButtonFeedback();
+      }
+    };
+  }
+  const oldPreview=window.previewLegalSettings;
+  if(typeof oldPreview==='function'){
+    window.previewLegalSettings=function(ev){
+      if(ev&&ev.preventDefault)ev.preventDefault();
+      const btn=ev&&ev.currentTarget ? ev.currentTarget : qa('#legal-settings-panel button').find(b=>(b.textContent||'').includes('Vorschau'));
+      vibrate(14);
+      try{
+        const r=oldPreview.apply(this,arguments);
+        setStatusLine('👁️ Vorschau aktualisiert am '+new Date().toLocaleString('de-DE'), 'ok');
+        pulse(btn,'fix35-ok',800);
+        return r;
+      }catch(e){
+        console.error(e);
+        setStatusLine('❌ Vorschau konnte nicht aktualisiert werden', 'error');
+        pulse(btn,'fix35-error',1000);
+      }finally{
+        attachGlobalButtonFeedback();
+      }
+    };
+  }
+  function updateBuildBars(){
+    const build=document.getElementById('build-version-bar');
+    if(build)build.innerHTML='🏷️ <strong>Version:</strong> '+FIX35_BUILD;
+    document.title='Rattenmelder Hamburg · '+FIX35_BUILD;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{updateBuildBars();attachGlobalButtonFeedback();setInterval(attachGlobalButtonFeedback,1200);});
+  window.addEventListener('load',()=>{updateBuildBars();attachGlobalButtonFeedback();});
+  if(document.readyState!=='loading'){setTimeout(()=>{updateBuildBars();attachGlobalButtonFeedback();},80);}
 })();
 </script>
 
