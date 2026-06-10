@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: FIX30_ROLLBACK_SAFE_FROM_FIX10_2026-06-10 -->
+<!-- BUILD: FIX31_CAREFUL_INTEGRATION_2026-06-10 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -7,11 +7,11 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Rattenmelder Hamburg · FIX30_ROLLBACK_SAFE_FROM_FIX10_2026-06-10</title>
+<title>Rattenmelder Hamburg · FIX31_CAREFUL_INTEGRATION_2026-06-10</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FIX30_ROLLBACK_SAFE_FROM_FIX10_2026-06-10');
+console.log('Rattenmelder Version: FIX31_CAREFUL_INTEGRATION_2026-06-10');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -555,6 +555,34 @@ body.admin-open .admin-page{pointer-events:auto!important;}
 .submit-btn.busy::after{content:' ';width:14px;height:14px;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;display:inline-block;animation:spinFix11 .8s linear infinite;}
 @keyframes spinFix11{to{transform:rotate(360deg)}}
 
+
+
+/* === FIX31: konservative Stabilisierung Admin, Modals und Freigabe === */
+#system-status-bar.ok{background:rgba(48,209,88,.08)!important;border-color:rgba(48,209,88,.25)!important;color:var(--green)!important;}
+#system-status-bar.err{background:rgba(255,59,59,.08)!important;border-color:rgba(255,59,59,.25)!important;color:var(--red)!important;}
+.fix31-modal{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:60000;display:none;align-items:flex-end;pointer-events:none;}
+.fix31-modal.open{display:flex;pointer-events:auto;}
+.fix31-box{width:100%;max-height:88vh;overflow:auto;background:var(--surface);border-top:1px solid var(--border);border-radius:24px 24px 0 0;padding:16px 18px calc(22px + env(safe-area-inset-bottom,0px));box-shadow:0 -18px 50px rgba(0,0,0,.55);}
+.fix31-title{font-size:19px;font-weight:900;margin-bottom:12px;}
+.fix31-row{margin-bottom:12px;}
+.fix31-row label{display:block;font-size:11px;color:var(--text2);font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.fix31-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.fix31-actions .submit-btn{flex:1;min-width:140px;margin:0;}
+.fix31-secondary{background:var(--surface2)!important;color:var(--text)!important;box-shadow:none!important;border:1px solid var(--border)!important;}
+.fix31-danger{background:var(--red-dim)!important;color:var(--red)!important;box-shadow:none!important;border:1px solid rgba(255,59,59,.3)!important;}
+.fix31-photo-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.fix31-photo-wrap{position:relative;}
+.fix31-photo-wrap img{width:82px;height:82px;border-radius:10px;object-fit:cover;border:1px solid var(--border);background:#222;}
+.fix31-photo-rm{position:absolute;top:-7px;right:-7px;width:24px;height:24px;border-radius:50%;border:none;background:var(--red);color:#fff;font-weight:900;}
+.lightbox{z-index:70000!important;}
+.lightbox.open{display:flex!important;}
+.lightbox .lb-close{z-index:70001!important;pointer-events:auto!important;}
+.loc-picker-bg{z-index:65000!important;}
+.sheet-bg{z-index:62000!important;}
+.workflow-actions.admin-actions .workflow-btn{min-height:38px;}
+.a-photo-row{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0;}
+.a-photo-row img{width:74px;height:74px;border-radius:10px;object-fit:cover;border:1px solid var(--border);background:#222;}
+
 </style>
 <!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
 </head>
@@ -576,8 +604,8 @@ body.admin-open .admin-page{pointer-events:auto!important;}
     <div class="stats-row workflow-stats">
       <div class="stat-card" role="button" title="Alle Sichtungen anzeigen" onclick="openStatList('rat')"><span class="stat-num" id="s-rat">0</span><div class="stat-lbl">Sichtungen</div></div>
       <div class="stat-card" role="button" title="Alle Maßnahmen anzeigen" onclick="openStatList('action')"><span class="stat-num" id="s-action">0</span><div class="stat-lbl">Maßnahmen</div></div>
-      <div class="stat-card" role="button" title="Behördenmeldungen anzeigen" onclick="openStatList('authority')"><span class="stat-num" id="s-authority">0</span><div class="stat-lbl">Behörde</div></div>
-      <div class="stat-card" role="button" title="Erledigte Fälle anzeigen" onclick="openStatList('done')"><span class="stat-num" id="s-done">0</span><div class="stat-lbl">Erledigt</div></div>
+      <div class="stat-card" role="button" title="Behördenmeldungen anzeigen" onclick="openStatList('authority')"><span class="stat-num" id="s-authority">0</span><div class="stat-lbl">Behörde gemeldet</div></div>
+      <div class="stat-card" role="button" title="Heutige Meldungen anzeigen" onclick="openStatList('today')"><span class="stat-num" id="s-done">0</span><div class="stat-lbl">Heute</div></div>
     </div>
 
     <div class="info-card">
@@ -706,7 +734,7 @@ body.admin-open .admin-page{pointer-events:auto!important;}
     <button class="mf-btn" id="mf-rat" onclick="setMapFilter('rat')">🔴 Sichtungen</button>
     <button class="mf-btn" id="mf-action" onclick="setMapFilter('action')">🟢 Maßnahmen</button>
     <button class="mf-btn" id="mf-authority" onclick="setMapFilter('authority')">📧 Behörde</button>
-    <button class="mf-btn" id="mf-done" onclick="setMapFilter('done')">✅ Erledigt</button>
+    <button class="mf-btn" id="mf-done" onclick="setMapFilter('today')">📅 Heute</button>
   </div>
   <div class="date-filter">
     <span class="df-lbl">Datum</span>
@@ -743,7 +771,7 @@ body.admin-open .admin-page{pointer-events:auto!important;}
     <button class="lf-btn" id="lf-rat" onclick="setListFilter('rat')">🔴 Sichtungen</button>
     <button class="lf-btn" id="lf-action" onclick="setListFilter('action')">🟢 Maßnahmen</button>
     <button class="lf-btn" id="lf-authority" onclick="setListFilter('authority')">📧 Behörde</button>
-    <button class="lf-btn" id="lf-done" onclick="setListFilter('done')">✅ Erledigt</button>
+    <button class="lf-btn" id="lf-done" onclick="setListFilter('today')">📅 Heute</button>
   </div>
   <div class="date-filter">
     <span class="df-lbl">Meldedatum</span>
@@ -837,8 +865,10 @@ body.admin-open .admin-page{pointer-events:auto!important;}
       </div>
     </div>
     <div id="a-panel" style="display:none;padding-bottom:40px">
+      <div class="sheets-bar" id="system-status-bar">🟡 <strong>Systemstatus wird geprüft…</strong></div>
+      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX31_CAREFUL_INTEGRATION_2026-06-10</div>
       <div class="sheets-bar" id="sheets-bar">📊 <strong>Google Sheets nicht verbunden.</strong> <a href="#" onclick="openSheetsSheet(event)">→ Einrichten</a></div>
-      <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Verwalter können Meldungen prüfen, Status setzen, eine E-Mail an Behörde/Verwaltung vorbereiten und Updates für Nachbarn per E-Mail oder WhatsApp vorbereiten. Gesendet wird bewusst über das eigene Mailprogramm bzw. WhatsApp.</div>
+      <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Neue Meldungen sind erst nach Admin-Freigabe öffentlich sichtbar. Pro Meldung: prüfen, bearbeiten, Standort korrigieren oder Behörde informieren. Benachrichtigungen an Anwohner laufen später über einen eigenen Abo-Bereich mit Radius.</div>
       <div class="a-bar">
         <button class="a-del-all" onclick="clearAll()">🗑️ Alle löschen</button>
         <span class="a-count" id="a-count"></span>
@@ -847,7 +877,7 @@ body.admin-open .admin-page{pointer-events:auto!important;}
       <div class="a-rep-list" id="a-rep-list"></div>
       <div class="a-divider"></div>
       <div class="a-sec">🔔 Abonnenten</div>
-      <button class="notify-btn" onclick="openNotifySheet()">📧 E-Mail Update vorbereiten</button><button class="notify-btn" onclick="sendWhatsAppBroadcast()">💬 WhatsApp Update vorbereiten</button>
+      <div class="a-hint">Benachrichtigungen werden nicht pro einzelner Meldung ausgelöst. Geplant ist ein eigener Abo-Bereich mit Radius, zum Beispiel 0,5 km Standard, und freiwilliger Kontaktangabe per E-Mail oder WhatsApp.</div>
       <div class="a-abo-list" id="a-abo-list"></div>
       <div id="v-section" style="display:none">
         <div class="a-divider"></div>
@@ -936,11 +966,32 @@ body.admin-open .admin-page{pointer-events:auto!important;}
   </div>
 </div>
 
+
+
+<!-- FIX31 Admin Edit Modal -->
+<div class="fix31-modal" id="fix31-edit-modal" onclick="fix31CloseOnBg(event)">
+  <div class="fix31-box" onclick="event.stopPropagation()">
+    <div class="fix31-title">✏️ Meldung bearbeiten</div>
+    <div class="fix31-row"><label>Art der Meldung</label><select class="inp" id="fix31-kind"><option value="rat">Rattensichtung</option><option value="action">Maßnahme vor Ort</option></select></div>
+    <div class="fix31-row"><label>Ort / Adresse</label><input class="inp" id="fix31-street" /></div>
+    <div class="fix31-row"><label>Was gesehen / was wurde unternommen</label><select class="inp" id="fix31-type"></select></div>
+    <div class="fix31-row"><label>Beschreibung</label><textarea class="inp" id="fix31-desc" style="min-height:100px"></textarea></div>
+    <div class="fix31-row"><label>Datum und Uhrzeit</label><input class="inp" type="datetime-local" id="fix31-time" /></div>
+    <div class="fix31-row"><label>Spitzname</label><input class="inp" id="fix31-name" /></div>
+    <div class="fix31-row"><label>Fotos</label><div class="hint">Fotos können angesehen oder einzeln aus der Meldung entfernt werden.</div><div class="fix31-photo-grid" id="fix31-photos"></div></div>
+    <div class="fix31-actions">
+      <button class="submit-btn" onclick="fix31SaveEdit(event)">💾 Speichern</button>
+      <button class="submit-btn fix31-secondary" onclick="fix31EditGps(event)">📍 Standort ändern</button>
+      <button class="submit-btn fix31-secondary" onclick="fix31CloseEdit(event)">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const APP_BUILD = 'FIX30_ROLLBACK_SAFE_FROM_FIX10_2026-06-10';
+const APP_BUILD = 'FIX31_CAREFUL_INTEGRATION_2026-06-10';
 const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
 const ADMIN_EMAIL = 'saschakitschke@gmx.net';
 const SUPABASE_URL = 'https://fholanhyuwapgrnhlsqq.supabase.co';
@@ -1906,5 +1957,369 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
   window.addEventListener('resize', setKeyboardState, {passive:true});
 })();
 </script>
+
+<script>
+/* FIX31 careful integration: keine Komplett-Neuentwicklung, sondern gezielte stabile Overrides. */
+(function(){
+  const FIX31_BUILD = 'FIX31_CAREFUL_INTEGRATION_2026-06-10';
+  const RAT_TYPES = ['Lebende Ratte gesehen','Mehrere Ratten gesehen','Tote Ratte gefunden','Rattenbau entdeckt','Rattenkot gefunden','Fraßspuren entdeckt'];
+  const ACTION_TYPES = ['Köderbox aufgestellt','Schädlingsbekämpfer vor Ort','Rattenbau verschlossen','Hinweisschild aufgestellt','Köderbox kontrolliert','Sonstige Maßnahme'];
+  let editId = null;
+  let editRemovedPhotos = new Set();
+
+  function eById(id){return document.getElementById(id);}
+  function findEntry(id){return entries.find(x=>String(x.id)===String(id));}
+  function entryIsPublic(e){return !!e && (e.status==='geprueft' || e.status==='gesendet');}
+  function isTodayEntry(e){return entryDateValue(e)===localDateValue(new Date());}
+  function photoIsPublic(e){return entryIsPublic(e) || isHaupt;}
+  function visiblePhotos(e){return photoIsPublic(e) ? photoList(e) : [];}
+  function safeStop(ev){ if(ev){ev.preventDefault?.(); ev.stopPropagation?.();} }
+
+  window.fix31CloseOnBg = function(ev){ if(ev.target && ev.target.id==='fix31-edit-modal') window.fix31CloseEdit(ev); };
+
+  window.checkSupabaseStatus = async function(){
+    const bar=eById('system-status-bar'); if(!bar)return;
+    if(!hasSupabase()){bar.className='sheets-bar err';bar.innerHTML='🔴 <strong>Supabase nicht geladen</strong>';return;}
+    try{
+      const {data,error}=await supabaseClient.from('reports').select('id',{count:'exact'}).limit(1);
+      if(error) throw error;
+      bar.className='sheets-bar ok';
+      bar.innerHTML=`🟢 <strong>Supabase verbunden</strong> · ${entries.length} Meldung${entries.length!==1?'en':''} geladen · ${new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`;
+    }catch(err){
+      bar.className='sheets-bar err';
+      bar.innerHTML='🔴 <strong>Supabase nicht erreichbar</strong> · '+esc(err.message||'Fehler');
+    }
+  };
+
+  const oldShowPanel = window.showPanel;
+  window.showPanel = function(){
+    oldShowPanel && oldShowPanel();
+    checkSupabaseStatus();
+  };
+  const oldOpenAdmin = window.openAdmin;
+  window.openAdmin = function(){
+    document.body.classList.add('admin-open');
+    const admin=eById('admin-page'); if(admin)admin.classList.add('open');
+    sessionStorage.setItem('rattenAdminOpen','yes');
+    if(isHaupt) renderAdminList();
+    checkSupabaseStatus();
+  };
+  window.closeAdmin = function(){
+    const admin=eById('admin-page'); if(admin)admin.classList.remove('open');
+    document.body.classList.remove('admin-open');
+    sessionStorage.removeItem('rattenAdminOpen');
+  };
+
+  window.updateStats = function(){
+    const byId=(id,val)=>{const el=eById(id);if(el)el.textContent=val;};
+    const nonDeleted = entries.filter(e=>e.status!=='ausgeblendet');
+    byId('s-rat',nonDeleted.filter(e=>e.kind==='rat').length);
+    byId('s-action',nonDeleted.filter(e=>e.kind==='action'&&!isAuthorityEntry(e)).length);
+    byId('s-authority',nonDeleted.filter(e=>e.status==='gesendet'||isAuthorityEntry(e)).length);
+    byId('s-done',nonDeleted.filter(isTodayEntry).length);
+  };
+
+  window.openStatList = function(kind){
+    if(kind==='rat'){listFilter='rat';dateFilterFrom='';dateFilterTo='';}
+    else if(kind==='action'){listFilter='action';dateFilterFrom='';dateFilterTo='';}
+    else if(kind==='authority'){listFilter='authority';dateFilterFrom='';dateFilterTo='';}
+    else if(kind==='today'){listFilter='today';const t=localDateValue(new Date());dateFilterFrom=t;dateFilterTo=t;}
+    else {listFilter='all';dateFilterFrom='';dateFilterTo='';}
+    goPage('liste');
+    setTimeout(()=>{setListFilter(listFilter);syncDateInputs();const body=eById('list-body');if(body)body.scrollTop=0;},80);
+  };
+
+  window.setListFilter = function(f){
+    listFilter=f;
+    ['all','rat','action','authority','done'].forEach(id=>{const el=eById('lf-'+id);if(el)el.className='lf-btn';});
+    const mapped=f==='today'?'done':f;
+    const act=eById('lf-'+mapped); if(act)act.className='lf-btn act';
+    renderList();
+  };
+
+  window.renderList = async function(){
+    const el=eById('list-body'); if(!el)return;
+    const filtered = entries.filter(e=>{
+      if(!isHaupt && !entryIsPublic(e)) return false;
+      if(e.status==='ausgeblendet') return false;
+      if(listFilter==='rat' && e.kind!=='rat') return false;
+      if(listFilter==='action' && (e.kind!=='action'||isAuthorityEntry(e))) return false;
+      if(listFilter==='authority' && !(e.status==='gesendet'||isAuthorityEntry(e))) return false;
+      if(listFilter==='today' && !isTodayEntry(e)) return false;
+      if(listFilter==='done' && !isTodayEntry(e)) return false;
+      return entryInDateRange(e);
+    });
+    const publicEntries=entries.filter(e=>isHaupt || entryIsPublic(e));
+    const rats=publicEntries.filter(e=>e.kind==='rat').length;
+    const actions=publicEntries.filter(e=>e.kind==='action'&&!isAuthorityEntry(e)).length;
+    const auth=publicEntries.filter(e=>e.status==='gesendet'||isAuthorityEntry(e)).length;
+    const today=publicEntries.filter(isTodayEntry).length;
+    const count=eById('list-count'); if(count)count.textContent=`${filtered.length} angezeigt · ${rats} Sichtungen · ${actions} Maßnahmen · ${auth} Behörde gemeldet · ${today} heute`;
+    if(!filtered.length){el.innerHTML=`<div class="empty-state"><div class="ei">🔍</div><div class="et">Keine Einträge für diese Auswahl</div></div>`;return;}
+    let html='';
+    for(const r of filtered){
+      const d=new Date(r.time||r.createdAt);
+      const ts=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';
+      const st=ST[r.status||'neu']||ST.neu;
+      const isAuth=isAuthorityEntry(r);
+      const typeBadgeCls=r.kind==='rat'?'rat-badge':'action-badge';
+      const cardCls=(r.kind==='action'||isAuth)?'r-card action-card':'r-card';
+      const p=visiblePhotos(r);
+      const rid=jsStr(r.id);
+      const photoHtml=p.length?`<div class="r-photos">${p.map((u,i)=>`<img class="r-photo" loading="lazy" src="${u}" onclick="openLightbox('${rid}',${i},event)" onerror="imgErr(this)" />`).join('')}</div>`:(photoList(r).length?'<div class="photo-wait">📷 Foto wartet auf Admin-Freigabe</div>':'');
+      const replyHtml=r.stadtAntwort?`<div class="city-reply"><div class="cr-label">🏛️ Antwort / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
+      const hist=isHaupt?formatHistory(r):'';
+      html+=`<div class="${cardCls}" id="entry-${r.id}"><div class="r-head"><div class="r-loc">📍 ${esc(r.street)}</div><div class="r-time">${ts}</div></div><div class="r-badges"><span class="r-type-badge ${typeBadgeCls}">${markerEmoji(r)} ${esc(r.type)}</span><span class="status-badge ${st.cls}">${st.lbl}</span></div><div class="r-desc">${esc(r.desc)}</div>${photoHtml}${replyHtml}<div class="r-meta"><span>👤 ${esc(r.name)}</span>${r.lat?`<span>📍 ${r.gpsExact?'Exakter GPS-Punkt':'Kartenposition'}</span>`:''}${r.lat?`<span>${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}</span>`:''}</div>${hist}</div>`;
+    }
+    el.innerHTML=html;
+  };
+
+  window.markerEmoji = function(r){
+    const t=(r.type||'').toLowerCase();
+    if(r.status==='gesendet'||isAuthorityEntry(r)) return '📧';
+    if(r.kind==='action'){
+      if(t.includes('köderbox')) return '📦';
+      if(t.includes('bekämpfer')) return '👷';
+      if(t.includes('verschlossen')) return '🧱';
+      if(t.includes('hinweisschild')) return '⚠️';
+      if(t.includes('kontrolliert')) return '🔍';
+      return '🟢';
+    }
+    if(t.includes('tote')) return '☠️';
+    if(t.includes('mehrere')) return '🐀🐀';
+    if(t.includes('bau')) return '🕳️';
+    if(t.includes('kot')) return '💩';
+    if(t.includes('fraß')||t.includes('frass')) return '🦷';
+    return '🐀';
+  };
+  window.markerClass = function(r){
+    if(r.status==='gesendet'||isAuthorityEntry(r)) return 'action';
+    if(r.kind==='action') return 'action';
+    return (r.type||'').toLowerCase().includes('tote') ? 'dead' : 'rat';
+  };
+  window.setMapFilter = function(f){
+    mapFilter=f;
+    ['all','rat','action','authority','done'].forEach(id=>{const el=eById('mf-'+id);if(el)el.className='mf-btn';});
+    const mapped=f==='today'?'done':f;
+    const act=eById('mf-'+mapped); if(act)act.className='mf-btn active-all';
+    refreshMarkers();
+  };
+  window.refreshMarkers = async function(){
+    if(!map)return;
+    mapMarkers.forEach(m=>map.removeLayer(m));mapMarkers=[];
+    const filtered=entries.filter(e=>{
+      if(!e.lat||!e.lon) return false;
+      if(!isHaupt && !entryIsPublic(e)) return false;
+      if(e.status==='ausgeblendet') return false;
+      if(!entryInDateRange(e)) return false;
+      if(mapFilter==='rat'&&e.kind!=='rat') return false;
+      if(mapFilter==='action'&&(e.kind!=='action'||isAuthorityEntry(e))) return false;
+      if(mapFilter==='authority'&&!(e.status==='gesendet'||isAuthorityEntry(e))) return false;
+      if((mapFilter==='today'||mapFilter==='done')&&!isTodayEntry(e)) return false;
+      return true;
+    });
+    const empty=eById('map-empty'); if(empty)empty.style.display=filtered.length?'none':'flex';
+    for(const r of filtered){
+      const emoji=markerEmoji(r);
+      const cls=markerClass(r)+(emoji.length>2?' small':'');
+      const icon=L.divIcon({className:'',html:`<div class="map-symbol ${cls}">${emoji}</div>`,iconSize:[38,38],iconAnchor:[19,19],popupAnchor:[0,-18]});
+      const d=new Date(r.time||r.createdAt);
+      const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+      const typeCls=r.kind==='rat'?'pu-rat':'pu-action';
+      const p=visiblePhotos(r);
+      const rid=jsStr(r.id);
+      const photoHtml=p.length?`<img class="pu-photo" loading="lazy" src="${p[0]}" onclick="openLightbox('${rid}',0,event)" onerror="imgErr(this)" />`:'';
+      const gpsLine=`<div class="pu-coords">${r.gpsExact?'Exakt gesetzter Kartenpunkt':'Kartenposition'}: ${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)}${r.accuracy?` · ca. ${Math.round(r.accuracy)} m`:''}</div>`;
+      const m=L.marker([r.lat,r.lon],{icon}).addTo(map);
+      m.bindPopup(`<div class="pu-loc">📍 ${esc(r.street)}</div><div class="pu-type ${typeCls}">${emoji} ${esc(r.type)}</div>${photoHtml}<div class="pu-desc">${esc(r.desc)}</div><div class="pu-meta">⏰ ${ts} · 👤 ${esc(r.name)}</div>${gpsLine}<button class="pu-btn" onclick="openEntryFromMap('${rid}')">Meldung öffnen</button>`);
+      mapMarkers.push(m);
+    }
+    if(filtered.length) map.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.3));
+  };
+
+  window.openLightbox = async function(id,idx,ev){
+    safeStop(ev);
+    const entry=findEntry(id);
+    const arr=(entry&&visiblePhotos(entry).length)?visiblePhotos(entry):(isHaupt&&entry?photoList(entry):await loadPhotosDB(id));
+    if(!arr.length)return;
+    const lb=eById('lightbox'), img=eById('lb-img'), cap=eById('lb-cap');
+    if(img){img.removeAttribute('src'); setTimeout(()=>{img.src=arr[idx]||arr[0];},10);}
+    if(cap)cap.textContent=`Foto ${(idx||0)+1} von ${arr.length}`;
+    if(lb)lb.classList.add('open');
+  };
+  window.closeLightbox = function(ev){safeStop(ev);const lb=eById('lightbox');const img=eById('lb-img');if(lb)lb.classList.remove('open');if(img)img.removeAttribute('src');};
+
+  function fillTypeOptions(kind,current){
+    const sel=eById('fix31-type'); if(!sel)return;
+    const arr=kind==='action'?ACTION_TYPES:RAT_TYPES;
+    sel.innerHTML=arr.map(v=>`<option value="${esc(v)}" ${v===current?'selected':''}>${esc(v)}</option>`).join('');
+  }
+  window.editEntry = function(id){
+    const e=findEntry(id); if(!e)return;
+    editId=String(id); editRemovedPhotos=new Set();
+    eById('fix31-kind').value=e.kind==='action'?'action':'rat';
+    eById('fix31-street').value=e.street||'';
+    fillTypeOptions(e.kind==='action'?'action':'rat', e.type||'');
+    eById('fix31-desc').value=e.desc||'';
+    const dt=new Date(e.time||e.createdAt||Date.now()); if(!isNaN(dt)){dt.setMinutes(dt.getMinutes()-dt.getTimezoneOffset());eById('fix31-time').value=dt.toISOString().slice(0,16);} else eById('fix31-time').value='';
+    eById('fix31-name').value=e.name||'';
+    renderEditPhotos(e);
+    eById('fix31-kind').onchange=()=>fillTypeOptions(eById('fix31-kind').value, eById('fix31-type').value);
+    const modal=eById('fix31-edit-modal'); if(modal)modal.classList.add('open');
+  };
+  function renderEditPhotos(e){
+    const box=eById('fix31-photos'); if(!box)return;
+    const arr=photoList(e).filter((_,i)=>!editRemovedPhotos.has(i));
+    if(!arr.length){box.innerHTML='<div class="hint">Keine Fotos vorhanden oder alle entfernt.</div>';return;}
+    box.innerHTML=arr.map((u,i)=>`<div class="fix31-photo-wrap"><img src="${u}" onclick="openLightbox('${jsStr(e.id)}',${photoList(e).indexOf(u)},event)"/><button class="fix31-photo-rm" onclick="fix31RemovePhoto(${photoList(e).indexOf(u)},event)">×</button></div>`).join('');
+  }
+  window.fix31RemovePhoto=function(i,ev){safeStop(ev);editRemovedPhotos.add(Number(i));const e=findEntry(editId);if(e)renderEditPhotos(e);};
+  window.fix31CloseEdit=function(ev){safeStop(ev);const m=eById('fix31-edit-modal');if(m)m.classList.remove('open');editId=null;editRemovedPhotos=new Set();};
+  window.fix31EditGps=function(ev){safeStop(ev);const e=findEntry(editId);if(e){fix31CloseEdit(ev);editGps(e.id);}};
+  window.fix31SaveEdit=async function(ev){
+    safeStop(ev);
+    const e=findEntry(editId); if(!e)return;
+    e.kind=eById('fix31-kind').value==='action'?'action':'rat';
+    e.street=eById('fix31-street').value.trim();
+    e.type=eById('fix31-type').value.trim();
+    e.desc=eById('fix31-desc').value.trim();
+    e.time=eById('fix31-time').value||e.time;
+    e.name=eById('fix31-name').value.trim()||'Anonym';
+    if(editRemovedPhotos.size){e.photoUrls=photoList(e).filter((_,i)=>!editRemovedPhotos.has(i));e.hasPhotos=e.photoUrls.length>0;}
+    addHistory(e,'Meldedaten durch Admin bearbeitet');
+    const ok=await updateEntryRemote(e,'report_admin_edited_original_fields'); if(!ok)return;
+    fix31CloseEdit(ev); updateStats(); renderAdminList(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); checkSupabaseStatus(); toast('✏️ Meldung gespeichert');
+  };
+
+  window.editGps = function(id){
+    const e=findEntry(id); if(!e)return;
+    locPickerTarget={mode:'admin',entryId:String(id)};
+    locPickerCoord={lat:Number(e.lat)||53.55,lon:Number(e.lon)||10.0,accuracy:e.accuracy||null,source:'admin-map',exact:true};
+    const bg=eById('loc-picker-bg'); if(!bg)return;
+    bg.classList.add('open');
+    setTimeout(()=>{
+      if(!locPickerMap){
+        const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,attribution:'© OpenStreetMap'});
+        const aerialOnly=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Luftbild © Esri'});
+        locPickerMap=L.map('loc-map',{layers:[street],zoomControl:true,attributionControl:false}).setView([locPickerCoord.lat,locPickerCoord.lon],19);
+        L.control.layers({'Straßenkarte mit Hausnummern':street,'Luftbild / Häuseransicht':aerialOnly}, null,{collapsed:true,position:'topright'}).addTo(locPickerMap);
+        locPickerMap.on('click',ev=>setPickerPoint(ev.latlng.lat,ev.latlng.lng,null,'admin-map'));
+      }
+      locPickerMap.invalidateSize();
+      locPickerMap.setView([locPickerCoord.lat,locPickerCoord.lon], locPickerCoord.lat?19:13);
+      setPickerPoint(locPickerCoord.lat,locPickerCoord.lon,locPickerCoord.accuracy,'admin-map');
+    },180);
+  };
+  window.closeLocationPicker = async function(save){
+    const bg=eById('loc-picker-bg');
+    if(save && locPickerTarget && locPickerTarget.mode==='admin'){
+      const e=findEntry(locPickerTarget.entryId);
+      if(e && locPickerCoord){
+        e.lat=locPickerCoord.lat; e.lon=locPickerCoord.lon; e.accuracy=locPickerCoord.accuracy||null; e.gpsExact=true; e.gpsSource='admin-map';
+        const label=await reverseAddressFromCoords(e.lat,e.lon);
+        if(label && confirm('Adresse durch Kartenpunkt ersetzen?\n\n'+label)){e.street=label;}
+        addHistory(e,'Standort per Karte durch Admin korrigiert');
+        const ok=await updateEntryRemote(e,'gps_admin_map_corrected'); if(!ok)return;
+        updateStats(); renderAdminList(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); toast('📍 Standort gespeichert');
+      }
+    } else if(save&&locPickerTarget&&locPickerCoord){
+      const hint=eById(locPickerTarget.hintId);
+      if(hint){hint.innerHTML=`🔄 Adresse zum gewählten Punkt wird aktualisiert…<br><span class="gps-exact">Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}</span>`;hint.className='hint';}
+      const newLabel=await reverseAddressFromCoords(locPickerCoord.lat,locPickerCoord.lon);
+      const finalLabel=newLabel || `GPS: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}`;
+      locPickerCoord.address=finalLabel; locPickerCoord.label=finalLabel;
+      const input=eById(locPickerTarget.inputId); if(input)input.value=finalLabel;
+      if(locPickerTarget.inputId==='fr-street') coordsRat=locPickerCoord; else coordsAction=locPickerCoord;
+      if(hint){hint.innerHTML=`✅ Genauer Kartenpunkt und nächste Adresse gespeichert<br><span class="gps-exact">${finalLabel}<br>Koordinaten: ${locPickerCoord.lat.toFixed(6)}, ${locPickerCoord.lon.toFixed(6)}${locPickerCoord.accuracy?` · Genauigkeit ca. ${Math.round(locPickerCoord.accuracy)} m`:''}</span>`;hint.className='hint ok';}
+      toast('✅ Punkt und Adresse übernommen');
+    }
+    if(bg)bg.classList.remove('open'); locPickerTarget=null;
+  };
+
+  window.informAuthority = function(id){
+    const e=findEntry(id); if(!e)return;
+    const recipient='schaedlingsbekaempfung@hu.hamburg.de';
+    const subject=`Rattenmeldung Hamburg: ${e.street||'ohne Adresse'}`;
+    const body=`Sehr geehrte Damen und Herren,\n\nhiermit leite ich eine geprüfte Meldung aus dem Rattenmelder Hamburg weiter.\n\n${buildEntryText(e)}\n\nHinweis: Diese Nachricht wurde manuell durch einen Verwalter geprüft und vorbereitet.\n\nMit freundlichen Grüßen\n${adminLabel()}`;
+    const pre=eById('email-pre'); if(pre)pre.textContent=body;
+    const link=eById('email-link');
+    if(link){link.textContent='📧 Mail-App öffnen';link.href=`mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;link.onclick=function(ev){rememberAuthoritySent(e,recipient); closeSheet('email-sheet'); toast('📧 Behörde informiert gespeichert');};}
+    const copyBtn=document.querySelector('#email-sheet .s-btn.orange');
+    if(copyBtn){copyBtn.onclick=function(ev){safeStop(ev);navigator.clipboard?.writeText(body).then(()=>{});rememberAuthoritySent(e,recipient);closeSheet('email-sheet');toast('📋 Mailtext kopiert und Status gespeichert');};}
+    const sheet=eById('email-sheet'); if(sheet)sheet.classList.add('open');
+  };
+  window.closeSheet=function(id){const s=eById(id);if(s)s.classList.remove('open');};
+  window.closeSheetBg=function(id,ev){if(ev&&ev.target===eById(id))closeSheet(id);};
+
+  window.setStatus = async function(id,status){
+    const e=findEntry(id); if(!e)return;
+    if(status==='bearbeitung'||status==='erledigt') status='geprueft';
+    e.status=status; if(status==='gesendet')e.gesendet=true; addHistory(e,`Status gesetzt: ${ST[status]?.lbl||status}`);
+    const ok=await updateEntryRemote(e,'status_'+status); if(!ok)return;
+    updateStats(); renderAdminList(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); checkSupabaseStatus(); toast(`Status: ${ST[status]?.lbl||status}`);
+  };
+  window.saveReply = async function(id){
+    const e=findEntry(id); if(!e)return;
+    const val=eById('reply-'+id)?.value?.trim()||'';
+    e.stadtAntwort=val;
+    if(val)addHistory(e,'Interne Notiz gespeichert');
+    const ok=await updateEntryRemote(e,'internal_note_saved'); if(!ok)return;
+    renderAdminList(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); toast(val?'✅ Notiz gespeichert':'🗑️ Notiz gelöscht');
+  };
+
+  window.renderAdminList = function(){
+    const el=eById('a-rep-list'); if(!el)return;
+    const newCount=entries.filter(x=>x.status==='neu').length;
+    const approvedCount=entries.filter(x=>x.status==='geprueft').length;
+    const sentCount=entries.filter(x=>x.status==='gesendet'||isAuthorityEntry(x)).length;
+    const count=eById('a-count'); if(count)count.textContent=`${entries.length} Einträge · ${newCount} neu · ${approvedCount} freigegeben · ${sentCount} Behörde`;
+    if(!entries.length){el.innerHTML='<div class="empty-state" style="padding:20px 0"><div class="ei" style="font-size:30px">✅</div><div class="et">Keine Einträge</div></div>';return;}
+    el.innerHTML=entries.map(r=>{
+      const d=new Date(r.time||r.createdAt);
+      const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+      const isRat=r.kind==='rat'; const isAuth=isAuthorityEntry(r); const st=r.status||'neu';
+      const stInfo=ST[st]||ST.neu;
+      const p=photoList(r); const rid=jsStr(r.id);
+      const photoHtml=p.length?`<div class="a-photo-row">${p.map((u,i)=>`<img src="${u}" onclick="openLightbox('${rid}',${i},event)" onerror="imgErr(this)" />`).join('')}</div>`:'';
+      const replyVal=r.stadtAntwort?esc(r.stadtAntwort):'';
+      const replyDisplay=r.stadtAntwort?`<div class="city-reply" style="margin-top:8px"><div class="cr-label">📝 Interne Notiz</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:'';
+      const actions=`<div class="workflow-actions admin-actions">
+        <button type="button" class="workflow-btn status" onclick="setStatus('${rid}','geprueft')">✅ Freigeben</button>
+        <button type="button" class="workflow-btn danger" onclick="setStatus('${rid}','ausgeblendet')">❌ Ablehnen</button>
+        <button type="button" class="workflow-btn edit" onclick="editEntry('${rid}')">✏️ Bearbeiten</button>
+        <button type="button" class="workflow-btn gps" onclick="editGps('${rid}')">📍 Standort ändern</button>
+        <button type="button" class="workflow-btn mail" onclick="informAuthority('${rid}')">📧 Behörde informieren</button>
+      </div>`;
+      return`<div class="a-card ${isRat?'':'action'}" id="ac${rid}"><div class="a-card-top"><div class="a-card-body">
+        <div class="a-loc">📍 ${esc(r.street)} <span class="status-badge ${stInfo.cls}">${stInfo.lbl}</span></div>
+        <div class="a-type ${isRat?'a-rat-type':'a-action-type'}">${isRat?'🐀 Sichtung':(isAuth?'📧 Behörde/Verwaltung':'🟢 Maßnahme')} · ${esc(r.type)}</div>
+        <div class="a-desc">${esc(r.desc)}</div>${photoHtml}
+        <div class="a-meta">👤 ${esc(r.name)} · ⏰ ${ts}${r.lat?` · GPS ${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}`:' · kein GPS'}${r.authorityBy?' · weitergeleitet durch '+esc(r.authorityBy):''}</div>
+        ${actions}${formatHistory(r)}${replyDisplay}
+        <div class="reply-wrap"><input class="reply-inp" id="reply-${rid}" placeholder="Interne Notiz oder Aktenzeichen…" value="${replyVal}" /><button type="button" class="reply-save" onclick="saveReply('${rid}')">💾</button></div>
+      </div><button type="button" class="a-del" onclick="delEntry('${rid}')">🗑️</button></div></div>`;
+    }).join('');
+  };
+
+  // Admin Logout für Safari: direkter, expliziter Handler
+  window.adminLogout = async function(ev){
+    safeStop(ev);
+    try{ if(hasSupabase()) await supabaseClient.auth.signOut(); }catch(_){ }
+    isHaupt=false; currentAdminEmail=''; currentAdminName='';
+    const login=eById('a-login'), panel=eById('a-panel'); if(login)login.style.display='flex'; if(panel)panel.style.display='none';
+    ['a-email','a-pw'].forEach(id=>{const el=eById(id); if(el)el.value='';});
+    closeAdmin(); toast('Abgemeldet');
+  };
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    const bb=eById('build-version-bar'); if(bb)bb.innerHTML='🏷️ <strong>Version:</strong> '+FIX31_BUILD;
+    const lbc=eById('lightbox'); if(lbc){lbc.onclick=function(ev){ if(ev.target===lbc)closeLightbox(ev); };}
+    const lbBtn=document.querySelector('#lightbox .lb-close'); if(lbBtn)lbBtn.onclick=closeLightbox;
+    setInterval(()=>{ if(document.body.classList.contains('admin-open')) checkSupabaseStatus(); },60000);
+    updateStats();
+  });
+})();
+</script>
+
 </body>
 </html>
