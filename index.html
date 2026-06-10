@@ -3180,5 +3180,342 @@ body.admin-open > .page{pointer-events:none!important;}
 })();
 </script>
 
+
+<style>
+/* === FIX27: Behördenmail stabil, keine sinnlosen Einzel-Updates, Abo-Konzept vorbereitet === */
+.rm-authority-sheet{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:flex-end;justify-content:center;z-index:2147483647!important;padding:0;pointer-events:auto!important;}
+.rm-authority-sheet.open{display:flex!important;}
+.rm-authority-box{width:100%;max-height:92vh;overflow-y:auto;background:var(--surface);border-top:1px solid var(--border);border-radius:24px 24px 0 0;padding:16px 18px calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 -18px 60px rgba(0,0,0,.65);}
+.rm-authority-title{font-size:20px;font-weight:900;margin-bottom:10px;letter-spacing:-.4px;}
+.rm-authority-note{font-size:13px;line-height:1.45;color:var(--text2);margin-bottom:10px;}
+.rm-authority-pre{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:13px;line-height:1.55;color:var(--text2);white-space:pre-wrap;max-height:280px;overflow:auto;margin:10px 0 12px;}
+.rm-authority-actions{display:flex;gap:9px;flex-wrap:wrap;}
+.rm-authority-actions button,.rm-authority-actions a{flex:1;min-width:120px;min-height:46px;border-radius:13px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;text-decoration:none;font-family:Inter,-apple-system,sans-serif;font-size:14px;font-weight:900;cursor:pointer;}
+.rm-authority-mail{background:var(--blue);color:#fff!important;border-color:rgba(10,132,255,.45)!important;}
+.rm-authority-copy{background:var(--green);color:#000!important;border-color:rgba(48,209,88,.45)!important;}
+.rm-authority-cancel{background:var(--surface2);color:var(--text2)!important;}
+.rm-info-box{margin:10px 18px 12px;padding:11px 13px;border-radius:12px;border:1px solid rgba(10,132,255,.25);background:rgba(10,132,255,.08);font-size:12px;color:var(--text2);line-height:1.45;}
+.rm-btn.forward{background:rgba(10,132,255,.14)!important;border-color:rgba(10,132,255,.35)!important;color:var(--blue)!important;}
+</style>
+
+<div class="rm-authority-sheet" id="rm-authority-sheet">
+  <div class="rm-authority-box">
+    <div class="rm-authority-title">🏛 Behörde informieren</div>
+    <div class="rm-authority-note">Die E-Mail wird aus dieser Meldung vorbereitet. Aus einer reinen GitHub Pages Seite kann sie nicht unsichtbar im Hintergrund versendet werden. Dafür braucht es später einen Webhook, z. B. Supabase Edge Function, n8n, Twilio oder WhatsApp Cloud API.</div>
+    <div class="rm-edit-label">Empfänger</div>
+    <input class="inp" id="rm-authority-recipient" value="schaedlingsbekaempfung@hu.hamburg.de" />
+    <div class="rm-edit-label">Betreff</div>
+    <input class="inp" id="rm-authority-subject" />
+    <div class="rm-edit-label">E-Mail Text</div>
+    <div class="rm-authority-pre" id="rm-authority-body"></div>
+    <div class="rm-authority-actions">
+      <a class="rm-authority-mail" id="rm-authority-mail-link" href="#">📧 Mail-App öffnen</a>
+      <button class="rm-authority-copy" id="rm-authority-copy" type="button">📋 Kopieren</button>
+      <button class="rm-authority-cancel" id="rm-authority-cancel" type="button">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* === FIX27: stabiler Admin Workflow ohne sinnlose Einzel-Update-Buttons === */
+(function(){
+  const BUILD27='FIX27_AUTHORITY_MAIL_ADMIN_CLEAN_2026-06-10';
+  window.rmCurrentBuild=BUILD27;
+  try{console.log('Rattenmelder Version:',BUILD27);}catch(_){ }
+  function $(id){return document.getElementById(id);}
+  function html27(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function txt27(s){return String(s==null?'':s);}
+  function sid27(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');}
+  function toast27(s){try{if(typeof toast==='function')toast(s);else alert(s);}catch(_){alert(s)}}
+  function now27(){return new Date().toISOString();}
+  function list27(){try{return Array.isArray(entries)?entries:[]}catch(_){return []}}
+  function find27(id){return list27().find(x=>String(x.id)===String(id));}
+  function meta27(e){try{return typeof getMeta==='function'?getMeta(e):((Array.isArray(e.history)?e.history:[]).find(x=>x&&x.__meta==='rattenmelder')||{});}catch(_){return {};}}
+  function setMeta27(e,patch){try{if(typeof setMeta==='function')setMeta(e,patch);else{e.history=e.history||[];let m=e.history.find(x=>x&&x.__meta==='rattenmelder');if(!m){m={__meta:'rattenmelder'};e.history.unshift(m);}Object.assign(m,patch||{});}}catch(_){}}
+  function addHist27(e,text){try{if(typeof addHistory==='function')addHistory(e,text);else{e.history=e.history||[];e.history.unshift({ts:now27(),by:(currentAdminEmail||'Admin'),text});}}catch(_){}}
+  function photos27(e){try{if(typeof photoListRaw==='function')return photoListRaw(e);if(typeof photoList==='function')return photoList(e);return Array.isArray(e.photoUrls)?e.photoUrls.filter(Boolean):[];}catch(_){return [];}}
+  function statusBadge27(r){try{if(typeof statusBadge==='function')return statusBadge(r);}catch(_){} const s=r.status||'neu'; const map={neu:'🟠 Neu',geprueft:'✅ Freigegeben',gesendet:'🏛 Behörde informiert',abgelehnt:'❌ Abgelehnt',papierkorb:'🗑 Papierkorb'}; return `<span class="status-badge ss">${map[s]||s}</span>`;}
+  function adminVisible27(e){if(!e)return false; return true;}
+  async function persist27(e,action,msg){
+    let ok=true;
+    try{if(typeof updateEntryRemote==='function')ok=await updateEntryRemote(e,action||'admin_update');else if(typeof saveEntries==='function')await saveEntries();}catch(err){ok=false;alert('Speichern fehlgeschlagen:\n\n'+(err&&err.message?err.message:String(err)));}
+    try{if(typeof updateStats==='function')updateStats();}catch(_){ }
+    try{if(typeof renderList==='function'&&window.curPage==='liste')renderList();}catch(_){ }
+    try{if(typeof refreshMarkers==='function')refreshMarkers();}catch(_){ }
+    try{if(typeof renderAdminList==='function')renderAdminList();}catch(_){ }
+    if(ok&&msg)toast27(msg); return ok;
+  }
+  function adminLabel27(){try{return typeof adminLabel==='function'?adminLabel():(currentAdminEmail||'Admin');}catch(_){return 'Admin';}}
+  function buildEntryText27(e){
+    const d=new Date(e.time||e.createdAt||Date.now());
+    return `Ort: ${e.street||''}\nGPS: ${e.lat?Number(e.lat).toFixed(6)+', '+Number(e.lon).toFixed(6):'nicht vorhanden'}\nArt: ${e.type||''}\nStatus: ${e.status||'Neu'}\nDatum: ${isNaN(d)?'':d.toLocaleString('de-DE')}\nGemeldet von: ${e.name||'Anonym'}\n\nBeschreibung:\n${e.desc||''}\n\nFoto vorhanden: ${photos27(e).length?'Ja, intern geprüft/Freigabe beachten':'Nein'}\n\nLink: ${location.origin}${location.pathname}#liste`;
+  }
+  function ensureNotice27(){
+    const panel=$('a-panel'); if(!panel||$('rm-notification-concept'))return;
+    const target=$('a-rep-list')||panel.firstElementChild;
+    const box=document.createElement('div'); box.className='rm-info-box'; box.id='rm-notification-concept';
+    box.innerHTML='<strong>Benachrichtigungen:</strong> Einzelne Update und WhatsApp Buttons wurden aus den Meldungen entfernt. Sinnvoll ist künftig ein eigener Abo Ablauf: Nutzer setzen beim Melden einen Haken, wählen E-Mail oder WhatsApp und einen Radius, Standard 0,5 km. Das braucht eine saubere Datenbankerweiterung und einen Webhook Dienst für echten Versand.';
+    if(target&&target.parentNode)target.parentNode.insertBefore(box,target); else panel.appendChild(box);
+  }
+
+  window.renderAdminList=function(){
+    try{if(typeof ensureAdminSystemPanel==='function')ensureAdminSystemPanel();}catch(_){ }
+    ensureNotice27();
+    const el=$('a-rep-list'); if(!el)return;
+    const visible=list27().filter(adminVisible27);
+    const cnt=$('a-count'); if(cnt)cnt.textContent=`${visible.length} Einträge · ${visible.filter(e=>(e.status||'neu')==='neu').length} neu`;
+    if(!visible.length){el.innerHTML='<div class="empty-state" style="padding:20px 0"><div class="ei" style="font-size:30px">✅</div><div class="et">Keine Einträge</div></div>';return;}
+    const pr={neu:0,geprueft:1,gesendet:2,abgelehnt:3,papierkorb:4};
+    const ordered=visible.slice().sort((a,b)=>(pr[a.status||'neu']??9)-(pr[b.status||'neu']??9)||new Date(b.createdAt||b.time||0)-new Date(a.createdAt||a.time||0));
+    el.innerHTML=ordered.map(r=>{
+      const d=new Date(r.time||r.createdAt||Date.now()); const ts=isNaN(d)?'':d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+      const rid=sid27(r.id); const isRat=(r.kind||'rat')==='rat'; const ph=photos27(r); const meta=meta27(r);
+      const cardClass=(r.status==='neu'?'rm-admin-card-new':(r.status==='geprueft'?'rm-admin-card-ok':(r.status==='papierkorb'?'rm-admin-card-trash':(r.status==='abgelehnt'?'rm-admin-card-rejected':''))));
+      const photoHtml=ph.length?`<div class="rm-admin-photo-row">${ph.map((u,i)=>`<img class="rm-admin-photo" loading="lazy" src="${html27(u)}" data-rm-action="photo" data-rm-id="${rid}" data-rm-index="${i}" onclick="return openLightboxAdmin('${rid}',${i})" onerror="imgErr(this)" />`).join('')}</div><div class="a-meta">📷 Foto Status: ${meta.photoApproved?'freigegeben':'nur intern sichtbar'}</div>`:'<div class="a-meta">📷 Kein Foto vorhanden</div>';
+      let main='';
+      if(r.status==='papierkorb'){
+        main=`<button class="rm-btn restore" data-rm-action="restore" data-rm-id="${rid}" onclick="return restoreEntry('${rid}')">↩️ Wiederherstellen</button><button class="rm-btn delete" data-rm-action="permanent-delete" data-rm-id="${rid}" onclick="return permanentDeleteEntry('${rid}')">Endgültig löschen</button>`;
+      }else if(r.status==='abgelehnt'){
+        main=`<button class="rm-btn approve" data-rm-action="approve" data-rm-id="${rid}" onclick="return approveEntry('${rid}')">✅ Doch freigeben</button><button class="rm-btn trash" data-rm-action="trash" data-rm-id="${rid}" onclick="return trashEntry('${rid}')">🗑 Papierkorb</button>`;
+      }else{
+        main=`${(r.status||'neu')==='neu'?`<button class="rm-btn approve" data-rm-action="approve" data-rm-id="${rid}" onclick="return approveEntry('${rid}')">✅ Prüfen & freigeben</button><button class="rm-btn reject" data-rm-action="reject" data-rm-id="${rid}" onclick="return rejectEntry('${rid}')">❌ Ablehnen</button>`:''}<button class="rm-btn forward" data-rm-action="authority" data-rm-id="${rid}" onclick="return informAuthority('${rid}')">🏛 Behörde informieren</button><button class="rm-btn edit" data-rm-action="edit" data-rm-id="${rid}" onclick="return editEntry('${rid}')">✏️ Bearbeiten</button><button class="rm-btn gps" data-rm-action="gps" data-rm-id="${rid}" onclick="return editGps('${rid}')">📍 Standort ändern</button><button class="rm-btn trash" data-rm-action="trash" data-rm-id="${rid}" onclick="return trashEntry('${rid}')">🗑 Papierkorb</button>`;
+      }
+      return `<div class="a-card ${isRat?'':'action'} ${cardClass}" id="ac${rid}"><div class="a-card-top"><div class="a-card-body"><div class="a-loc">📍 ${html27(r.street)} ${statusBadge27(r)}</div><div class="a-type ${isRat?'a-rat-type':'a-action-type'}">${isRat?'🐀 Sichtung':'🟢 Maßnahme'} · ${html27(r.type)}</div><div class="a-desc">${html27(r.desc)}</div>${photoHtml}<div class="a-meta">👤 ${html27(r.name||'Anonym')} · ⏰ ${html27(ts)}${r.lat?` · GPS ${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}`:' · kein GPS'}${r.authorityBy?' · weitergeleitet durch '+html27(r.authorityBy):''}</div><div class="rm-admin-actions">${main}</div>${typeof formatHistory==='function'?formatHistory(r):''}${r.stadtAntwort?`<div class="city-reply" style="margin-top:8px"><div class="cr-label">📝 Interne Notiz / Rückmeldung</div><div class="cr-text">${html27(r.stadtAntwort)}</div></div>`:''}<div class="reply-wrap"><input class="reply-inp" id="reply-${rid}" placeholder="Interne Notiz, Aktenzeichen oder Rückmeldung…" value="${html27(r.stadtAntwort||'')}"><button class="reply-save" onclick="return saveReply('${rid}')">💾</button></div></div></div></div>`;
+    }).join('');
+    try{if(typeof updateSupabaseStatusPanel==='function')updateSupabaseStatusPanel();}catch(_){ }
+  };
+
+  let pendingAuthorityId=null;
+  function openAuthoritySheet27(id){
+    const e=find27(id); if(!e){toast27('Meldung nicht gefunden'); return false;}
+    pendingAuthorityId=String(id);
+    const recipient='schaedlingsbekaempfung@hu.hamburg.de';
+    const subject=`Rattenmeldung Hamburg: ${e.street||''}`;
+    const body=`Sehr geehrte Damen und Herren,\n\nhiermit leite ich eine geprüfte Rattenmeldung aus dem nachbarschaftlichen Rattenmelder weiter.\n\n${buildEntryText27(e)}\n\nHinweis: Diese Nachricht wurde manuell durch einen Verwalter geprüft und über dessen Mailprogramm vorbereitet.\n\nViele Grüße\n${adminLabel27()}`;
+    const sh=$('rm-authority-sheet'); if(!sh)return false;
+    $('rm-authority-recipient').value=recipient;
+    $('rm-authority-subject').value=subject;
+    $('rm-authority-body').textContent=body;
+    const link=$('rm-authority-mail-link');
+    if(link){link.href='mailto:'+recipient+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);link.onclick=async function(ev){await markAuthoritySent27(); setTimeout(()=>closeAuthoritySheet27(),250);};}
+    sh.classList.add('open'); sh.style.display='flex';
+    return false;
+  }
+  function closeAuthoritySheet27(){const sh=$('rm-authority-sheet'); if(sh){sh.classList.remove('open');sh.style.display='none';} pendingAuthorityId=null; return false;}
+  async function markAuthoritySent27(){
+    const e=find27(pendingAuthorityId); if(!e)return;
+    const recipient=($('rm-authority-recipient')?.value||'schaedlingsbekaempfung@hu.hamburg.de').trim();
+    e.status='gesendet'; e.authorityNotifiedAt=now27(); e.authorityRecipient=recipient; e.authorityBy=adminLabel27();
+    setMeta27(e,{approved:true,photoApproved:true,statusOverride:'gesendet',authorityRecipient:recipient,authorityNotifiedAt:e.authorityNotifiedAt});
+    addHist27(e,'Behörde/Verwaltung informiert: '+recipient);
+    await persist27(e,'authority_forwarded','🏛 Behörde informiert gespeichert');
+  }
+  window.informAuthority=function(id){return openAuthoritySheet27(id);};
+  window.closeAuthoritySheet=closeAuthoritySheet27;
+  const copyBtn=$('rm-authority-copy'); if(copyBtn)copyBtn.addEventListener('click',async function(ev){ev.preventDefault();ev.stopPropagation();const txt=($('rm-authority-body')?.textContent||'');try{await navigator.clipboard.writeText(txt);await markAuthoritySent27();toast27('📋 Text kopiert und Status gespeichert');}catch(_){alert(txt);await markAuthoritySent27();}});
+  const cancelBtn=$('rm-authority-cancel'); if(cancelBtn)cancelBtn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();closeAuthoritySheet27();});
+
+  // Alte Einzelaktionen absichtlich deaktivieren, damit nichts Sinnloses mehr passiert.
+  window.notifyEntryEmail=function(){toast27('ℹ️ Einzel-Update wurde entfernt. Benachrichtigungen kommen später über den Abo-Bereich mit Radius.');return false;};
+  window.notifyEntryWhatsApp=function(){toast27('ℹ️ WhatsApp pro Meldung wurde entfernt. Benachrichtigungen kommen später über den Abo-Bereich mit Radius.');return false;};
+
+  function capture27(ev){
+    const authSheet=$('rm-authority-sheet');
+    if(authSheet&&authSheet.classList.contains('open')){
+      const cancel=ev.target.closest&&ev.target.closest('#rm-authority-cancel');
+      const copy=ev.target.closest&&ev.target.closest('#rm-authority-copy');
+      const mail=ev.target.closest&&ev.target.closest('#rm-authority-mail-link');
+      if(cancel||copy||mail){return;}
+    }
+    const ap=$('admin-page'); if(!ap||!ap.classList.contains('open'))return;
+    const btn=ev.target.closest&&ev.target.closest('#admin-page [data-rm-action], #admin-page [data-fix25-action]');
+    if(!btn)return;
+    const action=btn.dataset.rmAction||btn.dataset.fix25Action||''; const id=btn.dataset.rmId||btn.dataset.fix25Id||'';
+    if(action==='email'||action==='whatsapp'){
+      ev.preventDefault();ev.stopPropagation();if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();
+      toast27('ℹ️ Diese Einzelbenachrichtigung wurde entfernt.');return false;
+    }
+    if(action==='authority'){
+      ev.preventDefault();ev.stopPropagation();if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();
+      openAuthoritySheet27(id);return false;
+    }
+  }
+  document.addEventListener('pointerdown',capture27,{capture:true,passive:false});
+  document.addEventListener('click',capture27,{capture:true,passive:false});
+  document.addEventListener('DOMContentLoaded',function(){try{renderAdminList();}catch(_){ }});
+})();
+</script>
+
+
+
+<style>
+/* === FIX28: Admin Bearbeiten nur echte Meldedaten === */
+.rm-edit28-sheet{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:flex-end;justify-content:center;z-index:2147483647!important;pointer-events:auto!important;}
+.rm-edit28-sheet.open{display:flex!important;}
+.rm-edit28-box{width:100%;max-height:94vh;overflow-y:auto;background:var(--surface);border-top:1px solid var(--border);border-radius:24px 24px 0 0;padding:16px 18px calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 -18px 60px rgba(0,0,0,.7);}
+.rm-edit28-title{font-size:20px;font-weight:900;margin-bottom:6px;letter-spacing:-.4px;}
+.rm-edit28-sub{font-size:12px;color:var(--text2);line-height:1.45;margin-bottom:14px;}
+.rm-edit28-group{margin-bottom:14px;}
+.rm-edit28-label{display:block;font-size:12px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px;}
+.rm-edit28-options{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;}
+.rm-edit28-opt{border:1.5px solid var(--border);background:var(--surface2);color:var(--text2);border-radius:12px;padding:10px 8px;min-height:44px;font-family:Inter,-apple-system,sans-serif;font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation;}
+.rm-edit28-opt.on{border-color:var(--orange);background:rgba(255,149,0,.12);color:var(--orange);}
+.rm-edit28-photo-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.rm-edit28-photo-wrap{position:relative;width:82px;}
+.rm-edit28-photo{width:82px;height:82px;border-radius:12px;object-fit:cover;border:1px solid var(--border);background:#222;display:block;}
+.rm-edit28-photo-remove{position:absolute;right:-6px;top:-6px;width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,59,59,.45);background:var(--red);color:#fff;font-size:16px;font-weight:900;line-height:1;cursor:pointer;}
+.rm-edit28-photo-view{width:100%;margin-top:5px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);border-radius:8px;padding:5px 4px;font-size:10px;font-weight:800;cursor:pointer;}
+.rm-edit28-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.rm-edit28-actions button{flex:1;min-width:120px;border:none;border-radius:14px;padding:14px 10px;font-family:Inter,-apple-system,sans-serif;font-size:14px;font-weight:900;cursor:pointer;touch-action:manipulation;}
+.rm-edit28-save{background:var(--green);color:#000;}
+.rm-edit28-cancel{background:var(--surface2);color:var(--text2);border:1px solid var(--border)!important;}
+.rm-edit28-gps{background:rgba(255,149,0,.12);color:var(--orange);border:1px solid rgba(255,149,0,.35)!important;}
+.rm-edit28-danger-note{font-size:11px;color:var(--text3);line-height:1.4;margin-top:7px;}
+</style>
+
+<div class="rm-edit28-sheet" id="rm-edit28-sheet" aria-hidden="true">
+  <div class="rm-edit28-box">
+    <div class="rm-edit28-title">✏️ Meldung bearbeiten</div>
+    <div class="rm-edit28-sub">Hier sind bewusst nur die Angaben bearbeitbar, die bei der ursprünglichen Meldung entstehen: Ort, Art, Beschreibung, Datum/Uhrzeit, Spitzname und Fotos. Status, Admin-Verlauf und Systemwerte bleiben geschützt.</div>
+    <input type="hidden" id="rm-edit28-id" />
+    <input type="hidden" id="rm-edit28-kind" />
+    <div class="rm-edit28-group">
+      <label class="rm-edit28-label">1. Ort / Adresse</label>
+      <input class="inp" id="rm-edit28-street" placeholder="Straße, Hausnummer, Bereich" />
+      <div class="rm-edit28-danger-note">Den genauen Kartenpunkt bitte über „Standort auf Karte ändern“ setzen.</div>
+    </div>
+    <div class="rm-edit28-group">
+      <label class="rm-edit28-label" id="rm-edit28-type-label">2. Was wurde gesehen?</label>
+      <div class="rm-edit28-options" id="rm-edit28-type-options"></div>
+      <input class="inp" id="rm-edit28-type-custom" placeholder="Oder eigene Bezeichnung eintragen" style="margin-top:8px" />
+    </div>
+    <div class="rm-edit28-group">
+      <label class="rm-edit28-label">3. Beschreibung</label>
+      <textarea class="inp" id="rm-edit28-desc" placeholder="Beschreibung der Meldung" style="min-height:110px"></textarea>
+    </div>
+    <div class="rm-edit28-group">
+      <label class="rm-edit28-label">Optional: Datum und Uhrzeit</label>
+      <input class="inp" type="datetime-local" id="rm-edit28-time" />
+    </div>
+    <div class="rm-edit28-group">
+      <label class="rm-edit28-label">Optional: Spitzname</label>
+      <input class="inp" id="rm-edit28-name" placeholder="Spitzname oder anonym" />
+    </div>
+    <div class="rm-edit28-group">
+      <label class="rm-edit28-label">Fotos</label>
+      <div class="rm-edit28-photo-row" id="rm-edit28-photos"></div>
+      <div class="rm-edit28-danger-note">Fotos können hier einzeln aus der Meldung entfernt werden. Neue Fotos werden weiterhin über eine neue Meldung bzw. später über einen eigenen Upload-Schritt ergänzt.</div>
+    </div>
+    <div class="rm-edit28-actions">
+      <button class="rm-edit28-gps" type="button" id="rm-edit28-gps">📍 Standort auf Karte ändern</button>
+      <button class="rm-edit28-save" type="button" id="rm-edit28-save">💾 Speichern</button>
+      <button class="rm-edit28-cancel" type="button" id="rm-edit28-cancel">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* === FIX28: Admin-Bearbeitung nur mit echten Meldemaske-Feldern === */
+(function(){
+  const BUILD28='FIX28_ADMIN_EDIT_ORIGINAL_FIELDS_2026-06-10';
+  window.rmCurrentBuild=BUILD28;
+  try{console.log('Rattenmelder Version:',BUILD28);}catch(_){ }
+  let edit28Photos=[];
+  let selected28Type='';
+  function $(id){return document.getElementById(id);}
+  function list(){try{return Array.isArray(entries)?entries:[]}catch(_){return []}}
+  function find(id){return list().find(x=>String(x.id)===String(id));}
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function safe(s){return String(s==null?'':s).replace(/\/g,'\\').replace(/'/g,"\'").replace(/
+/g,' ');}
+  function msg(s){try{if(typeof toast==='function')toast(s);else alert(s);}catch(_){alert(s)}}
+  function getPhotos(e){try{if(typeof photoListRaw==='function')return photoListRaw(e).slice();if(typeof photoList==='function')return photoList(e).slice();return Array.isArray(e.photoUrls)?e.photoUrls.filter(Boolean).slice():[]}catch(_){return []}}
+  function isoLocal(v){
+    const d=new Date(v||Date.now()); if(isNaN(d))return '';
+    d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16);
+  }
+  const ratTypes=['Lebende Ratte gesehen','Mehrere Ratten gesehen','Tote Ratte gefunden','Rattenbau entdeckt','Rattenkot gefunden','Fraßspuren entdeckt'];
+  const actionTypes=['Köderbox aufgestellt','Schädlingsbekämpfer vor Ort','Rattenbau verschlossen','Hinweisschild aufgestellt','Köderbox kontrolliert','Sonstige Maßnahme'];
+  function renderTypeOptions(kind,current){
+    const opts=(kind==='action')?actionTypes:ratTypes;
+    const box=$('rm-edit28-type-options'); if(!box)return;
+    selected28Type=current||'';
+    box.innerHTML=opts.map(t=>`<button type="button" class="rm-edit28-opt ${t===current?'on':''}" data-edit28-type="${esc(t)}">${esc(t)}</button>`).join('');
+    const custom=$('rm-edit28-type-custom'); if(custom) custom.value=opts.includes(current)?'':(current||'');
+  }
+  function renderPhotos(){
+    const box=$('rm-edit28-photos'); if(!box)return;
+    if(!edit28Photos.length){box.innerHTML='<div class="rm-edit28-danger-note">Keine Fotos vorhanden.</div>';return;}
+    box.innerHTML=edit28Photos.map((u,i)=>`<div class="rm-edit28-photo-wrap"><img class="rm-edit28-photo" src="${esc(u)}" loading="lazy" onerror="if(typeof imgErr==='function')imgErr(this)"><button class="rm-edit28-photo-remove" type="button" data-edit28-remove="${i}">×</button><button class="rm-edit28-photo-view" type="button" data-edit28-view="${i}">Ansehen</button></div>`).join('');
+  }
+  function closeEdit(){const sh=$('rm-edit28-sheet'); if(sh){sh.classList.remove('open');sh.style.display='none';sh.setAttribute('aria-hidden','true');}}
+  window.editEntry=function(id){
+    const e=find(id); if(!e){msg('Meldung nicht gefunden');return false;}
+    const sh=$('rm-edit28-sheet'); if(!sh){msg('Bearbeiten Fenster fehlt');return false;}
+    $('rm-edit28-id').value=String(e.id);
+    $('rm-edit28-kind').value=e.kind||'rat';
+    $('rm-edit28-street').value=e.street||'';
+    $('rm-edit28-desc').value=e.desc||'';
+    $('rm-edit28-time').value=isoLocal(e.time||e.createdAt);
+    $('rm-edit28-name').value=e.name||'Anonym';
+    const label=$('rm-edit28-type-label'); if(label)label.textContent=(e.kind==='action')?'2. Was wurde unternommen?':'2. Was wurde gesehen?';
+    renderTypeOptions(e.kind||'rat',e.type||'');
+    edit28Photos=getPhotos(e);
+    renderPhotos();
+    sh.classList.add('open'); sh.style.display='flex'; sh.setAttribute('aria-hidden','false');
+    setTimeout(()=>{$('rm-edit28-street')&&$('rm-edit28-street').focus();},80);
+    return false;
+  };
+  async function persist(e){
+    let ok=true;
+    try{
+      if(typeof updateEntryRemote==='function') ok=await updateEntryRemote(e,'admin_edit_original_fields');
+      else if(typeof saveEntries==='function') await saveEntries();
+    }catch(err){ok=false;alert('Speichern fehlgeschlagen:
+
+'+(err&&err.message?err.message:String(err)));}
+    try{if(typeof addHistory==='function')addHistory(e,'Meldedaten im Adminbereich bearbeitet');}catch(_){ }
+    try{if(typeof updateStats==='function')updateStats();}catch(_){ }
+    try{if(typeof renderList==='function'&&window.curPage==='liste')renderList();}catch(_){ }
+    try{if(typeof refreshMarkers==='function')refreshMarkers();}catch(_){ }
+    try{if(typeof renderAdminList==='function')renderAdminList();}catch(_){ }
+    if(ok)msg('✏️ Meldung gespeichert');
+  }
+  async function saveEdit(){
+    const id=$('rm-edit28-id')?.value; const e=find(id); if(!e){msg('Meldung nicht gefunden');return;}
+    const custom=($('rm-edit28-type-custom')?.value||'').trim();
+    e.street=($('rm-edit28-street')?.value||'').trim();
+    e.type=custom||selected28Type||e.type||'';
+    e.desc=($('rm-edit28-desc')?.value||'').trim();
+    e.time=$('rm-edit28-time')?.value||e.time||new Date().toISOString();
+    e.name=($('rm-edit28-name')?.value||'').trim()||'Anonym';
+    e.photoUrls=edit28Photos.slice();
+    e.hasPhotos=e.photoUrls.length>0;
+    e.image_url=e.photoUrls[0]||null;
+    closeEdit();
+    await persist(e);
+  }
+  function handle(ev){
+    const t=ev.target;
+    const typeBtn=t.closest&&t.closest('[data-edit28-type]');
+    if(typeBtn){ev.preventDefault();ev.stopPropagation();selected28Type=typeBtn.dataset.edit28Type||'';document.querySelectorAll('#rm-edit28-type-options .rm-edit28-opt').forEach(b=>b.classList.toggle('on',b===typeBtn));const custom=$('rm-edit28-type-custom');if(custom)custom.value='';return false;}
+    const rem=t.closest&&t.closest('[data-edit28-remove]');
+    if(rem){ev.preventDefault();ev.stopPropagation();const i=Number(rem.dataset.edit28Remove);if(Number.isFinite(i)){edit28Photos.splice(i,1);renderPhotos();}return false;}
+    const view=t.closest&&t.closest('[data-edit28-view]');
+    if(view){ev.preventDefault();ev.stopPropagation();const id=$('rm-edit28-id')?.value;const i=Number(view.dataset.edit28View)||0;try{if(typeof openLightboxAdmin==='function')openLightboxAdmin(id,i);else if(typeof openLightbox==='function')openLightbox(id,i);}catch(_){ }return false;}
+    if(t.closest&&t.closest('#rm-edit28-save')){ev.preventDefault();ev.stopPropagation();saveEdit();return false;}
+    if(t.closest&&t.closest('#rm-edit28-cancel')){ev.preventDefault();ev.stopPropagation();closeEdit();return false;}
+    if(t.closest&&t.closest('#rm-edit28-gps')){ev.preventDefault();ev.stopPropagation();const id=$('rm-edit28-id')?.value;try{closeEdit(); if(typeof editGps==='function')editGps(id); else if(window.editGps)window.editGps(id);}catch(_){msg('GPS Bearbeitung nicht verfügbar');}return false;}
+  }
+  document.addEventListener('click',function(ev){if($('rm-edit28-sheet')&&$('rm-edit28-sheet').classList.contains('open'))handle(ev);},true);
+  document.addEventListener('pointerdown',function(ev){if($('rm-edit28-sheet')&&$('rm-edit28-sheet').classList.contains('open'))handle(ev);}, {capture:true,passive:false});
+  // Versionsanzeige nachziehen, damit nicht mehr die alte Kennung sichtbar bleibt.
+  function stamp(){
+    document.querySelectorAll('[id*="version"], .rm-build-badge, .admin-version, #rm-admin-build').forEach(el=>{try{el.textContent=BUILD28;}catch(_){}});
+  }
+  document.addEventListener('DOMContentLoaded',stamp); setTimeout(stamp,500); setTimeout(stamp,1500);
+})();
+</script>
+
 </body>
 </html>
