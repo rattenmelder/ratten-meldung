@@ -639,8 +639,9 @@ button.fix35-error,.s-btn.fix35-error,.workflow-btn.fix35-error{
 #legal-save-status.fix35-status-error{color:var(--red)!important;font-weight:800;}
 .supabase-hint-sql{background:rgba(10,132,255,.08);border:1px solid rgba(10,132,255,.24);color:var(--blue);padding:10px 12px;border-radius:12px;font-size:12px;line-height:1.45;margin-top:10px;}
 
+.fix40-build{font-size:11px;color:var(--text3);margin-top:4px;}
 </style>
-<!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
+<!-- Version: FIX40_ADMIN_HARD_STATUS_FIX_2026-06-10 -->
 
 <style id="fix39-admin-restore-style">
 html.fix39-admin-restore #admin-page{display:flex!important;}
@@ -3760,5 +3761,150 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
   setInterval(()=>{ if($('#admin-page.open')) bindAdminActions(); },1200);
 })();
 </script>
+
+
+<script id="fix40-admin-hard-status-fix">
+(function(){
+  'use strict';
+  const BUILD='FIX40_ADMIN_HARD_STATUS_FIX_2026-06-10';
+  function qs(s,root){return (root||document).querySelector(s);} 
+  function qsa(s,root){return Array.from((root||document).querySelectorAll(s));}
+  function stopHard(ev){try{if(ev){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation&&ev.stopImmediatePropagation();}}catch(_){}}
+  function vibrate(){try{navigator.vibrate&&navigator.vibrate(18);}catch(_){}}
+  function msg(t){try{if(typeof toast==='function')toast(t);else alert(t);}catch(_){alert(t);}}
+  function statusLabel(s){return ({neu:'🆕 Neu',geprueft:'✅ Geprüft',gesendet:'📧 Bereits an Behörde gemeldet',ausgeblendet:'❌ Abgelehnt'})[s]||s;}
+  function findEntryLocal(id){try{return (entries||[]).find(e=>String(e.id)===String(id));}catch(_){return null;}}
+  function rerenderAll(){try{if(typeof updateStats==='function')updateStats();}catch(_){} try{if(typeof renderAdminList==='function')renderAdminList();}catch(e){console.warn('renderAdminList failed',e);} try{if(typeof curPage!=='undefined'&&curPage==='liste'&&typeof renderList==='function')renderList();}catch(_){} try{if(typeof map!=='undefined'&&map&&typeof refreshMarkers==='function')refreshMarkers();}catch(_){} setTimeout(bindFix40AdminButtons,80);}
+  async function ensureAdminSession(){
+    try{
+      if(typeof supabaseClient==='undefined'||!supabaseClient)return true;
+      const {data,error}=await supabaseClient.auth.getSession();
+      if(error)throw error;
+      if(!data||!data.session){msg('⚠️ Admin Session abgelaufen. Bitte neu einloggen.');return false;}
+      try{currentAdminEmail=data.session.user.email||currentAdminEmail||'';}catch(_){}
+      return true;
+    }catch(e){console.error('FIX40 session check failed',e);msg('⚠️ Admin Session konnte nicht geprüft werden.');return false;}
+  }
+  async function updateOnlyStatus(id, uiStatus){
+    const e=findEntryLocal(id);
+    if(!e){msg('⚠️ Meldung nicht gefunden. Bitte Seite einmal neu laden.');return false;}
+    if(!(await ensureAdminSession()))return false;
+    const dbStatus= uiStatus==='geprueft' ? 'in_review' : uiStatus==='ausgeblendet' ? 'rejected' : uiStatus==='gesendet' ? 'forwarded' : 'new';
+    const old=e.status;
+    e.status=uiStatus;
+    if(uiStatus==='gesendet'){
+      e.gesendet=true;
+      e.authorityNotifiedAt=e.authorityNotifiedAt||new Date().toISOString();
+      try{e.authorityBy=(typeof adminLabel==='function'?adminLabel():currentAdminEmail||'Admin');}catch(_){}
+    }
+    try{if(typeof addHistory==='function')addHistory(e,'Status gesetzt: '+statusLabel(uiStatus));}catch(_){}
+    try{
+      if(typeof supabaseClient!=='undefined'&&supabaseClient){
+        const payload={status:dbStatus,updated_at:new Date().toISOString()};
+        if(uiStatus==='gesendet'){
+          payload.authority_notified=true;
+          payload.authority_notified_at=e.authorityNotifiedAt;
+          payload.authority_by=e.authorityBy||null;
+        }
+        // Nur die Statusfelder schreiben. Keine kompletten Datensätze, damit keine falschen/alten Spalten stören.
+        const {error}=await supabaseClient.from('reports').update(payload).eq('id',String(id));
+        if(error)throw error;
+      }else if(typeof saveEntries==='function'){
+        await saveEntries();
+      }
+      msg(uiStatus==='geprueft'?'✅ Meldung freigegeben':uiStatus==='ausgeblendet'?'❌ Meldung abgelehnt':'📧 Behörde informiert gespeichert');
+      rerenderAll();
+      return true;
+    }catch(err){
+      console.error('FIX40 status update failed',err);
+      e.status=old;
+      msg('❌ Status konnte nicht gespeichert werden: '+(err.message||'Unbekannter Fehler'));
+      rerenderAll();
+      return false;
+    }
+  }
+  window.fix40SetStatus=function(id,status,ev){stopHard(ev);vibrate();return updateOnlyStatus(id,status);};
+  window.setStatus=function(id,status,ev){
+    if(status==='bearbeitung'||status==='erledigt')status='geprueft';
+    if(status==='rejected'||status==='abgelehnt')status='ausgeblendet';
+    return window.fix40SetStatus(id,status,ev);
+  };
+  async function markAuthorityAndOpenMail(id,ev){
+    stopHard(ev);vibrate();
+    const e=findEntryLocal(id); if(!e){msg('⚠️ Meldung nicht gefunden.');return false;}
+    let body='';
+    try{body=typeof buildEntryText==='function'?buildEntryText(e):JSON.stringify(e,null,2);}catch(_){body=JSON.stringify(e,null,2);}
+    const subject='Rattenmeldung Hamburg: '+(e.street||'ohne Adresse');
+    const to='schaedlingsbekaempfung@hu.hamburg.de';
+    const sheet=qs('#email-sheet'), pre=qs('#email-pre'), link=qs('#email-link');
+    const mailBody='Sehr geehrte Damen und Herren,\n\nhiermit leite ich eine geprüfte Meldung aus dem privaten Rattenmelder Hamburg weiter.\n\n'+body+'\n\nHinweis: Vorhandene Bilder sind als direkte Links zu genau dieser Meldung im Text enthalten.\n\nMit freundlichen Grüßen\n'+(typeof adminLabel==='function'?adminLabel():'Admin');
+    if(pre)pre.textContent=mailBody;
+    const href='mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(mailBody);
+    if(link){link.href=href;link.onclick=async function(e2){stopHard(e2);await updateOnlyStatus(id,'gesendet');setTimeout(()=>{location.href=href;},80);return false;};}
+    const copy=qs('#email-sheet .s-btn.orange');
+    if(copy){copy.onclick=async function(e3){stopHard(e3);try{await navigator.clipboard.writeText(mailBody);}catch(_){} await updateOnlyStatus(id,'gesendet'); if(sheet)sheet.classList.remove('open'); return false;};}
+    const close=qs('#email-sheet .sheet-close');
+    if(close){close.onclick=function(e4){stopHard(e4); if(sheet)sheet.classList.remove('open'); return false;};}
+    if(sheet)sheet.classList.add('open'); else { await updateOnlyStatus(id,'gesendet'); location.href=href; }
+    msg('📧 Behördenmail vorbereitet');
+    return false;
+  }
+  window.informAuthority=markAuthorityAndOpenMail;
+  function cardId(btn){const c=btn&&btn.closest&&btn.closest('.a-card');return c?(c.id||'').replace(/^ac/,''):'';}
+  function bindFix40AdminButtons(){
+    const admin=qs('#admin-page'); if(!admin)return;
+    qsa('#a-rep-list .a-card',admin).forEach(card=>{
+      const id=(card.id||'').replace(/^ac/,''); if(!id)return;
+      qsa('button,a',card).forEach(btn=>{
+        const t=(btn.textContent||'')+' '+(btn.getAttribute('onclick')||'');
+        if(/Freigeben|Geprüft|geprueft/.test(t)){
+          btn.setAttribute('type','button');btn.dataset.fix40='approve';btn.onclick=function(ev){return window.fix40SetStatus(id,'geprueft',ev);};
+        }else if(/Ablehnen|Abgelehnt|ausgeblendet|rejected/.test(t)){
+          btn.setAttribute('type','button');btn.dataset.fix40='reject';btn.onclick=function(ev){return window.fix40SetStatus(id,'ausgeblendet',ev);};
+        }else if(/Behörde informieren|Behörden informieren|informAuthority/.test(t)){
+          btn.setAttribute('type','button');btn.dataset.fix40='authority';btn.onclick=function(ev){return markAuthorityAndOpenMail(id,ev);};
+        }
+      });
+    });
+  }
+  // Capture ganz vorne: verhindert, dass alte kaputte onclick Handler zuerst laufen.
+  ['click','touchend'].forEach(type=>document.addEventListener(type,function(ev){
+    const admin=qs('#admin-page.open'); if(!admin)return;
+    const btn=ev.target&&ev.target.closest?ev.target.closest('button,a'):null; if(!btn||!admin.contains(btn))return;
+    const id=cardId(btn); if(!id)return;
+    const key=btn.dataset.fix40||''; const text=(btn.textContent||'')+' '+(btn.getAttribute('onclick')||'');
+    if(key==='approve'||/Freigeben|Geprüft|geprueft/.test(text)){return window.fix40SetStatus(id,'geprueft',ev);}
+    if(key==='reject'||/Ablehnen|Abgelehnt|ausgeblendet|rejected/.test(text)){return window.fix40SetStatus(id,'ausgeblendet',ev);}
+    if(key==='authority'||/Behörde informieren|Behörden informieren|informAuthority/.test(text)){return markAuthorityAndOpenMail(id,ev);}
+  },true));
+  // Render absichern.
+  const oldRender=window.renderAdminList;
+  if(typeof oldRender==='function'){
+    window.renderAdminList=function(){const r=oldRender.apply(this,arguments);setTimeout(bindFix40AdminButtons,30);return r;};
+  }
+  // Reload Admin wiederherstellen, ohne dass der Nutzer neu klicken muss.
+  async function restoreAdminClean(){
+    const wants=localStorage.getItem('rattenAdminPanelOpen')==='yes'||localStorage.getItem('rattenAdminOpen')==='yes'||localStorage.getItem('rattenAdminOpenPersist_v38')==='yes'||localStorage.getItem('rattenAdminOpenPersist_v37')==='yes';
+    if(!wants)return;
+    const a=qs('#admin-page'); if(a)a.classList.add('open'); document.body.classList.add('admin-open');
+    if(!(await ensureAdminSession()))return;
+    try{if(typeof loadAdminDataIfAllowed==='function')await loadAdminDataIfAllowed();}catch(_){}
+    try{if(typeof showPanel==='function')showPanel();}catch(_){}
+    try{if(typeof renderAdminList==='function')renderAdminList();}catch(_){}
+    bindFix40AdminButtons();
+  }
+  window.openAdmin=(function(prev){return function(){localStorage.setItem('rattenAdminPanelOpen','yes');localStorage.setItem('rattenAdminOpen','yes');const a=qs('#admin-page');if(a)a.classList.add('open');document.body.classList.add('admin-open');try{prev&&prev.apply(this,arguments);}catch(_){}setTimeout(bindFix40AdminButtons,80);return false;};})(window.openAdmin);
+  window.closeAdmin=(function(prev){return function(){localStorage.removeItem('rattenAdminPanelOpen');localStorage.removeItem('rattenAdminOpen');try{prev&&prev.apply(this,arguments);}catch(_){}const a=qs('#admin-page');if(a)a.classList.remove('open');document.body.classList.remove('admin-open');return false;};})(window.closeAdmin);
+  function setBuild(){
+    try{document.title='Rattenmelder Hamburg · '+BUILD;}catch(_){}
+    const b=qs('#system-status-bar'); if(b&&!/FIX40/.test(b.textContent||'')) b.insertAdjacentHTML('beforeend','<div class="fix40-build">Version: '+BUILD+'</div>');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{setBuild();restoreAdminClean();setTimeout(bindFix40AdminButtons,700);});
+  else {setBuild();setTimeout(()=>{restoreAdminClean();bindFix40AdminButtons();},100);}
+  window.addEventListener('load',()=>{setBuild();setTimeout(bindFix40AdminButtons,500);});
+  setInterval(()=>{if(qs('#admin-page.open'))bindFix40AdminButtons();},1000);
+})();
+</script>
+
 </body>
 </html>
