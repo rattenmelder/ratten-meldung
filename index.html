@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10 -->
+<!-- BUILD: FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -7,11 +7,11 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Rattenmelder Hamburg · FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10</title>
+<title>Rattenmelder Hamburg · FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10');
+console.log('Rattenmelder Version: FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -922,7 +922,7 @@ button.fix35-error,.s-btn.fix35-error,.workflow-btn.fix35-error{
     </div>
     <div id="a-panel" style="display:none;padding-bottom:40px">
       <div class="sheets-bar" id="system-status-bar">🟡 <strong>Systemstatus wird geprüft…</strong></div>
-      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10</div>
+      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10</div>
       <div class="sheets-bar" id="sheets-bar">📊 <strong>Google Sheets nicht verbunden.</strong> <a href="#" onclick="openSheetsSheet(event)">→ Einrichten</a></div>
       <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Neue Meldungen sind erst nach Admin-Freigabe öffentlich sichtbar. Pro Meldung: prüfen, bearbeiten, Standort korrigieren oder Behörde informieren. Benachrichtigungen an Anwohner laufen später über einen eigenen sicheren Nutzerbereich mit Radius, Abmeldung und freiwilliger Kontaktangabe.</div>
       <div class="a-bar">
@@ -1047,7 +1047,7 @@ button.fix35-error,.s-btn.fix35-error,.workflow-btn.fix35-error{
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const APP_BUILD = 'FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
+const APP_BUILD = 'FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10';
 const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
 const ADMIN_EMAIL = 'saschakitschke@gmx.net';
 const SUPABASE_URL = 'https://fholanhyuwapgrnhlsqq.supabase.co';
@@ -1128,8 +1128,8 @@ function declinePrivacy(){privacyAccepted=false;localStorage.setItem('rattenPriv
 function ensurePrivacyOk(){if(privacyAccepted)return true;showPrivacyConsentIfNeeded();toast('🔒 Bitte Datenschutzhinweis bestätigen');return false;}
 
 function hasSupabase(){return !!supabaseClient;}
-function dbStatusToUi(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'bearbeitung',resolved:'erledigt',rejected:'neu'})[s]||s||'neu';}
-function uiStatusToDb(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',bearbeitung:'in_progress',erledigt:'resolved'})[s]||'new';}
+function dbStatusToUi(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'geprueft',resolved:'geprueft',rejected:'ausgeblendet'})[s]||s||'neu';}
+function uiStatusToDb(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',ausgeblendet:'rejected',bearbeitung:'in_review',erledigt:'in_review'})[s]||'new';}
 function dbReportToEntry(r){const photos=Array.isArray(r.photo_urls)?r.photo_urls:(r.image_url?[r.image_url]:[]);return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};}
 function entryToDb(e){const photos=Array.isArray(e.photoUrls)?e.photoUrls.filter(Boolean):[];return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,accuracy:e.accuracy||null,gps_source:e.gpsSource||null,gps_exact:!!e.gpsExact,image_url:photos.length?photos[0]:null,photo_urls:photos,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',event_time:e.time||new Date().toISOString(),admin_note:e.stadtAntwort||null,history:e.history||[],authority_notified:!!e.authorityNotifiedAt,authority_notified_at:e.authorityNotifiedAt||null,authority_email:e.authorityRecipient||null,authority_by:e.authorityBy||null,created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};}
 async function loadSupabaseData(){
@@ -2017,7 +2017,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script>
 /* FIX31 careful integration: keine Komplett-Neuentwicklung, sondern gezielte stabile Overrides. */
 (function(){
-  const FIX31_BUILD = 'FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
+  const FIX31_BUILD = 'FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10';
   const RAT_TYPES = ['Lebende Ratte gesehen','Mehrere Ratten gesehen','Tote Ratte gefunden','Rattenbau entdeckt','Rattenkot gefunden','Fraßspuren entdeckt'];
   const ACTION_TYPES = ['Köderbox aufgestellt','Schädlingsbekämpfer vor Ort','Rattenbau verschlossen','Hinweisschild aufgestellt','Köderbox kontrolliert','Sonstige Maßnahme'];
   let editId = null;
@@ -2380,10 +2380,10 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10
+/* FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10
    Konservativer Patch auf Fix31: keine großen Umbauten, nur gezielte Korrekturen. */
 (function(){
-  const FIX32_BUILD='FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
+  const FIX32_BUILD='FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10';
   const ADMIN_CONTACT_EMAIL='saschakitschke@gmx.net';
   const SITE_RESPONSIBLE='Sascha von Kitschke';
   const AUTHORITY_MAIL='schaedlingsbekaempfung@hu.hamburg.de';
@@ -2409,9 +2409,14 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
     ST.geprueft={cls:'ss',lbl:'✅ Geprüft'};
     ST.gesendet={cls:'ss',lbl:'📧 Bereits an Behörde gemeldet'};
     ST.ausgeblendet={cls:'sn',lbl:'❌ Abgelehnt'};
+    if(Array.isArray(entries)){entries.forEach(function(e){if(e && (e.status==='rejected'||e.status==='abgelehnt')) e.status='ausgeblendet';});}
   }
 
-  function photoUrls(e){return (Array.isArray(e&&e.photoUrls)?e.photoUrls:[]).filter(Boolean);}
+  function photoUrls(e){
+    // Nur die direkt zu dieser Meldung gespeicherten Foto-URLs verwenden. Keine Bucket-Übersicht und kein allgemeiner Foto-Link.
+    const arr=(Array.isArray(e&&e.photoUrls)?e.photoUrls:[]).filter(Boolean);
+    return arr.filter(u=>/^https?:\/\//i.test(String(u)) && !/\/storage\/v1\/object\/public\/report-photos\/?$/i.test(String(u)));
+  }
   function originalMarkerEmoji(r){
     const t=(r.type||'').toLowerCase();
     if(r.kind==='action'){
@@ -2631,12 +2636,12 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10
+/* FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10
    Entfernt den rechten Updates Tab aus der Navigation.
    Benachrichtigungen werden nicht mehr als halbfertiger Button angeboten,
    sondern bleiben als eigener sicherer Nutzerbereich geplant. */
 (function(){
-  const BUILD='FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
+  const BUILD='FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10';
   function hideUpdateTabs(){
     document.querySelectorAll('button').forEach(btn=>{
       const txt=(btn.textContent||'').trim();
@@ -2660,12 +2665,12 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10
+/* FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10
    Rechtliches im Adminbereich komplett bearbeitbar.
    Speichert zuerst lokal und versucht zusätzlich Supabase app_settings zu nutzen,
    damit die App auch ohne neue Datenbanktabelle stabil bleibt. */
 (function(){
-  const BUILD='FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
+  const BUILD='FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10';
   const LEGAL_KEY='rattenLegalSettings_v1';
   const DEFAULT_LEGAL={
     siteTitle:'Rattenmelder Hamburg',
@@ -2838,11 +2843,11 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10
+/* FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10
    Ergänzt sichtbares und haptisches Feedback für Buttons, besonders Rechtliches speichern/Vorschau.
    Greift konservativ ein und verändert keine Datenlogik. */
 (function(){
-  const FIX35_BUILD='FIX35_STABILITY_LEGAL_FEEDBACK_2026-06-10';
+  const FIX35_BUILD='FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10';
   const q=(s,root=document)=>root.querySelector(s);
   const qa=(s,root=document)=>Array.from(root.querySelectorAll(s));
   function vibrate(ms){try{if(navigator.vibrate)navigator.vibrate(ms||12);}catch(_){}}
@@ -2943,6 +2948,102 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
   document.addEventListener('DOMContentLoaded',()=>{updateBuildBars();attachGlobalButtonFeedback();setInterval(attachGlobalButtonFeedback,1200);});
   window.addEventListener('load',()=>{updateBuildBars();attachGlobalButtonFeedback();});
   if(document.readyState!=='loading'){setTimeout(()=>{updateBuildBars();attachGlobalButtonFeedback();},80);}
+})();
+</script>
+
+
+<script>
+/* === FIX36: P1 Nachbesserung Behörden-Fotolinks + Ablehnen bleibt Abgelehnt + Radius-Klarstellung === */
+(function(){
+  const BUILD='FIX36_P1_STATUS_PHOTOLINKS_RADIUS_CLARITY_2026-06-10';
+  try{document.title='Rattenmelder Hamburg · '+BUILD;}catch(_){ }
+
+  function byId(id){return document.getElementById(id);}
+  function safeStop(ev){try{if(ev){ev.preventDefault();ev.stopPropagation();}}catch(_){ }}
+
+  // Statusmapping direkt nachladen: Supabase rejected darf nie wieder als Neu angezeigt werden.
+  try{
+    window.dbStatusToUi=function(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'geprueft',resolved:'geprueft',rejected:'ausgeblendet'})[s]||s||'neu';};
+    window.uiStatusToDb=function(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',ausgeblendet:'rejected',bearbeitung:'in_review',erledigt:'in_review'})[s]||'new';};
+    if(window.ST){window.ST.ausgeblendet={cls:'sn',lbl:'❌ Abgelehnt'};}
+    if(Array.isArray(window.entries)){window.entries.forEach(e=>{if(e&&(e.status==='rejected'||e.status==='abgelehnt'))e.status='ausgeblendet';});}
+  }catch(_){ }
+
+  window.fix36PhotoUrls=function(e){
+    const arr=(Array.isArray(e&&e.photoUrls)?e.photoUrls:[]).filter(Boolean).map(String);
+    return arr.filter(u=>/^https?:\/\//i.test(u) && !/\/storage\/v1\/object\/public\/report-photos\/?$/i.test(u));
+  };
+
+  // Behördenmail: nur die direkten Foto-Links dieser konkreten Meldung aufnehmen.
+  window.buildEntryText=function(e){
+    const photos=window.fix36PhotoUrls(e);
+    const statusLabel=(window.ST&&ST[e.status||'neu']?ST[e.status||'neu'].lbl:(e.status||'Neu'));
+    const meldender=(e.name&&String(e.name).trim()&&String(e.name).trim().toLowerCase()!=='anonym')?`Spitzname: ${e.name}`:'Anonyme Meldung';
+    return `Ort: ${e.street||''}\nGPS: ${e.lat?Number(e.lat).toFixed(6)+', '+Number(e.lon).toFixed(6):'nicht vorhanden'}\nArt: ${e.type||''}\nStatus: ${statusLabel}\nDatum: ${new Date(e.time||e.createdAt||Date.now()).toLocaleString('de-DE')}\n${meldender}\nBeschreibung:\n${e.desc||''}\n${photos.length?'\nFoto-Link(s) zu genau dieser Meldung:\n'+photos.map((u,i)=>(i+1)+'. '+u).join('\n'):'\nFoto-Link(s): keine freigegebenen Fotos zu dieser Meldung gespeichert'}\n\nLink zur Meldungsübersicht: ${typeof publicUrl==='function'?publicUrl():location.origin+location.pathname}#liste`;
+  };
+
+  window.informAuthority=function(id,ev){
+    safeStop(ev);
+    const e=(window.entries||[]).find(x=>String(x.id)===String(id));
+    if(!e)return;
+    const recipient=window.AUTHORITY_MAIL||'schaedlingsbekaempfung@hu.hamburg.de';
+    const subject=`Rattenmeldung Hamburg: ${e.street||'ohne Adresse'}`;
+    const body=`Sehr geehrte Damen und Herren,\n\nhiermit leite ich eine geprüfte Meldung aus dem privaten Rattenmelder Hamburg weiter.\n\n${window.buildEntryText(e)}\n\nHinweis: Diese Nachricht wurde manuell durch einen Admin geprüft und vorbereitet. Fotoanlagen können technisch nicht automatisch über GitHub Pages angehängt werden; vorhandene Bilder sind deshalb als direkte Links zu genau dieser Meldung im Text aufgeführt.\n\nMit freundlichen Grüßen\n${typeof adminLabel==='function'?adminLabel():'Admin'}`;
+    const pre=byId('email-pre'); if(pre)pre.textContent=body;
+    const link=byId('email-link');
+    if(link){
+      link.textContent='📧 Mail-App öffnen';
+      link.href=`mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      link.onclick=function(ev2){
+        safeStop(ev2);
+        try{rememberAuthoritySent(e,recipient);}catch(_){
+          e.status='gesendet'; e.authorityNotifiedAt=new Date().toISOString(); e.authorityRecipient=recipient;
+          if(typeof saveEntries==='function')saveEntries();
+        }
+        setTimeout(()=>{window.location.href=link.href;},60);
+        return false;
+      };
+    }
+    const copyBtn=document.querySelector('#email-sheet .s-btn.orange');
+    if(copyBtn){
+      copyBtn.onclick=function(ev3){
+        safeStop(ev3);
+        navigator.clipboard?.writeText(body).then(()=>{try{rememberAuthoritySent(e,recipient);}catch(_){ } if(typeof toast==='function')toast('📋 Behördenmail kopiert und Status gespeichert');});
+        return false;
+      };
+    }
+    const sheet=byId('email-sheet'); if(sheet)sheet.classList.add('open');
+    if(typeof toast==='function')toast('📧 Behördenmail vorbereitet');
+    return false;
+  };
+
+  // Ablehnen: sofort sichtbar, dauerhaft abgelehnt, nicht mehr Neu.
+  const oldSetStatus=window.setStatus;
+  window.setStatus=async function(id,status,ev){
+    safeStop(ev);
+    if(status==='rejected'||status==='abgelehnt')status='ausgeblendet';
+    const e=(window.entries||[]).find(x=>String(x.id)===String(id));
+    if(!e)return;
+    e.status=status;
+    if(status==='gesendet')e.gesendet=true;
+    try{if(typeof addHistory==='function')addHistory(e,`Status gesetzt: ${(window.ST&&ST[status]?ST[status].lbl:status)}`);}catch(_){ }
+    let ok=true;
+    try{if(typeof updateEntryRemote==='function')ok=await updateEntryRemote(e,'status_'+status);else if(typeof saveEntries==='function')await saveEntries();}catch(err){ok=false;console.error(err);}
+    if(!ok){if(typeof toast==='function')toast('⚠️ Status konnte nicht gespeichert werden');return false;}
+    try{if(typeof updateStats==='function')updateStats(); if(typeof renderAdminList==='function')renderAdminList(); if(window.curPage==='liste'&&typeof renderList==='function')renderList(); if(window.map&&typeof refreshMarkers==='function')refreshMarkers();}catch(_){ }
+    if(typeof toast==='function')toast(status==='ausgeblendet'?'❌ Meldung abgelehnt':'✅ Status gespeichert');
+    return false;
+  };
+
+  // Nachträglich alle Ablehnen-Buttons sauber verdrahten, auch nach neuem Rendern.
+  const oldRender=window.renderAdminList;
+  if(typeof oldRender==='function'){
+    window.renderAdminList=function(){
+      const r=oldRender.apply(this,arguments);
+      setTimeout(()=>{document.querySelectorAll("button[onclick*='ausgeblendet'],button[onclick*='rejected']").forEach(btn=>{btn.onclick=function(ev){const card=btn.closest('.a-card'); const id=(card&&card.id?card.id.replace(/^ac/,''):null); const m=(btn.getAttribute('onclick')||'').match(/setStatus\('([^']+)'/); return window.setStatus(m?m[1]:id,'ausgeblendet',ev);};});},0);
+      return r;
+    };
+  }
 })();
 </script>
 
