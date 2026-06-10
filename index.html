@@ -4606,5 +4606,257 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 })();
 </script>
 
+
+
+<script id="fix45-admin-cleanup-authority-text">
+(function(){
+  'use strict';
+  const BUILD='FIX45B_ADMIN_STATUS_SECURITY_CLEAN_2026-06-11';
+  const DEFAULT_MAIL='schaedlingsbekaempfung@hu.hamburg.de';
+  const DEFAULT_TEMPLATES={
+    standard:{label:'Standardmeldung',text:'Sehr geehrte Damen und Herren,
+
+über die private Plattform „Rattenmelder Hamburg“ wurde eine mögliche Rattensichtung gemeldet. Die Meldung wurde im Adminbereich geprüft und wird Ihnen zur weiteren Prüfung und gegebenenfalls zur Einleitung geeigneter Maßnahmen weitergeleitet.
+
+Wir bitten um kurze Rückmeldung, wie mit der Meldung weiter verfahren wird beziehungsweise ob diese an eine andere zuständige Stelle weitergeleitet werden soll.'},
+    akut:{label:'Dringende Sichtung / mehrere Tiere',text:'Sehr geehrte Damen und Herren,
+
+über die private Plattform „Rattenmelder Hamburg“ wurde eine aus unserer Sicht dringende Rattenmeldung erfasst. Aufgrund der Beschreibung beziehungsweise der Häufung der Sichtung bitten wir um zeitnahe Prüfung und Rückmeldung zum weiteren Vorgehen.
+
+Falls eine andere Stelle zuständig ist, bitten wir um Weiterleitung oder einen kurzen Hinweis zur zuständigen Ansprechstelle.'},
+    tot:{label:'Tote Ratte / Kadaver',text:'Sehr geehrte Damen und Herren,
+
+über die private Plattform „Rattenmelder Hamburg“ wurde der Fund einer toten Ratte gemeldet. Wir bitten um Prüfung, ob eine Entfernung, weitere Kontrolle oder zusätzliche Maßnahme erforderlich ist.
+
+Bitte geben Sie eine kurze Rückmeldung, wie hier weiter verfahren wird.'},
+    bau:{label:'Rattenbau / Löcher / Spuren',text:'Sehr geehrte Damen und Herren,
+
+über die private Plattform „Rattenmelder Hamburg“ wurden Hinweise auf einen möglichen Rattenbau, Löcher oder Fraßspuren gemeldet. Wir bitten um fachliche Prüfung der Situation und Rückmeldung, ob Maßnahmen erforderlich sind.
+
+Die konkreten Meldedaten sind unten aufgeführt.'},
+    privat:{label:'Privater Bereich',text:'Sehr geehrte Damen und Herren,
+
+über die private Plattform „Rattenmelder Hamburg“ wurde eine Sichtung im privaten Bereich gemeldet. Uns ist bewusst, dass die Zuständigkeit je nach Grundstückssituation unterschiedlich sein kann. Wir bitten dennoch um Einschätzung, ob eine behördliche Zuständigkeit besteht oder an wen sich die betroffene Person wenden sollte.
+
+Die konkreten Meldedaten sind unten aufgeführt.'}
+  };
+
+  function qs(s,r){return (r||document).querySelector(s)}
+  function qsa(s,r){return Array.from((r||document).querySelectorAll(s))}
+  function haptic(){try{navigator.vibrate&&navigator.vibrate(14)}catch(_){}}
+  function toast45(m){try{if(typeof toast==='function')toast(m);else alert(m)}catch(_){}}
+  function safe(v){return String(v==null?'':v)}
+  function clean(v){return safe(v).replace(/[<>]/g,'')}
+  function entriesArr(){try{return (typeof entries!=='undefined'&&Array.isArray(entries))?entries:[]}catch(_){return []}}
+  function findEntry(id){return entriesArr().find(e=>String(e.id)===String(id))}
+  function adminName(){try{return typeof adminLabel==='function'?adminLabel():(typeof currentAdminEmail!=='undefined'&&currentAdminEmail?currentAdminEmail:'Admin')}catch(_){return 'Admin'}}
+  function niceDate(v){try{return new Date(v||Date.now()).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})}catch(_){return safe(v)}}
+  function publicLink(){try{return typeof publicUrl==='function'?publicUrl():location.origin+location.pathname}catch(_){return location.href.split('#')[0]}}
+  function statusLabel(e){try{return (window.ST&&window.ST[e.status||'neu']&&window.ST[e.status||'neu'].lbl)||e.status||'Neu'}catch(_){return e.status||'Neu'}}
+  function scopeLabel(e){
+    try{if(typeof window.scopeLabel==='function'&&typeof window.getScope==='function')return window.scopeLabel(window.getScope(e));}catch(_){}
+    try{
+      const h=Array.isArray(e&&e.history)?e.history:[];
+      const meta=h.find(x=>x&&(x.__meta==='rattenmelder'||x.__scope==='rattenmelder'))||{};
+      const raw=safe(e&&e.locationScope||e&&e.scope||meta.locationScope||meta.scope||'').toLowerCase();
+      if(raw.includes('privat')||raw.includes('private'))return 'Privater Bereich';
+      if(raw.includes('öffentlich')||raw.includes('oeffentlich')||raw.includes('public'))return 'Öffentlicher Bereich';
+    }catch(_){}
+    return 'Nicht angegeben';
+  }
+  function photoLinks(e){let arr=[]; if(Array.isArray(e&&e.photoUrls))arr=e.photoUrls; else if(Array.isArray(e&&e.photo_urls))arr=e.photo_urls; else if(e&&e.image_url)arr=[e.image_url]; return arr.map(String).filter(u=>/^https?:\/\//i.test(u)&&!/\/report-photos\/?$/i.test(u));}
+
+  function templateFromEditor(key){
+    key=key||autoTemplateKey(null);
+    const txt=qs('.fix44-text[data-key="'+key+'"]');
+    if(txt&&txt.value.trim())return txt.value.trim();
+    return (DEFAULT_TEMPLATES[key]||DEFAULT_TEMPLATES.standard).text;
+  }
+  function selectedKeyForEntry(e){
+    const type=safe(e&&e.type).toLowerCase(); const desc=safe(e&&e.desc).toLowerCase(); const scope=scopeLabel(e).toLowerCase(); const blob=type+' '+desc;
+    if(scope.includes('privat'))return 'privat';
+    if(/tot|kadaver/.test(blob))return 'tot';
+    if(/bau|loch|löcher|loecher|spur|fraß|frass|kot/.test(blob))return 'bau';
+    if(/mehrere|viele|akut|spielplatz|schule|kita/.test(blob))return 'akut';
+    const sel=qs('#fix44-selected'); return sel&&sel.value?sel.value:'standard';
+  }
+  function autoTemplateKey(){return (qs('#fix44-selected')&&qs('#fix44-selected').value)||'standard'}
+  function mailDetails(e){
+    const photos=photoLinks(e);
+    const melder=(e.name&&safe(e.name).trim()&&safe(e.name).trim().toLowerCase()!=='anonym')?'Spitzname „'+clean(e.name).trim()+'“':'anonym';
+    return [
+      'RATTENMELDUNG HAMBURG',
+      '=====================',
+      '',
+      'Meldungsdaten',
+      '------------',
+      'Meldungs-ID: '+clean(e.id||''),
+      'Status im Portal: '+clean(statusLabel(e)),
+      'Standortart: '+clean(scopeLabel(e)),
+      'Adresse / Ort: '+clean(e.street||''),
+      'GPS-Koordinaten: '+(e.lat?Number(e.lat).toFixed(6)+', '+Number(e.lon).toFixed(6):'nicht vorhanden'),
+      'Art der Meldung: '+clean(e.type||''),
+      'Datum / Uhrzeit der Sichtung: '+niceDate(e.time||e.createdAt),
+      'Gemeldet von: '+melder,
+      '',
+      'Beschreibung:',
+      clean(e.desc||''),
+      '',
+      photos.length ? 'Foto-Link(s) zu genau dieser Meldung:
+'+photos.map((u,i)=>(i+1)+'. '+u).join('
+') : 'Foto-Link(s): Zu dieser Meldung sind keine freigegebenen Fotos gespeichert.',
+      '',
+      'Öffentliche Übersicht:',
+      publicLink()+'#liste',
+      '',
+      'Hinweis: Vorhandene Bilder sind als direkte Links zu genau dieser konkreten Meldung im Text enthalten.'
+    ].join('
+');
+  }
+  function buildMailBody(e){
+    const key=selectedKeyForEntry(e);
+    let tpl=templateFromEditor(key).trim();
+    let body=tpl+'
+
+'+mailDetails(e);
+    if(!/mit freundlichen grüßen|mit freundlichen gruessen/i.test(body)) body+='
+
+Mit freundlichen Grüßen
+'+adminName();
+    return body;
+  }
+  window.buildEntryText=function(e){return buildMailBody(e)};
+  window.informAuthority=function(id,ev){
+    try{ev&&ev.preventDefault();ev&&ev.stopPropagation();}catch(_){}
+    haptic();
+    const e=findEntry(id); if(!e){toast45('⚠️ Meldung nicht gefunden');return false;}
+    const recipient=DEFAULT_MAIL;
+    const subject='Rattenmeldung Hamburg · '+(e.street||'ohne Adresse')+' · '+scopeLabel(e);
+    const body=buildMailBody(e);
+    const href='mailto:'+encodeURIComponent(recipient)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    const sheet=qs('#email-sheet'), pre=qs('#email-pre'), link=qs('#email-link');
+    if(pre)pre.textContent=body;
+    if(link){link.href=href;link.onclick=async function(e2){try{e2.preventDefault();e2.stopPropagation();}catch(_){};haptic();try{if(typeof window.fix40SetStatus==='function')await window.fix40SetStatus(id,'gesendet',e2);else if(typeof window.setStatus==='function')await window.setStatus(id,'gesendet');}catch(err){console.warn(err)};setTimeout(()=>{location.href=href},80);return false;};}
+    const copy=qs('#email-sheet .s-btn.orange'); if(copy){copy.onclick=async function(e3){try{e3.preventDefault();e3.stopPropagation();}catch(_){};haptic();try{await navigator.clipboard.writeText(body)}catch(_){};try{if(typeof window.fix40SetStatus==='function')await window.fix40SetStatus(id,'gesendet',e3);else if(typeof window.setStatus==='function')await window.setStatus(id,'gesendet');}catch(err){console.warn(err)};if(sheet)sheet.classList.remove('open');toast45('📋 Behördenmail kopiert und Status gespeichert');return false;};}
+    const close=qs('#email-sheet .sheet-close'); if(close)close.onclick=function(e4){try{e4.preventDefault();e4.stopPropagation();}catch(_){};haptic();if(sheet)sheet.classList.remove('open');return false;};
+    if(sheet)sheet.classList.add('open'); else location.href=href;
+    toast45('📧 Behördenmail vorbereitet');
+    return false;
+  };
+
+  function cleanBuildDisplay(){
+    try{document.title='Rattenmelder Hamburg · '+BUILD;}catch(_){}
+    const top=qs('#fix39-build-line'); if(top)top.textContent='Systemstatus · Version '+BUILD;
+    const bar=qs('#system-status-bar'); if(bar){
+      qsa('.fix43-build',bar).forEach(x=>x.remove());
+      qsa('div',bar).forEach(x=>{if(/Version:/i.test(x.textContent||''))x.remove();});
+      const line=document.createElement('div'); line.className='fix45-version-line'; line.textContent='Version: '+BUILD; bar.appendChild(line);
+    }
+  }
+  async function runSecurity45(){
+    const out=qs('#fix43-security-result'); if(!out)return;
+    out.innerHTML='⏳ Sicherheitsprüfung läuft...';
+    const rows=[]; const add=(ok,label,detail)=>rows.push({ok,label,detail});
+    let c=null; try{c=(typeof supabaseClient!=='undefined'?supabaseClient:null)||window.supabaseClient||null;}catch(_){}
+    add(!!c,'Supabase SDK geladen',c?'Client verfügbar':'Client nicht verfügbar');
+    try{ if(c){const sess=await c.auth.getSession(); const mail=sess&&sess.data&&sess.data.session&&sess.data.session.user&&sess.data.session.user.email; add(!!mail,'Admin Session',mail?'eingeloggt als '+mail:'keine aktive Session');}}catch(e){add(false,'Admin Session','Fehler: '+e.message)}
+    try{ if(c){const r=await c.from('reports').select('id',{count:'exact',head:true}); add(!r.error,'Reports lesbar',r.error?r.error.message:'OK');}}catch(e){add(false,'Reports lesbar','Fehler: '+e.message)}
+    try{ if(c){const r=await c.from('app_settings').select('key',{count:'exact',head:true}); add(!r.error,'App Settings erreichbar',r.error?r.error.message:'OK');}}catch(e){add(false,'App Settings erreichbar','Fehler: '+e.message)}
+    add(true,'Foto-Freigabe Logik','Öffentliche Anzeige erfolgt nur nach Freigabe beziehungsweise Behördenstatus. Storage Policies bitte zusätzlich in Supabase prüfen.');
+    add(true,'Eingabe-Schutz','Textausgaben werden im Frontend escaped. Serverseitige Prüfung bleibt zusätzlich empfohlen.');
+    add(true,'Privater Seitenhinweis','Impressum und Datenschutz sind im Adminbereich pflegbar.');
+    out.innerHTML=rows.map(r=>'<div class="fix43-sec-row '+(r.ok?'ok':'bad')+'"><strong>'+(r.ok?'✅':'⚠️')+' '+clean(r.label)+'</strong><br><span>'+clean(r.detail||'')+'</span></div>').join('');
+  }
+  function makeSecurityCollapsible(){
+    const p=qs('#fix43-security-panel'); if(!p)return;
+    const head=qs('.fix43-sec-head',p); if(!head)return;
+    if(!qs('#fix45-sec-toggle',p)){
+      const t=document.createElement('button'); t.type='button'; t.id='fix45-sec-toggle'; t.textContent='Aufklappen';
+      t.onclick=function(e){e.preventDefault();e.stopPropagation();haptic();p.classList.toggle('fix45-open');t.textContent=p.classList.contains('fix45-open')?'Einklappen':'Aufklappen';return false;};
+      head.appendChild(t);
+    }
+    p.classList.remove('fix45-open');
+    const run=qs('#fix43-sec-run',p); if(run)run.onclick=function(e){e.preventDefault();e.stopPropagation();haptic();p.classList.add('fix45-open');const t=qs('#fix45-sec-toggle',p); if(t)t.textContent='Einklappen';runSecurity45();return false;};
+  }
+  function patchPreview(){
+    const preview=qs('#fix44-preview'); if(preview)preview.onclick=function(e){e.preventDefault();e.stopPropagation();haptic();const sample=entriesArr()[0]||{id:'BEISPIEL',street:'Beispielstraße 1, Hamburg',type:'Lebende Ratte gesehen',desc:'Beispielbeschreibung der Meldung.',name:'Anonym',status:'neu',time:new Date().toISOString(),locationScope:'public',lat:53.55,lon:10.0,photoUrls:['https://beispiel.de/foto-zur-meldung.jpg']};alert(buildMailBody(sample));return false;};
+  }
+  function init(){cleanBuildDisplay();makeSecurityCollapsible();patchPreview();}
+  const css=document.createElement('style'); css.textContent=`
+    #fix43-security-panel:not(.fix45-open) .fix43-sec-note,#fix43-security-panel:not(.fix45-open) .fix43-sec-result{display:none!important;}
+    #fix45-sec-toggle{margin-left:6px;border:1px solid rgba(10,132,255,.35);background:rgba(10,132,255,.12);color:var(--blue);border-radius:11px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:900;cursor:pointer;}
+    .fix45-version-line{font-size:12px;color:var(--blue);margin-top:5px;}
+  `; document.head.appendChild(css);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,800)); else setTimeout(init,400);
+  const oldShow=window.showPanel; if(typeof oldShow==='function')window.showPanel=function(){const r=oldShow.apply(this,arguments);setTimeout(init,250);return r;};
+  const oldOpen=window.openAdmin; if(typeof oldOpen==='function')window.openAdmin=function(){const r=oldOpen.apply(this,arguments);setTimeout(init,300);return r;};
+  setInterval(()=>{if(qs('#admin-page.open'))init();},2500);
+})();
+</script>
+
+
+<script>
+/* FIX45B: aggressive cleanup for duplicate build lines and reliable Supabase client security check */
+(function(){
+  const BUILD='FIX45B_ADMIN_STATUS_SECURITY_CLEAN_2026-06-11';
+  const $=(s,r=document)=>r.querySelector(s);
+  const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  function haptic(){try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}}
+  function cleanText(v){return String(v==null?'':v).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));}
+  function getClient(){
+    try{ if(typeof supabaseClient!=='undefined' && supabaseClient) return supabaseClient; }catch(_){}
+    try{ if(window.supabaseClient) return window.supabaseClient; }catch(_){}
+    try{ if(window.supabase && typeof SUPABASE_URL!=='undefined' && typeof SUPABASE_PUBLISHABLE_KEY!=='undefined') return window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY); }catch(_){}
+    return null;
+  }
+  function cleanupVersions(){
+    try{document.title='Rattenmelder Hamburg · '+BUILD;}catch(_){}
+    const top=$('#fix39-build-line');
+    if(top) top.textContent='Systemstatus · Version '+BUILD;
+    const buildBar=$('#build-version-bar');
+    if(buildBar) buildBar.innerHTML='🏷️ <strong>Version:</strong> '+BUILD;
+    const bar=$('#system-status-bar');
+    if(bar){
+      // remove every previously appended Version line from old fixes
+      $$('.fix31-build,.fix32-build,.fix33-build,.fix34-build,.fix35-build,.fix36-build,.fix37-build,.fix38-build,.fix39-build,.fix40-build,.fix41-build,.fix42-build,.fix43-build,.fix44-build,.fix45-version-line',bar).forEach(x=>x.remove());
+      $$('div',bar).forEach(x=>{ if(/^\s*Version\s*:/i.test(x.textContent||'')) x.remove(); });
+      let line=$('#fix45b-version-line');
+      if(!line){ line=document.createElement('div'); line.id='fix45b-version-line'; bar.appendChild(line); }
+      line.textContent='Version: '+BUILD;
+    }
+  }
+  async function runSecurity45b(){
+    const out=$('#fix43-security-result'); if(!out) return;
+    out.innerHTML='⏳ Sicherheitsprüfung läuft...';
+    const rows=[]; const add=(ok,label,detail)=>rows.push({ok,label,detail});
+    const c=getClient();
+    add(!!c,'Supabase Client',c?'Client verfügbar':'Client nicht verfügbar');
+    try{
+      if(c){
+        const sess=await c.auth.getSession();
+        const mail=sess?.data?.session?.user?.email;
+        add(!!mail,'Admin Session',mail?'eingeloggt als '+mail:'keine aktive Session');
+      }
+    }catch(e){add(false,'Admin Session','Fehler: '+e.message)}
+    try{ if(c){const r=await c.from('reports').select('id',{count:'exact',head:true});add(!r.error,'Meldungen erreichbar',r.error?r.error.message:'OK');} }catch(e){add(false,'Meldungen erreichbar','Fehler: '+e.message)}
+    try{ if(c){const r=await c.from('app_settings').select('key',{count:'exact',head:true});add(!r.error,'Einstellungen erreichbar',r.error?r.error.message:'OK');} }catch(e){add(false,'Einstellungen erreichbar','Fehler: '+e.message)}
+    add(true,'Foto Freigabe','Fotos werden im Frontend nur nach Freigabe angezeigt. Storage Policies bitte zusätzlich in Supabase prüfen.');
+    add(true,'Private Seite Hinweis','Impressum und Datenschutz sind im Adminbereich pflegbar.');
+    out.innerHTML=rows.map(r=>'<div class="fix43-sec-row '+(r.ok?'ok':'bad')+'"><strong>'+(r.ok?'✅':'⚠️')+' '+cleanText(r.label)+'</strong><br><span>'+cleanText(r.detail||'')+'</span></div>').join('');
+  }
+  function patchSecurityButton(){
+    const p=$('#fix43-security-panel');
+    if(p){
+      const run=$('#fix43-sec-run',p);
+      if(run) run.onclick=function(e){e.preventDefault();e.stopPropagation();haptic();p.classList.add('fix45-open');const t=$('#fix45-sec-toggle',p);if(t)t.textContent='Einklappen';runSecurity45b();return false;};
+    }
+  }
+  function init(){cleanupVersions();patchSecurityButton();}
+  document.addEventListener('DOMContentLoaded',init);
+  setTimeout(init,250); setTimeout(init,1000); setTimeout(init,2500);
+  window.fix45bCleanup=init;
+})();
+</script>
+
 </body>
 </html>
