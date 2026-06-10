@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: FIX32_CAREFUL_POLISH_2026-06-10 -->
+<!-- BUILD: FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -7,11 +7,11 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Rattenmelder Hamburg · FIX32_CAREFUL_POLISH_2026-06-10</title>
+<title>Rattenmelder Hamburg · FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FIX32_CAREFUL_POLISH_2026-06-10');
+console.log('Rattenmelder Version: FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -585,7 +585,7 @@ body.admin-open .admin-page{pointer-events:auto!important;}
 
 
 
-/* === FIX32: konservative Korrekturen ohne Komplettumbau === */
+/* === FIX33: Updates-Tab entfernt, Benachrichtigungssystem als eigener sicherer Bereich geplant === */
 .workflow-btn.busy,.a-del.busy,.reply-save.busy{opacity:.65!important;pointer-events:none!important;filter:saturate(.8);}
 .workflow-btn.flash-ok,.a-del.flash-ok{box-shadow:0 0 0 2px rgba(48,209,88,.75)!important;transform:scale(.98);}
 .workflow-btn.flash-warn{box-shadow:0 0 0 2px rgba(255,149,0,.75)!important;transform:scale(.98);}
@@ -598,6 +598,22 @@ body.admin-open .admin-page{pointer-events:auto!important;}
 .name-choice-row button{flex:1;border:1px solid var(--border);background:var(--surface2);color:var(--text2);border-radius:10px;padding:9px 10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
 .name-choice-row button.active{border-color:var(--orange);color:var(--orange);background:rgba(255,149,0,.1);}
 .legal-warning{background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.24);border-radius:14px;padding:12px;margin-bottom:12px;color:var(--orange);font-size:13px;line-height:1.5;}
+
+
+
+/* === FIX34: Rechtliches im Adminbereich bearbeitbar === */
+.legal-settings-panel{margin:18px;border:1px solid var(--border);background:var(--surface);border-radius:18px;padding:16px;}
+.legal-settings-panel h3{font-size:18px;margin-bottom:8px;}
+.legal-settings-grid{display:grid;grid-template-columns:1fr;gap:9px;margin-top:12px;}
+.legal-settings-grid.two{grid-template-columns:1fr 1fr;}
+.legal-settings-label{font-size:11px;color:var(--text2);font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 5px;display:block;}
+.legal-settings-panel textarea{min-height:115px;resize:vertical;}
+.legal-settings-note{font-size:12px;color:var(--text2);line-height:1.45;margin:8px 0 12px;}
+.legal-settings-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.legal-settings-actions button{flex:1;min-width:140px;}
+.legal-status-line{font-size:12px;color:var(--text3);margin-top:9px;line-height:1.4;}
+.legal-preview-box{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:13px;color:var(--text2);line-height:1.5;margin-top:10px;}
+@media(max-width:520px){.legal-settings-grid.two{grid-template-columns:1fr}.legal-settings-panel{margin:14px 18px}}
 
 </style>
 <!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
@@ -636,13 +652,16 @@ body.admin-open .admin-page{pointer-events:auto!important;}
     <div class="info-card">
       <div class="ic-row"><span class="ic-icon">🔒</span><div><div class="ic-title">Datenschutz</div><div class="ic-text">Anonym melden möglich. Standort, Beschreibung und optionale Fotos werden in Supabase gespeichert. Abonnements und Behördenmails laufen nur nach bewusster Aktion.</div></div></div>
     </div>
+
+    <div class="info-card">
+      <div class="ic-row"><span class="ic-icon">🔔</span><div><div class="ic-title">Benachrichtigungen</div><div class="ic-text">Ein sicherer Benachrichtigungsbereich ist geplant. Meldungen bleiben derzeit anonym möglich. Kontaktdaten werden erst später freiwillig und getrennt von der eigentlichen Meldung abgefragt.</div></div></div>
+    </div>
     <div class="legal-links"><button onclick="goPage('datenschutz')">Datenschutz</button><button onclick="goPage('impressum')">Impressum</button><button onclick="openAdmin()">Verwalter-Login</button></div>
   </div>
   <nav class="tab-bar">
     <button class="tab-item active" id="tab-home" onclick="goPage('home')"><span class="ti">🏠</span>Start</button>
     <button class="tab-item" id="tab-karte" onclick="goPage('karte')"><span class="ti">🗺️</span>Karte</button>
     <button class="tab-item" id="tab-liste" onclick="goPage('liste')"><span class="ti">📋</span>Liste</button>
-    <button class="tab-item" id="tab-abo" onclick="goPage('abo')"><span class="ti">🔔</span>Updates</button>
   </nav>
 </div>
 
@@ -768,7 +787,6 @@ body.admin-open .admin-page{pointer-events:auto!important;}
     <button class="tab-item" id="tab-home2" onclick="goPage('home')"><span class="ti">🏠</span>Start</button>
     <button class="tab-item active" id="tab-karte2" onclick="goPage('karte')"><span class="ti">🗺️</span>Karte</button>
     <button class="tab-item" id="tab-liste2" onclick="goPage('liste')"><span class="ti">📋</span>Liste</button>
-    <button class="tab-item" id="tab-abo2" onclick="goPage('abo')"><span class="ti">🔔</span>Updates</button>
   </nav>
 </div>
 
@@ -802,7 +820,6 @@ body.admin-open .admin-page{pointer-events:auto!important;}
     <button class="tab-item" onclick="goPage('home')"><span class="ti">🏠</span>Start</button>
     <button class="tab-item" onclick="goPage('karte')"><span class="ti">🗺️</span>Karte</button>
     <button class="tab-item active" onclick="goPage('liste')"><span class="ti">📋</span>Liste</button>
-    <button class="tab-item" onclick="goPage('abo')"><span class="ti">🔔</span>Updates</button>
   </nav>
 </div>
 
@@ -833,7 +850,6 @@ body.admin-open .admin-page{pointer-events:auto!important;}
     <button class="tab-item" onclick="goPage('home')"><span class="ti">🏠</span>Start</button>
     <button class="tab-item" onclick="goPage('karte')"><span class="ti">🗺️</span>Karte</button>
     <button class="tab-item" onclick="goPage('liste')"><span class="ti">📋</span>Liste</button>
-    <button class="tab-item active" onclick="goPage('abo')"><span class="ti">🔔</span>Updates</button>
   </nav>
 </div>
 
@@ -882,9 +898,9 @@ body.admin-open .admin-page{pointer-events:auto!important;}
     </div>
     <div id="a-panel" style="display:none;padding-bottom:40px">
       <div class="sheets-bar" id="system-status-bar">🟡 <strong>Systemstatus wird geprüft…</strong></div>
-      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX32_CAREFUL_POLISH_2026-06-10</div>
+      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10</div>
       <div class="sheets-bar" id="sheets-bar">📊 <strong>Google Sheets nicht verbunden.</strong> <a href="#" onclick="openSheetsSheet(event)">→ Einrichten</a></div>
-      <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Neue Meldungen sind erst nach Admin-Freigabe öffentlich sichtbar. Pro Meldung: prüfen, bearbeiten, Standort korrigieren oder Behörde informieren. Benachrichtigungen an Anwohner laufen später über einen eigenen Abo-Bereich mit Radius.</div>
+      <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Neue Meldungen sind erst nach Admin-Freigabe öffentlich sichtbar. Pro Meldung: prüfen, bearbeiten, Standort korrigieren oder Behörde informieren. Benachrichtigungen an Anwohner laufen später über einen eigenen sicheren Nutzerbereich mit Radius, Abmeldung und freiwilliger Kontaktangabe.</div>
       <div class="a-bar">
         <button class="a-del-all" onclick="clearAll()">🗑️ Alle löschen</button>
         <span class="a-count" id="a-count"></span>
@@ -893,7 +909,7 @@ body.admin-open .admin-page{pointer-events:auto!important;}
       <div class="a-rep-list" id="a-rep-list"></div>
       <div class="a-divider"></div>
       <div class="a-sec">🔔 Abonnenten</div>
-      <div class="a-hint">Benachrichtigungen werden nicht pro einzelner Meldung ausgelöst. Geplant ist ein eigener Abo-Bereich mit Radius, zum Beispiel 0,5 km Standard, und freiwilliger Kontaktangabe per E-Mail oder WhatsApp.</div>
+      <div class="a-hint">Benachrichtigungen werden nicht pro einzelner Meldung ausgelöst. Geplant ist ein eigener Nutzerbereich: freiwillige E-Mail/WhatsApp Angabe, Standardradius 0,5 km, Abmeldung und Kontolöschung.</div>
       <div class="a-abo-list" id="a-abo-list"></div>
       <div id="v-section" style="display:none">
         <div class="a-divider"></div>
@@ -1007,7 +1023,7 @@ body.admin-open .admin-page{pointer-events:auto!important;}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const APP_BUILD = 'FIX32_CAREFUL_POLISH_2026-06-10';
+const APP_BUILD = 'FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10';
 const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
 const ADMIN_EMAIL = 'saschakitschke@gmx.net';
 const SUPABASE_URL = 'https://fholanhyuwapgrnhlsqq.supabase.co';
@@ -1977,7 +1993,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script>
 /* FIX31 careful integration: keine Komplett-Neuentwicklung, sondern gezielte stabile Overrides. */
 (function(){
-  const FIX31_BUILD = 'FIX32_CAREFUL_POLISH_2026-06-10';
+  const FIX31_BUILD = 'FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10';
   const RAT_TYPES = ['Lebende Ratte gesehen','Mehrere Ratten gesehen','Tote Ratte gefunden','Rattenbau entdeckt','Rattenkot gefunden','Fraßspuren entdeckt'];
   const ACTION_TYPES = ['Köderbox aufgestellt','Schädlingsbekämpfer vor Ort','Rattenbau verschlossen','Hinweisschild aufgestellt','Köderbox kontrolliert','Sonstige Maßnahme'];
   let editId = null;
@@ -2340,10 +2356,10 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX32_CAREFUL_POLISH_2026-06-10
+/* FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10
    Konservativer Patch auf Fix31: keine großen Umbauten, nur gezielte Korrekturen. */
 (function(){
-  const FIX32_BUILD='FIX32_CAREFUL_POLISH_2026-06-10';
+  const FIX32_BUILD='FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10';
   const ADMIN_CONTACT_EMAIL='saschakitschke@gmx.net';
   const SITE_RESPONSIBLE='Sascha von Kitschke';
   const AUTHORITY_MAIL='schaedlingsbekaempfung@hu.hamburg.de';
@@ -2586,6 +2602,213 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
   });
   // Falls Script nach DOMContentLoaded eingebunden ist.
   if(document.readyState!=='loading'){setTimeout(()=>{setLegalText(); fixLabels(); addNameChoice('fr'); addNameChoice('fa'); addNotificationHint(); updateStats();},60);}
+})();
+</script>
+
+
+<script>
+/* FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10
+   Entfernt den rechten Updates Tab aus der Navigation.
+   Benachrichtigungen werden nicht mehr als halbfertiger Button angeboten,
+   sondern bleiben als eigener sicherer Nutzerbereich geplant. */
+(function(){
+  const BUILD='FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10';
+  function hideUpdateTabs(){
+    document.querySelectorAll('button').forEach(btn=>{
+      const txt=(btn.textContent||'').trim();
+      const oc=btn.getAttribute('onclick')||'';
+      if((txt==='🔔Updates'||txt==='Updates'||txt.includes('Updates')) && oc.includes("goPage('abo')")){
+        btn.remove();
+      }
+    });
+    const build=document.getElementById('build-version-bar');
+    if(build) build.innerHTML='🏷️ <strong>Version:</strong> '+BUILD;
+  }
+  document.addEventListener('DOMContentLoaded',hideUpdateTabs);
+  window.addEventListener('load',hideUpdateTabs);
+  const oldGoPage=window.goPage;
+  window.goPage=function(name){
+    if(name==='abo'){ toast('🔔 Benachrichtigungen werden als eigener sicherer Nutzerbereich vorbereitet.'); return; }
+    if(typeof oldGoPage==='function') return oldGoPage.apply(this,arguments);
+  };
+})();
+</script>
+
+
+<script>
+/* FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10
+   Rechtliches im Adminbereich komplett bearbeitbar.
+   Speichert zuerst lokal und versucht zusätzlich Supabase app_settings zu nutzen,
+   damit die App auch ohne neue Datenbanktabelle stabil bleibt. */
+(function(){
+  const BUILD='FIX34_LEGAL_ADMIN_SETTINGS_2026-06-10';
+  const LEGAL_KEY='rattenLegalSettings_v1';
+  const DEFAULT_LEGAL={
+    siteTitle:'Rattenmelder Hamburg',
+    projectSubtitle:'Privates Nachbarschaftsprojekt',
+    operatorType:'Privatperson',
+    responsibleName:'Sascha Fynn Kitschke',
+    organization:'',
+    street:'',
+    postalCode:'',
+    city:'Hamburg',
+    email:'saschakitschke@gmx.net',
+    phone:'',
+    website:'',
+    privateNotice:'Diese Plattform ist ein privates Meldeportal und keine offizielle Behördenseite. Meldungen werden von einer Privatperson gesammelt, geprüft und können an zuständige Stellen weitergeleitet werden.',
+    impressumExtra:'Diese Seite ist kein Angebot der Freien und Hansestadt Hamburg und nicht mit dem Institut für Hygiene und Umwelt verbunden. Offizielle Meldungen erfolgen erst, wenn ein Admin eine Meldung manuell an die zuständige Stelle weiterleitet oder Bürgerinnen und Bürger sich selbst direkt an die zuständige Stelle wenden.',
+    liabilityText:'Die Inhalte werden nach bestem Wissen gepflegt. Für Vollständigkeit, Richtigkeit und behördliche Bearbeitung wird keine Gewähr übernommen.',
+    privacyText:'Diese Seite dient der privaten nachbarschaftlichen Dokumentation von Rattensichtungen und Maßnahmen vor Ort. Verarbeitet werden insbesondere Ort, GPS Koordinaten, Zeitpunkt, Art der Sichtung oder Maßnahme, Beschreibung, optional Fotos sowie ein optionaler Spitzname. Fotos werden erst nach Prüfung durch einen Admin öffentlich angezeigt. Bitte laden Sie keine Fotos hoch, auf denen Personen, Kinder, Kennzeichen, Klingelschilder, private Innenbereiche oder sonstige sensible Inhalte erkennbar sind. Eine Meldung kann anonym erfolgen. Kontaktdaten für spätere Benachrichtigungen werden nur freiwillig und separat erhoben. Die technische Speicherung erfolgt über Supabase. Die öffentliche Webseite wird über GitHub Pages bereitgestellt. Anfragen zur Auskunft, Korrektur oder Löschung können an die im Impressum genannte E Mail Adresse gerichtet werden.',
+    updatedAt:'',
+    updatedBy:''
+  };
+  let legalSettings={...DEFAULT_LEGAL};
+  let legalSaveMode='lokal';
+
+  function byId(id){return document.getElementById(id);}
+  function escHtml(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function nl2br(v){return escHtml(v).replace(/\n/g,'<br>');}
+  function val(id){const el=byId(id);return el?el.value.trim():'';}
+  function setVal(id,v){const el=byId(id);if(el)el.value=v||'';}
+  function mailLink(email){return email?`<a class="ic-link" href="mailto:${escHtml(email)}">${escHtml(email)}</a>`:'nicht angegeben';}
+  function addressBlock(s){
+    const lines=[];
+    if(s.responsibleName)lines.push(s.responsibleName);
+    if(s.organization)lines.push(s.organization);
+    const street=s.street||'';
+    const place=[s.postalCode,s.city].filter(Boolean).join(' ');
+    if(street)lines.push(street);
+    if(place)lines.push(place);
+    return lines.length?lines.map(escHtml).join('<br>'):'<em>Noch keine Anschrift hinterlegt</em>';
+  }
+  function loadLocalLegal(){
+    try{const raw=localStorage.getItem(LEGAL_KEY); if(raw){legalSettings={...DEFAULT_LEGAL,...JSON.parse(raw)};}}catch(e){}
+  }
+  async function loadRemoteLegal(){
+    if(!window.supabaseClient && typeof supabaseClient==='undefined')return;
+    const client=window.supabaseClient || supabaseClient;
+    if(!client)return;
+    try{
+      const {data,error}=await client.from('app_settings').select('value').eq('key','legal').maybeSingle();
+      if(!error && data && data.value){legalSettings={...DEFAULT_LEGAL,...data.value}; legalSaveMode='Supabase'; localStorage.setItem(LEGAL_KEY,JSON.stringify(legalSettings));}
+    }catch(e){/* Tabelle fehlt wahrscheinlich. Lokal weiterlaufen. */}
+  }
+  async function saveRemoteLegal(){
+    const client=(window.supabaseClient || (typeof supabaseClient!=='undefined'?supabaseClient:null));
+    if(!client)return false;
+    try{
+      const payload={key:'legal',value:legalSettings,updated_at:new Date().toISOString()};
+      const {error}=await client.from('app_settings').upsert(payload,{onConflict:'key'});
+      if(error)throw error;
+      legalSaveMode='Supabase';
+      return true;
+    }catch(e){console.warn('FIX34 legal Supabase Speicherung nicht aktiv:',e);return false;}
+  }
+  function renderLegalPages(){
+    const s=legalSettings;
+    const ds=byId('page-datenschutz');
+    const im=byId('page-impressum');
+    if(ds){
+      const body=ds.querySelector('.scroll-body');
+      if(body)body.innerHTML=`
+        <div class="legal-warning"><strong>Hinweis:</strong> ${nl2br(s.privateNotice)}</div>
+        <div class="legal-card"><h2>Datenschutzhinweise</h2><p>Verantwortlich für diese private Seite:</p><p>${addressBlock(s)}</p><p>Kontakt: ${mailLink(s.email)}${s.phone?'<br>Telefon: '+escHtml(s.phone):''}</p></div>
+        <div class="legal-card"><h3>Datenschutztext</h3><p>${nl2br(s.privacyText)}</p></div>
+        <div class="legal-card"><h3>Keine Behördenseite</h3><p>${nl2br(s.impressumExtra)}</p></div>
+        <div class="legal-card"><h3>Letzte Änderung</h3><p>${s.updatedAt?escHtml(new Date(s.updatedAt).toLocaleString('de-DE')):'Noch nicht gespeichert'}${s.updatedBy?'<br>Bearbeitet von: '+escHtml(s.updatedBy):''}</p></div>`;
+    }
+    if(im){
+      const body=im.querySelector('.scroll-body');
+      if(body)body.innerHTML=`
+        <div class="legal-warning"><strong>Wichtiger Hinweis:</strong> ${nl2br(s.privateNotice)}</div>
+        <div class="legal-card"><h2>Impressum</h2><p><strong>${escHtml(s.siteTitle)}</strong><br>${escHtml(s.projectSubtitle)}</p><p><strong>Betreiberart:</strong> ${escHtml(s.operatorType)}</p><p><strong>Verantwortlich:</strong><br>${addressBlock(s)}</p><p><strong>Kontakt:</strong><br>E Mail: ${mailLink(s.email)}${s.phone?'<br>Telefon: '+escHtml(s.phone):''}${s.website?'<br>Webseite: '+escHtml(s.website):''}</p></div>
+        <div class="legal-card"><h3>Keine offizielle Behördenseite</h3><p>${nl2br(s.impressumExtra)}</p></div>
+        <div class="legal-card"><h3>Haftungshinweis</h3><p>${nl2br(s.liabilityText)}</p></div>
+        <div class="legal-card"><h3>Letzte Änderung</h3><p>${s.updatedAt?escHtml(new Date(s.updatedAt).toLocaleString('de-DE')):'Noch nicht gespeichert'}${s.updatedBy?'<br>Bearbeitet von: '+escHtml(s.updatedBy):''}</p></div>`;
+    }
+  }
+  function renderLegalAdminSection(){
+    const panel=byId('a-panel'); if(!panel)return;
+    let box=byId('legal-settings-panel');
+    if(!box){
+      box=document.createElement('div');
+      box.id='legal-settings-panel';
+      box.className='legal-settings-panel';
+      const vSection=byId('v-section');
+      if(vSection)panel.insertBefore(box,vSection); else panel.appendChild(box);
+    }
+    const s=legalSettings;
+    box.innerHTML=`
+      <h3>⚖️ Rechtliches bearbeiten</h3>
+      <div class="legal-settings-note">Hier kannst du Impressum, Datenschutz, Kontakt und den Hinweis „private Seite, keine Behördenseite“ ohne neuen GitHub Upload ändern. Du kannst auch eine andere ladungsfähige Anschrift eintragen, wenn sie für das Projekt rechtlich nutzbar ist.</div>
+      <div class="legal-settings-grid two">
+        <div><label class="legal-settings-label">Seitentitel</label><input class="inp" id="legal-siteTitle" value="${escHtml(s.siteTitle)}"></div>
+        <div><label class="legal-settings-label">Untertitel</label><input class="inp" id="legal-projectSubtitle" value="${escHtml(s.projectSubtitle)}"></div>
+        <div><label class="legal-settings-label">Betreiberart</label><select class="inp" id="legal-operatorType"><option ${s.operatorType==='Privatperson'?'selected':''}>Privatperson</option><option ${s.operatorType==='Unternehmen'?'selected':''}>Unternehmen</option><option ${s.operatorType==='Verein'?'selected':''}>Verein</option><option ${s.operatorType==='Sonstiges'?'selected':''}>Sonstiges</option></select></div>
+        <div><label class="legal-settings-label">Organisation optional</label><input class="inp" id="legal-organization" value="${escHtml(s.organization)}" placeholder="z. B. Verein, Firma, Projektname"></div>
+        <div><label class="legal-settings-label">Verantwortlicher Name</label><input class="inp" id="legal-responsibleName" value="${escHtml(s.responsibleName)}"></div>
+        <div><label class="legal-settings-label">E Mail</label><input class="inp" id="legal-email" value="${escHtml(s.email)}"></div>
+        <div><label class="legal-settings-label">Straße und Hausnummer</label><input class="inp" id="legal-street" value="${escHtml(s.street)}" placeholder="frei eintragbar"></div>
+        <div><label class="legal-settings-label">PLZ</label><input class="inp" id="legal-postalCode" value="${escHtml(s.postalCode)}"></div>
+        <div><label class="legal-settings-label">Ort</label><input class="inp" id="legal-city" value="${escHtml(s.city)}"></div>
+        <div><label class="legal-settings-label">Telefon optional</label><input class="inp" id="legal-phone" value="${escHtml(s.phone)}"></div>
+      </div>
+      <label class="legal-settings-label">Hinweis private Seite / keine Behördenseite</label>
+      <textarea class="inp" id="legal-privateNotice">${escHtml(s.privateNotice)}</textarea>
+      <label class="legal-settings-label">Zusatz Impressum / keine Behördenseite</label>
+      <textarea class="inp" id="legal-impressumExtra">${escHtml(s.impressumExtra)}</textarea>
+      <label class="legal-settings-label">Datenschutztext</label>
+      <textarea class="inp" id="legal-privacyText" style="min-height:180px">${escHtml(s.privacyText)}</textarea>
+      <label class="legal-settings-label">Haftungshinweis</label>
+      <textarea class="inp" id="legal-liabilityText">${escHtml(s.liabilityText)}</textarea>
+      <div class="legal-settings-actions">
+        <button type="button" class="submit-btn green" onclick="saveLegalSettingsFromAdmin()">💾 Rechtliches speichern</button>
+        <button type="button" class="submit-btn" style="background:var(--surface2);box-shadow:none;color:var(--text)" onclick="previewLegalSettings()">👁️ Vorschau aktualisieren</button>
+      </div>
+      <div class="legal-status-line" id="legal-save-status">Speicherort: ${escHtml(legalSaveMode)} · Letzte Änderung: ${s.updatedAt?escHtml(new Date(s.updatedAt).toLocaleString('de-DE')):'noch nicht gespeichert'}</div>
+      <div class="legal-preview-box"><strong>Aktuelle öffentliche Anzeige:</strong><br>${escHtml(s.siteTitle)} · ${escHtml(s.responsibleName)} · ${escHtml(s.email)}<br>${escHtml(s.privateNotice).slice(0,220)}${s.privateNotice.length>220?'…':''}</div>`;
+  }
+  window.previewLegalSettings=function(){collectLegalFromAdmin(false);renderLegalPages();renderLegalAdminSection(); if(typeof toast==='function')toast('👁️ Vorschau aktualisiert');};
+  function collectLegalFromAdmin(mark){
+    legalSettings={...legalSettings,
+      siteTitle:val('legal-siteTitle')||DEFAULT_LEGAL.siteTitle,
+      projectSubtitle:val('legal-projectSubtitle'),
+      operatorType:val('legal-operatorType')||'Privatperson',
+      organization:val('legal-organization'),
+      responsibleName:val('legal-responsibleName'),
+      street:val('legal-street'),
+      postalCode:val('legal-postalCode'),
+      city:val('legal-city'),
+      email:val('legal-email'),
+      phone:val('legal-phone'),
+      privateNotice:val('legal-privateNotice'),
+      impressumExtra:val('legal-impressumExtra'),
+      privacyText:val('legal-privacyText'),
+      liabilityText:val('legal-liabilityText')
+    };
+    if(mark){legalSettings.updatedAt=new Date().toISOString();legalSettings.updatedBy=(typeof currentAdminEmail!=='undefined'&&currentAdminEmail)||'Admin';}
+  }
+  window.saveLegalSettingsFromAdmin=async function(){
+    collectLegalFromAdmin(true);
+    localStorage.setItem(LEGAL_KEY,JSON.stringify(legalSettings));
+    const remote=await saveRemoteLegal();
+    renderLegalPages();renderLegalAdminSection();
+    const st=byId('legal-save-status'); if(st)st.textContent='Gespeichert: '+(remote?'Supabase und Browser':'Browser lokal, Supabase Tabelle app_settings nicht gefunden')+' · '+new Date().toLocaleString('de-DE');
+    if(typeof toast==='function')toast(remote?'✅ Rechtliches gespeichert':'✅ Rechtliches lokal gespeichert');
+  };
+  const oldShowPanel=window.showPanel;
+  window.showPanel=function(){ if(typeof oldShowPanel==='function')oldShowPanel.apply(this,arguments); setTimeout(renderLegalAdminSection,80); };
+  const oldOpenAdmin=window.openAdmin;
+  window.openAdmin=function(){ if(typeof oldOpenAdmin==='function')oldOpenAdmin.apply(this,arguments); setTimeout(renderLegalAdminSection,120); };
+  const oldGoPage=window.goPage;
+  window.goPage=function(name){ const r=oldGoPage?oldGoPage.apply(this,arguments):undefined; if(name==='datenschutz'||name==='impressum')setTimeout(renderLegalPages,30); return r; };
+  async function initLegal(){
+    loadLocalLegal(); renderLegalPages();
+    await loadRemoteLegal(); renderLegalPages(); renderLegalAdminSection();
+    const build=byId('build-version-bar'); if(build)build.innerHTML='🏷️ <strong>Version:</strong> '+BUILD;
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initLegal); else initLegal();
+  window.addEventListener('load',()=>setTimeout(initLegal,200));
 })();
 </script>
 
