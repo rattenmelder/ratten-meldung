@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: FIX31_CAREFUL_INTEGRATION_2026-06-10 -->
+<!-- BUILD: FIX32_CAREFUL_POLISH_2026-06-10 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -7,11 +7,11 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Rattenmelder Hamburg · FIX31_CAREFUL_INTEGRATION_2026-06-10</title>
+<title>Rattenmelder Hamburg · FIX32_CAREFUL_POLISH_2026-06-10</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FIX31_CAREFUL_INTEGRATION_2026-06-10');
+console.log('Rattenmelder Version: FIX32_CAREFUL_POLISH_2026-06-10');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -583,6 +583,22 @@ body.admin-open .admin-page{pointer-events:auto!important;}
 .a-photo-row{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0;}
 .a-photo-row img{width:74px;height:74px;border-radius:10px;object-fit:cover;border:1px solid var(--border);background:#222;}
 
+
+
+/* === FIX32: konservative Korrekturen ohne Komplettumbau === */
+.workflow-btn.busy,.a-del.busy,.reply-save.busy{opacity:.65!important;pointer-events:none!important;filter:saturate(.8);}
+.workflow-btn.flash-ok,.a-del.flash-ok{box-shadow:0 0 0 2px rgba(48,209,88,.75)!important;transform:scale(.98);}
+.workflow-btn.flash-warn{box-shadow:0 0 0 2px rgba(255,149,0,.75)!important;transform:scale(.98);}
+.admin-select-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 18px 12px;}
+.admin-select-row button{border:1px solid var(--border);background:var(--surface2);color:var(--text2);border-radius:10px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+.admin-select-row button.danger{background:rgba(255,59,59,.12);border-color:rgba(255,59,59,.3);color:var(--red);}
+.a-card.is-selected{border-color:var(--orange)!important;box-shadow:0 0 0 1px rgba(255,149,0,.45);}
+.a-select{width:22px;height:22px;accent-color:var(--orange);margin-top:2px;flex:0 0 auto;}
+.name-choice-row{display:flex;gap:8px;margin:-3px 0 9px;}
+.name-choice-row button{flex:1;border:1px solid var(--border);background:var(--surface2);color:var(--text2);border-radius:10px;padding:9px 10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+.name-choice-row button.active{border-color:var(--orange);color:var(--orange);background:rgba(255,149,0,.1);}
+.legal-warning{background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.24);border-radius:14px;padding:12px;margin-bottom:12px;color:var(--orange);font-size:13px;line-height:1.5;}
+
 </style>
 <!-- Version: workflow-datenschutz-mail-whatsapp-2026-06-07 -->
 </head>
@@ -866,7 +882,7 @@ body.admin-open .admin-page{pointer-events:auto!important;}
     </div>
     <div id="a-panel" style="display:none;padding-bottom:40px">
       <div class="sheets-bar" id="system-status-bar">🟡 <strong>Systemstatus wird geprüft…</strong></div>
-      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX31_CAREFUL_INTEGRATION_2026-06-10</div>
+      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX32_CAREFUL_POLISH_2026-06-10</div>
       <div class="sheets-bar" id="sheets-bar">📊 <strong>Google Sheets nicht verbunden.</strong> <a href="#" onclick="openSheetsSheet(event)">→ Einrichten</a></div>
       <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Neue Meldungen sind erst nach Admin-Freigabe öffentlich sichtbar. Pro Meldung: prüfen, bearbeiten, Standort korrigieren oder Behörde informieren. Benachrichtigungen an Anwohner laufen später über einen eigenen Abo-Bereich mit Radius.</div>
       <div class="a-bar">
@@ -991,7 +1007,7 @@ body.admin-open .admin-page{pointer-events:auto!important;}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const APP_BUILD = 'FIX31_CAREFUL_INTEGRATION_2026-06-10';
+const APP_BUILD = 'FIX32_CAREFUL_POLISH_2026-06-10';
 const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
 const ADMIN_EMAIL = 'saschakitschke@gmx.net';
 const SUPABASE_URL = 'https://fholanhyuwapgrnhlsqq.supabase.co';
@@ -1961,7 +1977,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script>
 /* FIX31 careful integration: keine Komplett-Neuentwicklung, sondern gezielte stabile Overrides. */
 (function(){
-  const FIX31_BUILD = 'FIX31_CAREFUL_INTEGRATION_2026-06-10';
+  const FIX31_BUILD = 'FIX32_CAREFUL_POLISH_2026-06-10';
   const RAT_TYPES = ['Lebende Ratte gesehen','Mehrere Ratten gesehen','Tote Ratte gefunden','Rattenbau entdeckt','Rattenkot gefunden','Fraßspuren entdeckt'];
   const ACTION_TYPES = ['Köderbox aufgestellt','Schädlingsbekämpfer vor Ort','Rattenbau verschlossen','Hinweisschild aufgestellt','Köderbox kontrolliert','Sonstige Maßnahme'];
   let editId = null;
@@ -2318,6 +2334,258 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
     setInterval(()=>{ if(document.body.classList.contains('admin-open')) checkSupabaseStatus(); },60000);
     updateStats();
   });
+})();
+</script>
+
+
+
+<script>
+/* FIX32_CAREFUL_POLISH_2026-06-10
+   Konservativer Patch auf Fix31: keine großen Umbauten, nur gezielte Korrekturen. */
+(function(){
+  const FIX32_BUILD='FIX32_CAREFUL_POLISH_2026-06-10';
+  const ADMIN_CONTACT_EMAIL='saschakitschke@gmx.net';
+  const SITE_RESPONSIBLE='Sascha von Kitschke';
+  const AUTHORITY_MAIL='schaedlingsbekaempfung@hu.hamburg.de';
+  const eById=(id)=>document.getElementById(id);
+  const stop=(ev)=>{try{ev&&ev.preventDefault&&ev.preventDefault();ev&&ev.stopPropagation&&ev.stopPropagation();}catch(_){}};
+  const esc2=(s)=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  let adminSelectionMode=false;
+  let selectedReports=new Set();
+
+  function flashButton(btn,cls='flash-ok'){
+    if(!btn)return;
+    btn.classList.add(cls);
+    setTimeout(()=>btn.classList.remove(cls),650);
+  }
+
+  // Status Mapping reparieren: abgelehnt bleibt abgelehnt/ausgeblendet und fällt nicht auf Neu zurück.
+  try{
+    window.dbStatusToUi = dbStatusToUi = function(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'geprueft',resolved:'geprueft',rejected:'ausgeblendet'})[s]||s||'neu';};
+    window.uiStatusToDb = uiStatusToDb = function(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',ausgeblendet:'rejected',bearbeitung:'in_review',erledigt:'in_review'})[s]||'new';};
+  }catch(_){ }
+  if(window.ST){
+    ST.neu={cls:'sn',lbl:'🆕 Neu'};
+    ST.geprueft={cls:'ss',lbl:'✅ Geprüft'};
+    ST.gesendet={cls:'ss',lbl:'📧 Bereits an Behörde gemeldet'};
+    ST.ausgeblendet={cls:'sn',lbl:'❌ Abgelehnt'};
+  }
+
+  function photoUrls(e){return (Array.isArray(e&&e.photoUrls)?e.photoUrls:[]).filter(Boolean);}
+  function originalMarkerEmoji(r){
+    const t=(r.type||'').toLowerCase();
+    if(r.kind==='action'){
+      if(t.includes('köderbox')) return '📦';
+      if(t.includes('bekämpfer')) return '👷';
+      if(t.includes('verschlossen')) return '🧱';
+      if(t.includes('hinweisschild')) return '⚠️';
+      if(t.includes('kontrolliert')) return '🔍';
+      return '🟢';
+    }
+    if(t.includes('tote')) return '☠️';
+    if(t.includes('mehrere')) return '🐀🐀';
+    if(t.includes('bau')) return '🕳️';
+    if(t.includes('kot')) return '💩';
+    if(t.includes('fraß')||t.includes('frass')) return '🦷';
+    return '🐀';
+  }
+  window.markerEmoji=function(r){return originalMarkerEmoji(r||{});};
+  window.markerClass=function(r){
+    if((r&&r.kind)==='action') return 'action';
+    return ((r&&r.type)||'').toLowerCase().includes('tote') ? 'dead' : 'rat';
+  };
+
+  // Behörde zählt über Status, aber Marker bleibt das ursprüngliche Sichtungs/Maßnahmen Symbol.
+  window.isAuthorityEntry=function(e){return !!(e&&(e.status==='gesendet'||e.authorityNotifiedAt||e.authorityRecipient));};
+
+  function isToday(e){try{return localDateValue(e.createdAt||e.time||Date.now())===localDateValue(new Date());}catch(_){return false;}}
+  window.updateStats=function(){
+    const byId=(id,val)=>{const el=eById(id);if(el)el.textContent=val;};
+    const active=(entries||[]).filter(e=>e.status!=='ausgeblendet');
+    byId('s-rat',active.filter(e=>e.kind==='rat').length);
+    byId('s-action',active.filter(e=>e.kind==='action'&&!isAuthorityEntry(e)).length);
+    byId('s-authority',active.filter(e=>isAuthorityEntry(e)).length);
+    byId('s-done',active.filter(isToday).length);
+  };
+
+  // Öffentliche Liste/Karte: abgelehnte Einträge raus; Behörde Filter sauber über Status.
+  const oldEntryIsPublic=window.entryIsPublic;
+  window.entryIsPublic=function(e){return !!(e && e.status!=='ausgeblendet' && (e.status==='geprueft'||e.status==='gesendet'||(typeof isHaupt!=='undefined'&&isHaupt)));};
+
+  // Datenschutz und Impressum im Dokument sauber setzen.
+  function setLegalText(){
+    const ds=eById('page-datenschutz');
+    const im=eById('page-impressum');
+    if(ds){
+      const body=ds.querySelector('.scroll-body');
+      if(body)body.innerHTML=`
+        <div class="legal-warning"><strong>Hinweis:</strong> Diese Internetseite ist keine offizielle Seite der Freien und Hansestadt Hamburg, keiner Behörde und nicht des Instituts für Hygiene und Umwelt. Es handelt sich um ein privates Nachbarschaftsprojekt zur Sammlung und Weiterleitung von Hinweisen.</div>
+        <div class="legal-card"><h2>Datenschutzhinweise</h2><p>Verantwortlich für diese private Seite ist ${SITE_RESPONSIBLE}. Kontakt: <a class="ic-link" href="mailto:${ADMIN_CONTACT_EMAIL}">${ADMIN_CONTACT_EMAIL}</a>.</p><p>Die Seite dient dazu, Rattenmeldungen und Maßnahmen nachbarschaftlich zu erfassen, intern zu prüfen und bei Bedarf an zuständige Stellen weiterzuleiten.</p></div>
+        <div class="legal-card"><h3>Welche Daten werden verarbeitet?</h3><ul><li>Ort, GPS Koordinaten und Zeitpunkt der Meldung</li><li>Art der Sichtung oder Maßnahme</li><li>Beschreibung und optional hochgeladene Fotos</li><li>optional Spitzname oder anonyme Kennzeichnung</li><li>bei Admins: Login E-Mail, Bearbeitungsverlauf und technische Protokolle</li><li>bei späterer Benachrichtigungsfunktion nur freiwillig angegebene Kontaktdaten und Radiusangaben</li></ul></div>
+        <div class="legal-card"><h3>Fotos</h3><p>Fotos werden zunächst nicht öffentlich angezeigt. Erst nach Prüfung und Freigabe durch einen Admin können Fotos öffentlich sichtbar werden. Bitte keine Personen, Kinder, Kennzeichen, Klingelschilder, private Innenbereiche oder sonstige sensiblen Inhalte fotografieren.</p></div>
+        <div class="legal-card"><h3>Zweck der Verarbeitung</h3><p>Die Daten werden genutzt, um Meldungen zu dokumentieren, auf Karte und Liste nach Freigabe darzustellen, Meldungen intern zu prüfen und eine E Mail an zuständige Stellen vorzubereiten.</p></div>
+        <div class="legal-card"><h3>Speicherung und Dienstleister</h3><p>Die technische Speicherung erfolgt über Supabase. Die öffentliche Webseite wird über GitHub Pages bereitgestellt. Eine automatische behördliche Bearbeitung findet dadurch nicht statt.</p></div>
+        <div class="legal-card"><h3>Freiwilligkeit</h3><p>Eine Meldung kann anonym erfolgen. Kontaktdaten für spätere Benachrichtigungen sollen nur freiwillig und separat erhoben werden. Ohne freiwillige Kontaktangabe erfolgt keine persönliche Benachrichtigung.</p></div>
+        <div class="legal-card"><h3>Auskunft und Löschung</h3><p>Anfragen zur Löschung oder Korrektur können per E Mail an <a class="ic-link" href="mailto:${ADMIN_CONTACT_EMAIL}">${ADMIN_CONTACT_EMAIL}</a> gestellt werden.</p></div>`;
+    }
+    if(im){
+      const body=im.querySelector('.scroll-body');
+      if(body)body.innerHTML=`
+        <div class="legal-warning"><strong>Wichtiger Hinweis:</strong> Dies ist keine behördliche oder offizielle städtische Internetseite. Die Seite wird privat als Nachbarschaftsprojekt betrieben.</div>
+        <div class="legal-card"><h2>Impressum</h2><p><strong>Rattenmelder Hamburg</strong><br>Privates Nachbarschaftsprojekt</p><p>Verantwortlich: ${SITE_RESPONSIBLE}<br>E Mail: <a class="ic-link" href="mailto:${ADMIN_CONTACT_EMAIL}">${ADMIN_CONTACT_EMAIL}</a></p></div>
+        <div class="legal-card"><h3>Keine Behördenseite</h3><p>Diese Seite ist kein Angebot der Freien und Hansestadt Hamburg und nicht mit dem Institut für Hygiene und Umwelt verbunden. Offizielle Meldungen erfolgen erst, wenn ein Admin eine Meldung manuell an die zuständige Stelle weiterleitet oder Bürgerinnen und Bürger sich selbst direkt an die zuständige Stelle wenden.</p></div>
+        <div class="legal-card"><h3>Kontakt zur zuständigen Stelle</h3><p>Institut für Hygiene und Umwelt Hamburg, Schädlingsbekämpfung, E Mail: <a class="ic-link" href="mailto:${AUTHORITY_MAIL}">${AUTHORITY_MAIL}</a>.</p></div>
+        <div class="legal-card"><h3>Haftungshinweis</h3><p>Die Inhalte werden nach bestem Wissen gepflegt. Für Vollständigkeit, Richtigkeit und behördliche Bearbeitung wird keine Gewähr übernommen.</p></div>`;
+    }
+  }
+
+  // Mail an Behörde: Mailto kann auf iPhone/Browser keine Dateien automatisch anhängen. Daher werden Foto Links in den Mailtext aufgenommen.
+  window.buildEntryText=function(e){
+    const photos=photoUrls(e);
+    const meldender=(e.name&&String(e.name).trim()&&String(e.name).trim().toLowerCase()!=='anonym')?`Spitzname: ${e.name}`:'Anonyme Meldung';
+    return `Ort: ${e.street||''}\nGPS: ${e.lat?Number(e.lat).toFixed(6)+', '+Number(e.lon).toFixed(6):'nicht vorhanden'}\nArt: ${e.type||''}\nStatus: ${ST[e.status||'neu']?.lbl||e.status||'Neu'}\nDatum: ${new Date(e.time||e.createdAt||Date.now()).toLocaleString('de-DE')}\n${meldender}\nBeschreibung:\n${e.desc||''}\n${photos.length?'\nFoto-Link(s):\n'+photos.map((u,i)=>(i+1)+'. '+u).join('\n'):''}\n\nLink: ${publicUrl()}#liste`;
+  };
+
+  window.informAuthority=function(id){
+    const e=(entries||[]).find(x=>String(x.id)===String(id)); if(!e)return;
+    const recipient=AUTHORITY_MAIL;
+    const subject=`Rattenmeldung Hamburg: ${e.street||'ohne Adresse'}`;
+    const body=`Sehr geehrte Damen und Herren,\n\nhiermit leite ich eine geprüfte Meldung aus dem privaten Rattenmelder Hamburg weiter.\n\n${buildEntryText(e)}\n\nHinweis: Diese Nachricht wurde manuell durch einen Admin geprüft und vorbereitet. Fotoanlagen können technisch nicht automatisch über GitHub Pages angehängt werden; vorhandene Bilder sind deshalb als Link im Text aufgeführt.\n\nMit freundlichen Grüßen\n${adminLabel()}`;
+    const pre=eById('email-pre'); if(pre)pre.textContent=body;
+    const sheet=eById('email-sheet');
+    const link=eById('email-link');
+    if(link){
+      link.textContent='📧 Mail-App öffnen';
+      link.href=`mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      link.onclick=function(ev){
+        // nicht preventDefault, sonst öffnet Mail-App nicht. Status nach kurzem Delay setzen.
+        setTimeout(()=>{rememberAuthoritySent(e,recipient); closeSheet('email-sheet'); updateStats(); renderAdminList(); if(map)refreshMarkers();},450);
+      };
+    }
+    const copyBtn=document.querySelector('#email-sheet .s-btn.orange');
+    if(copyBtn){
+      copyBtn.onclick=function(ev){stop(ev);navigator.clipboard?.writeText(body);rememberAuthoritySent(e,recipient);closeSheet('email-sheet');updateStats();renderAdminList();if(map)refreshMarkers();toast('📋 Mailtext kopiert und Status gespeichert');};
+    }
+    const closeBtn=document.querySelector('#email-sheet .sheet-close');
+    if(closeBtn){closeBtn.onclick=function(ev){stop(ev);closeSheet('email-sheet');};}
+    if(sheet)sheet.classList.add('open');
+  };
+
+  window.rememberAuthoritySent=function(e,recipient){
+    if(!e)return;
+    e.status='gesendet'; e.gesendet=true;
+    e.authorityNotifiedAt=new Date().toISOString();
+    e.authorityRecipient=recipient;
+    e.authorityBy=adminLabel();
+    addHistory(e,`Behörde informiert: ${recipient}`);
+    saveEntries(); updateStats(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); renderAdminList();
+  };
+
+  // Status Button: sichtbares Feedback und abgelehnt bleibt abgelehnt.
+  window.setStatus=async function(id,status,ev){
+    stop(ev);
+    const e=(entries||[]).find(x=>String(x.id)===String(id)); if(!e)return;
+    if(status==='bearbeitung'||status==='erledigt') status='geprueft';
+    if(status==='rejected') status='ausgeblendet';
+    const btn=ev&&ev.currentTarget; if(btn){btn.classList.add('busy');}
+    e.status=status; if(status==='gesendet')e.gesendet=true;
+    addHistory(e,`Status gesetzt: ${ST[status]?.lbl||status}`);
+    const ok=await updateEntryRemote(e,'status_'+status);
+    if(btn){btn.classList.remove('busy'); flashButton(btn,status==='ausgeblendet'?'flash-warn':'flash-ok');}
+    if(!ok)return;
+    updateStats(); renderAdminList(); if(curPage==='liste')renderList(); if(map)refreshMarkers(); checkSupabaseStatus(); toast(`Status: ${ST[status]?.lbl||status}`);
+  };
+
+  // Mehrfachauswahl und sichereres Löschen.
+  window.toggleAdminSelection=function(ev){stop(ev);adminSelectionMode=!adminSelectionMode;selectedReports.clear();renderAdminList();};
+  window.toggleReportSelect=function(id,ev){stop(ev); if(selectedReports.has(String(id)))selectedReports.delete(String(id)); else selectedReports.add(String(id)); const card=eById('ac'+String(id)); if(card)card.classList.toggle('is-selected',selectedReports.has(String(id))); const c=eById('selected-count'); if(c)c.textContent=selectedReports.size;};
+  async function deleteIds(ids){
+    for(const id of ids){
+      if(hasSupabase()){const {error}=await supabaseClient.from('reports').delete().eq('id',String(id)); if(error){alert('Löschen fehlgeschlagen: '+(error.message||'Unbekannt'));return false;}}
+      try{delPhotosDB(id);}catch(_){ }
+    }
+    entries=entries.filter(e=>!ids.includes(String(e.id)));
+    updateStats();renderAdminList();if(curPage==='liste')renderList();if(map)refreshMarkers();return true;
+  }
+  window.deleteSelectedReports=async function(ev){
+    stop(ev); const ids=[...selectedReports]; if(!ids.length){toast('Keine Meldungen ausgewählt');return;}
+    if(!confirm(`${ids.length} ausgewählte Meldung(en) löschen?`))return;
+    const ok=await deleteIds(ids); if(ok){selectedReports.clear();adminSelectionMode=false;toast('Ausgewählte Meldungen gelöscht');}
+  };
+  window.delEntry=async function(id,ev){
+    stop(ev); if(!confirm('Diese Meldung wirklich löschen?'))return;
+    const ok=await deleteIds([String(id)]); if(ok)toast('🗑️ Meldung gelöscht');
+  };
+  window.clearAll=async function(ev){
+    stop(ev); if(!entries||!entries.length){toast('Keine Einträge vorhanden');return;}
+    if(!confirm(`Alle ${entries.length} Einträge löschen? Diese Aktion ist kritisch.`))return;
+    const word=prompt('Zur Sicherheit bitte genau ALLE LÖSCHEN eingeben:');
+    if(word!=='ALLE LÖSCHEN'){toast('Löschen abgebrochen');return;}
+    const ok=await deleteIds(entries.map(e=>String(e.id))); if(ok){entries=[];localStorage.removeItem('rattenEntries');toast('Alle Meldungen gelöscht');}
+  };
+
+  // Admin Liste: nur gezielt ergänzen, keine Komplettlogik ändern.
+  const previousRenderAdminList=window.renderAdminList;
+  window.renderAdminList=function(){
+    if(typeof previousRenderAdminList==='function') previousRenderAdminList();
+    const list=eById('a-rep-list'); if(!list)return;
+    const oldSel=document.querySelector('.admin-select-row'); if(oldSel)oldSel.remove();
+    const bar=document.createElement('div');bar.className='admin-select-row';
+    bar.innerHTML=`<button type="button" onclick="toggleAdminSelection(event)">${adminSelectionMode?'Auswahl beenden':'Mehrere auswählen'}</button>${adminSelectionMode?`<button type="button" class="danger" onclick="deleteSelectedReports(event)">Ausgewählte löschen (<span id="selected-count">${selectedReports.size}</span>)</button>`:''}`;
+    list.parentNode.insertBefore(bar,list);
+    // Buttons auf explizite event Übergabe korrigieren und Auswahl Checkboxen einschleusen.
+    (entries||[]).forEach(r=>{
+      const rid=String(r.id); const card=eById('ac'+rid); if(!card)return;
+      const free=card.querySelector("button[onclick*='geprueft']"); if(free)free.setAttribute('onclick',`setStatus('${jsStr(rid)}','geprueft',event)`);
+      const deny=card.querySelector("button[onclick*='ausgeblendet']"); if(deny)deny.setAttribute('onclick',`setStatus('${jsStr(rid)}','ausgeblendet',event)`);
+      const del=card.querySelector('.a-del'); if(del)del.setAttribute('onclick',`delEntry('${jsStr(rid)}',event)`);
+      if(adminSelectionMode && !card.querySelector('.a-select')){
+        const cb=document.createElement('input');cb.type='checkbox';cb.className='a-select';cb.checked=selectedReports.has(rid);cb.onclick=(ev)=>toggleReportSelect(rid,ev);
+        const top=card.querySelector('.a-card-top'); if(top)top.insertBefore(cb,top.firstChild);
+        card.classList.toggle('is-selected',selectedReports.has(rid));
+      }
+    });
+  };
+
+  // Name Auswahl: anonym oder Spitzname, ohne neue Pflichtdaten.
+  function addNameChoice(prefix){
+    const inp=eById(prefix+'-name'); if(!inp || inp.dataset.choiceAdded)return;
+    inp.dataset.choiceAdded='yes';
+    const row=document.createElement('div'); row.className='name-choice-row';
+    row.innerHTML=`<button type="button" class="active" data-mode="anon">Anonym melden</button><button type="button" data-mode="nick">Mit Spitzname</button>`;
+    inp.parentNode.insertBefore(row, inp);
+    const btns=row.querySelectorAll('button');
+    function setMode(mode){
+      btns.forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+      if(mode==='anon'){inp.value=''; inp.placeholder='Anonym'; inp.disabled=true;} else {inp.disabled=false; inp.placeholder='Spitzname eingeben'; inp.focus();}
+    }
+    btns[0].onclick=(ev)=>{stop(ev);setMode('anon');};
+    btns[1].onclick=(ev)=>{stop(ev);setMode('nick');};
+    setMode('anon');
+  }
+
+  // Benachrichtigung sauber planen, nicht heimlich aktivieren.
+  function addNotificationHint(){
+    ['fr','fa'].forEach(prefix=>{
+      const consent=eById(prefix+'-consent'); if(!consent || document.querySelector('#'+prefix+'-notify-hint'))return;
+      const hint=document.createElement('div');hint.id=prefix+'-notify-hint';hint.className='hint';hint.style.display='block';hint.innerHTML='🔔 Benachrichtigungen werden später freiwillig separat angeboten, mit Radius z. B. 0,5 km und eigener Datenschutz-Zustimmung. Für die Meldung selbst werden keine Kontaktdaten benötigt.';
+      consent.closest('label')?.after(hint);
+    });
+  }
+
+  function fixLabels(){
+    const authLabel=document.querySelector('#s-authority')?.parentElement?.querySelector('.stat-lbl'); if(authLabel)authLabel.textContent='Bereits an Behörde gemeldet';
+    const todayLabel=document.querySelector('#s-done')?.parentElement?.querySelector('.stat-lbl'); if(todayLabel)todayLabel.textContent='Heute';
+    const build=eById('build-version-bar'); if(build)build.innerHTML='🏷️ <strong>Version:</strong> '+FIX32_BUILD;
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    setLegalText(); fixLabels(); addNameChoice('fr'); addNameChoice('fa'); addNotificationHint(); updateStats();
+    const lb=eById('lightbox'); if(lb){lb.onclick=(ev)=>{if(ev.target===lb)closeLightbox(ev);};}
+    const lbClose=document.querySelector('#lightbox .lb-close'); if(lbClose)lbClose.onclick=(ev)=>closeLightbox(ev);
+  });
+  // Falls Script nach DOMContentLoaded eingebunden ist.
+  if(document.readyState!=='loading'){setTimeout(()=>{setLegalText(); fixLabels(); addNameChoice('fr'); addNameChoice('fa'); addNotificationHint(); updateStats();},60);}
 })();
 </script>
 
