@@ -641,7 +641,7 @@ button.fix35-error,.s-btn.fix35-error,.workflow-btn.fix35-error{
 
 .fix40-build{font-size:11px;color:var(--text3);margin-top:4px;}
 </style>
-<!-- Version: FIX40_ADMIN_HARD_STATUS_FIX_2026-06-10 -->
+<!-- Version: FIX41_SCOPE_AUTHORITY_MAIL_2026-06-11 -->
 
 <style id="fix39-admin-restore-style">
 html.fix39-admin-restore #admin-page{display:flex!important;}
@@ -1141,7 +1141,21 @@ function ensurePrivacyOk(){if(privacyAccepted)return true;showPrivacyConsentIfNe
 function hasSupabase(){return !!supabaseClient;}
 function dbStatusToUi(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'geprueft',resolved:'geprueft',rejected:'ausgeblendet'})[s]||s||'neu';}
 function uiStatusToDb(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',ausgeblendet:'rejected',bearbeitung:'in_review',erledigt:'in_review'})[s]||'new';}
-function dbReportToEntry(r){const photos=Array.isArray(r.photo_urls)?r.photo_urls:(r.image_url?[r.image_url]:[]);return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by};}
+
+function getScopeFromHistory(h){
+  const arr=Array.isArray(h)?h:[];
+  const meta=arr.find(x=>x&&x.__scope==='rattenmelder');
+  return meta&&meta.locationScope?meta.locationScope:'';
+}
+function ensureScopeInHistory(entry,scope){
+  if(!entry)return;
+  if(!Array.isArray(entry.history))entry.history=[];
+  let meta=entry.history.find(x=>x&&x.__scope==='rattenmelder');
+  if(!meta){meta={__scope:'rattenmelder'};entry.history.unshift(meta);}
+  meta.locationScope=scope||meta.locationScope||'';
+}
+function scopeLabel(scope){return scope==='public'?'Öffentlicher Bereich':scope==='private'?'Privater Bereich':'Nicht angegeben';}
+function dbReportToEntry(r){const photos=Array.isArray(r.photo_urls)?r.photo_urls:(r.image_url?[r.image_url]:[]);return {id:r.id,kind:r.report_type==='action'?'action':'rat',street:r.street||r.address||'',type:r.category||r.title||'',desc:r.description||'',time:r.event_time||r.created_at,name:r.reporter_name||'Anonym',hasPhotos:photos.length>0,photoUrls:photos,status:dbStatusToUi(r.status),stadtAntwort:r.admin_note||'',createdAt:r.created_at,lat:r.latitude,lon:r.longitude,accuracy:r.accuracy_meters||r.accuracy,gpsSource:r.gps_source,gpsExact:!!r.gps_exact,history:r.history||[],authorityNotifiedAt:r.authority_notified_at,authorityRecipient:r.authority_email,authorityBy:r.authority_by,locationScope:getScopeFromHistory(h)};}
 function entryToDb(e){const photos=Array.isArray(e.photoUrls)?e.photoUrls.filter(Boolean):[];return {id:String(e.id),report_type:e.kind==='action'?'action':'sighting',category:e.type||'',description:e.desc||'',street:e.street||'',house_number:'',postal_code:'',city:'Hamburg',latitude:e.lat||null,longitude:e.lon||null,accuracy_meters:e.accuracy||null,accuracy:e.accuracy||null,gps_source:e.gpsSource||null,gps_exact:!!e.gpsExact,image_url:photos.length?photos[0]:null,photo_urls:photos,status:uiStatusToDb(e.status||'neu'),reporter_name:e.name||'Anonym',event_time:e.time||new Date().toISOString(),admin_note:e.stadtAntwort||null,history:e.history||[],authority_notified:!!e.authorityNotifiedAt,authority_notified_at:e.authorityNotifiedAt||null,authority_email:e.authorityRecipient||null,authority_by:e.authorityBy||null,created_at:e.createdAt||new Date().toISOString(),updated_at:new Date().toISOString()};}
 async function loadSupabaseData(){
   if(!hasSupabase()){toast('⚠️ Supabase konnte nicht geladen werden');return;}
@@ -1436,6 +1450,8 @@ async function submitReport(kind){
     if(!desc){flashInp(isRat?'fr-desc':'fa-desc');toast('✏️ Bitte kurz beschreiben');return;}
     const consentId=isRat?'fr-consent':'fa-consent';
     if(document.getElementById(consentId)&&!document.getElementById(consentId).checked){toast('🔒 Bitte Datenschutzbestätigung anhaken');return;}
+    const scope = (typeof getSelectedLocationScope==='function') ? getSelectedLocationScope(kind) : '';
+    if(!scope){toast('📍 Bitte auswählen: öffentlicher oder privater Bereich');return;}
 
     setBusy(true);
     toast('⏳ Meldung wird gespeichert...');
@@ -1444,7 +1460,7 @@ async function submitReport(kind){
     const photoArr=isRat?photosRat:photosAction;
     let photoUrls=[];
     try{photoUrls=await uploadPhotoDataUrls(id,photoArr);}catch(photoError){console.error('Foto Upload Fehler:',photoError);toast('⚠️ Foto konnte nicht hochgeladen werden. Meldung wird trotzdem gespeichert.');}
-    const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoUrls.length>0,photoUrls,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null,accuracy:coords?coords.accuracy:null,gpsSource:coords?coords.source:null,gpsExact:coords?!!coords.exact:false,history:[]};
+    const entry={id,kind,street,type:selType,desc,time:document.getElementById(isRat?'fr-time':'fa-time').value||new Date().toISOString(),name:document.getElementById(isRat?'fr-name':'fa-name').value.trim()||'Anonym',hasPhotos:photoUrls.length>0,photoUrls,status:'neu',stadtAntwort:'',createdAt:new Date().toISOString(),lat:coords?coords.lat:null,lon:coords?coords.lon:null,accuracy:coords?coords.accuracy:null,gpsSource:coords?coords.source:null,gpsExact:coords?!!coords.exact:false,locationScope:scope,history:[{__scope:'rattenmelder',locationScope:scope}]};
     if(hasSupabase()){
       const {data,error}=await supabaseClient.from('reports').insert(entryToDb(entry)).select('*').single();
       if(error){console.error('Supabase INSERT Fehler:',error);const msg=error.message||error.details||error.hint||'Unbekannter Fehler';toast('❌ Supabase: '+msg.slice(0,90));alert('Supabase Fehler beim Speichern:\n\n'+msg+'\n\nDetails: '+(error.details||'-')+'\nHint: '+(error.hint||'-'));return;}
@@ -3766,7 +3782,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script id="fix40-admin-hard-status-fix">
 (function(){
   'use strict';
-  const BUILD='FIX40_ADMIN_HARD_STATUS_FIX_2026-06-10';
+  const BUILD='FIX41_SCOPE_AUTHORITY_MAIL_2026-06-11';
   function qs(s,root){return (root||document).querySelector(s);} 
   function qsa(s,root){return Array.from((root||document).querySelectorAll(s));}
   function stopHard(ev){try{if(ev){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation&&ev.stopImmediatePropagation();}}catch(_){}}
@@ -3903,6 +3919,138 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
   else {setBuild();setTimeout(()=>{restoreAdminClean();bindFix40AdminButtons();},100);}
   window.addEventListener('load',()=>{setBuild();setTimeout(bindFix40AdminButtons,500);});
   setInterval(()=>{if(qs('#admin-page.open'))bindFix40AdminButtons();},1000);
+})();
+</script>
+
+
+<script id="fix41-scope-authority-mail">
+(function(){
+  'use strict';
+  const BUILD41='FIX41_SCOPE_AUTHORITY_MAIL_2026-06-11';
+  const AUTHORITY_MAIL='schaedlingsbekaempfung@hu.hamburg.de';
+  function qs(s,r){return (r||document).querySelector(s);} function qsa(s,r){return Array.from((r||document).querySelectorAll(s));}
+  function stop(ev){try{if(ev){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation&&ev.stopImmediatePropagation();}}catch(_){}}
+  function toastSafe(t){try{if(typeof toast==='function')toast(t);else console.log(t);}catch(_){}}
+  function escHtml(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function allEntries(){try{return Array.isArray(entries)?entries:[]}catch(_){return [];}}
+  function findEntry(id){return allEntries().find(e=>String(e.id)===String(id));}
+  window.scopeLabel=function(scope){return scope==='public'?'Öffentlicher Bereich':scope==='private'?'Privater Bereich':'Nicht angegeben';};
+  function getScope(e){
+    if(e&&e.locationScope)return e.locationScope;
+    const h=Array.isArray(e&&e.history)?e.history:[];
+    const m=h.find(x=>x&&x.__scope==='rattenmelder');
+    return m&&m.locationScope?m.locationScope:'';
+  }
+  window.getReportScope=function(e){return getScope(e);};
+  function ensureScope(e,scope){
+    if(!e)return; e.locationScope=scope||e.locationScope||'';
+    if(!Array.isArray(e.history))e.history=[];
+    let m=e.history.find(x=>x&&x.__scope==='rattenmelder');
+    if(!m){m={__scope:'rattenmelder'}; e.history.unshift(m);}
+    m.locationScope=e.locationScope||'';
+  }
+  window.getSelectedLocationScope=function(kind){
+    const name=kind==='action'?'fa-location-scope':'fr-location-scope';
+    const el=qs('input[name="'+name+'"]:checked');
+    return el?el.value:'';
+  };
+  function addScopeSelectors(){
+    [['rat','rat-type-grid','fr-scope-wrap','fr-location-scope'],['action','action-type-grid','fa-scope-wrap','fa-location-scope']].forEach(([kind,gridId,wrapId,name])=>{
+      if(qs('#'+wrapId))return;
+      const grid=qs('#'+gridId); if(!grid)return;
+      const box=document.createElement('div'); box.className='field-grp scope-field'; box.id=wrapId;
+      box.innerHTML='<div class="field-lbl"><span class="step-badge">'+(kind==='rat'?'2a':'2a')+'</span>Bereich der Sichtung</div><div class="type-grid two scope-grid"><label class="tc scope-choice"><input type="radio" name="'+name+'" value="public"><span class="tc-icon">🏙️</span><span class="tc-label">Öffentlicher Bereich</span></label><label class="tc scope-choice"><input type="radio" name="'+name+'" value="private"><span class="tc-icon">🏡</span><span class="tc-label">Privater Bereich</span></label></div><div class="hint">Wichtig für die Weiterleitung an die zuständige Stelle.</div>';
+      grid.closest('.field-grp').insertAdjacentElement('afterend',box);
+    });
+    qsa('.scope-choice input').forEach(inp=>{
+      inp.addEventListener('change',()=>{
+        const name=inp.name; qsa('input[name="'+name+'"]').forEach(x=>x.closest('.scope-choice')?.classList.toggle('sel',x.checked));
+      });
+    });
+  }
+  function resetScope(kind){
+    const name=kind==='action'?'fa-location-scope':'fr-location-scope';
+    qsa('input[name="'+name+'"]').forEach(x=>{x.checked=false; x.closest('.scope-choice')?.classList.remove('sel');});
+  }
+  const oldReset=window.resetForm;
+  if(typeof oldReset==='function')window.resetForm=function(kind){const r=oldReset.apply(this,arguments); resetScope(kind); return r;};
+  function scopeBadge(e){const label=window.scopeLabel(getScope(e));return '<span class="scope-badge '+(getScope(e)==='private'?'private':'public')+'">'+escHtml(label)+'</span>';}
+  function decorateScopeBadges(){
+    allEntries().forEach(e=>{
+      const r=qs('#entry-'+CSS.escape(String(e.id))+' .r-badges');
+      if(r&&!r.querySelector('.scope-badge'))r.insertAdjacentHTML('beforeend',scopeBadge(e));
+      const a=qs('#ac'+CSS.escape(String(e.id))+' .a-type');
+      if(a&&!a.parentElement.querySelector('.scope-badge'))a.insertAdjacentHTML('afterend','<div class="a-meta scope-line">📌 '+escHtml(window.scopeLabel(getScope(e)))+'</div>');
+    });
+  }
+  ['renderList','renderAdminList'].forEach(fn=>{
+    const old=window[fn];
+    if(typeof old==='function')window[fn]=function(){const r=old.apply(this,arguments); setTimeout(decorateScopeBadges,20); return r;};
+  });
+  function exactPhotoLinks(e){
+    let arr=[]; if(Array.isArray(e&&e.photoUrls))arr=e.photoUrls; else if(e&&e.image_url)arr=[e.image_url];
+    return arr.map(String).filter(u=>/^https?:\/\//i.test(u)&&!/\/report-photos\/?$/i.test(u));
+  }
+  function niceDate(v){try{return new Date(v||Date.now()).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'});}catch(_){return String(v||'');}}
+  window.buildEntryText=function(e){
+    const photos=exactPhotoLinks(e);
+    const melder=(e.name&&String(e.name).trim()&&String(e.name).trim().toLowerCase()!=='anonym')?'Spitzname / Melderangabe: '+e.name:'Meldung: anonym';
+    return [
+      'Rattenmeldung Hamburg',
+      '======================',
+      '',
+      'Hinweis: Diese Meldung stammt aus einem privaten Nachbarschaftsportal. Es handelt sich nicht um eine offizielle Behördenseite. Die Meldung wurde durch einen Admin geprüft und wird zur weiteren Prüfung weitergeleitet.',
+      '',
+      'Meldungsnummer: '+(e.id||''),
+      'Status: '+((window.ST&&window.ST[e.status||'neu']&&window.ST[e.status||'neu'].lbl)||e.status||'Neu'),
+      'Standortart: '+window.scopeLabel(getScope(e)),
+      'Adresse / Ort: '+(e.street||''),
+      'GPS: '+(e.lat?Number(e.lat).toFixed(6)+', '+Number(e.lon).toFixed(6):'nicht vorhanden'),
+      'Art der Meldung: '+(e.type||''),
+      'Datum / Uhrzeit der Sichtung: '+niceDate(e.time||e.createdAt),
+      melder,
+      '',
+      'Beschreibung:',
+      e.desc||'',
+      '',
+      photos.length?'Foto-Link(s) zu genau dieser Meldung:\n'+photos.map((u,i)=>(i+1)+'. '+u).join('\n'):'Foto-Link(s): keine Fotos zu dieser Meldung gespeichert oder freigegeben.',
+      '',
+      'Bitte prüfen Sie, ob aufgrund der Meldung weitere Maßnahmen erforderlich sind oder ob eine Weiterleitung an die zuständige Stelle erfolgen soll.',
+      '',
+      'Link zur Meldungsübersicht: '+(typeof publicUrl==='function'?publicUrl():(location.origin+location.pathname))+'#liste'
+    ].join('\n');
+  };
+  function authorityMail(id,ev){
+    stop(ev); try{navigator.vibrate&&navigator.vibrate(18);}catch(_){ }
+    const e=findEntry(id); if(!e){toastSafe('⚠️ Meldung nicht gefunden.');return false;}
+    const subject='Rattenmeldung Hamburg: '+(e.street||'ohne Adresse')+' · '+window.scopeLabel(getScope(e));
+    const body='Sehr geehrte Damen und Herren,\n\nanbei leite ich Ihnen eine geprüfte Meldung aus dem privaten Rattenmelder Hamburg weiter.\n\n'+window.buildEntryText(e)+'\n\nMit freundlichen Grüßen\n'+(typeof adminLabel==='function'?adminLabel():'Admin');
+    const href='mailto:'+encodeURIComponent(AUTHORITY_MAIL)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    const sheet=qs('#email-sheet'), pre=qs('#email-pre'), link=qs('#email-link');
+    if(pre)pre.textContent=body;
+    if(link){link.href=href;link.onclick=async function(e2){stop(e2); if(typeof window.fix40SetStatus==='function')await window.fix40SetStatus(id,'gesendet',e2); setTimeout(()=>{location.href=href;},80); return false;};}
+    const copy=qs('#email-sheet .s-btn.orange');
+    if(copy)copy.onclick=async function(e3){stop(e3); try{await navigator.clipboard.writeText(body);}catch(_){} if(typeof window.fix40SetStatus==='function')await window.fix40SetStatus(id,'gesendet',e3); if(sheet)sheet.classList.remove('open'); toastSafe('📋 Behördenmail kopiert und Status gespeichert'); return false;};
+    const close=qs('#email-sheet .sheet-close'); if(close)close.onclick=function(e4){stop(e4); if(sheet)sheet.classList.remove('open'); return false;};
+    if(sheet)sheet.classList.add('open'); else location.href=href;
+    toastSafe('📧 Ausführliche Behördenmail vorbereitet');
+    return false;
+  }
+  window.informAuthority=authorityMail;
+  function addScopeStyles(){
+    if(qs('#fix41-scope-styles'))return;
+    const st=document.createElement('style'); st.id='fix41-scope-styles'; st.textContent=`
+      .scope-field{margin-top:-4px}.scope-choice{display:block;position:relative}.scope-choice input{position:absolute;opacity:0;pointer-events:none}.scope-choice.sel{border-color:var(--orange)!important;background:rgba(255,149,0,.10)!important}.scope-choice.sel .tc-label{color:var(--text)!important}.scope-badge{display:inline-block;font-size:10px;font-weight:900;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;background:rgba(10,132,255,.10);border:1px solid rgba(10,132,255,.25);color:var(--blue)}.scope-badge.private{background:rgba(191,90,242,.10);border-color:rgba(191,90,242,.28);color:var(--purple)}.scope-line{margin-top:4px;color:var(--orange)!important}
+    `; document.head.appendChild(st);
+  }
+  function patchBuild(){
+    try{document.title='Rattenmelder Hamburg · '+BUILD41;}catch(_){ }
+    const b=qs('#system-status-bar'); if(b&&!/FIX41/.test(b.textContent||'')) b.insertAdjacentHTML('beforeend','<div class="fix41-build">Version: '+BUILD41+'</div>');
+  }
+  function init(){addScopeStyles();addScopeSelectors();decorateScopeBadges();patchBuild();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init); else init();
+  window.addEventListener('load',()=>setTimeout(init,300));
+  setInterval(()=>{if(qs('#admin-page.open'))decorateScopeBadges();},1200);
 })();
 </script>
 
