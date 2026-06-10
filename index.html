@@ -3047,5 +3047,271 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 })();
 </script>
 
+
+<script>
+/* FIX37_ADMIN_ACTION_RESTORE_2026-06-10
+   Konservativer Hotfix auf Fix36:
+   - Adminbereich bleibt nach Reload offen, sofern Supabase Auth Session noch gültig ist
+   - Freigeben/Ablehnen/Behörde informieren werden per delegierter Klicklogik stabil abgefangen
+   - Ablehnen bleibt dauerhaft Abgelehnt
+   - Mehrfachauswahl kann zuverlässig an/aus und einzeln abgewählt werden
+   - Keine Änderungen an funktionierenden Bereichen wie Bearbeiten, Standort oder Notiz
+*/
+(function(){
+  const BUILD='FIX37_ADMIN_ACTION_RESTORE_2026-06-10';
+  const ADMIN_OPEN_KEY='rattenAdminOpenPersist_v37';
+  const q=(s,r=document)=>r.querySelector(s);
+  const qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  const stop=(ev)=>{try{if(ev){ev.preventDefault();ev.stopPropagation();}}catch(_){ }};
+  const vibrate=(ms)=>{try{if(navigator.vibrate)navigator.vibrate(ms||12);}catch(_){ }};
+  const toastSafe=(msg)=>{try{if(typeof toast==='function')toast(msg);}catch(_){ }};
+  let selectionMode=false;
+  let selectedIds=new Set();
+
+  function setBuild(){
+    try{document.title='Rattenmelder Hamburg · '+BUILD;}catch(_){ }
+    qa('#build-version-bar,.build-version-bar').forEach(el=>{el.innerHTML='🏷️ <strong>Version:</strong> '+BUILD;});
+  }
+
+  function findEntry(id){return (window.entries||[]).find(e=>String(e.id)===String(id));}
+  function cardIdFromButton(btn){
+    const card=btn&&btn.closest&&btn.closest('.a-card');
+    if(card&&card.id)return card.id.replace(/^ac/,'');
+    const oc=(btn&&btn.getAttribute&&btn.getAttribute('onclick'))||'';
+    const m=oc.match(/(?:setStatus|informAuthority|editEntry|editGps|delEntry)\('([^']+)'/);
+    return m?m[1]:'';
+  }
+
+  function normalizeStatus(s){
+    if(s==='rejected'||s==='abgelehnt')return 'ausgeblendet';
+    if(s==='bearbeitung'||s==='erledigt')return 'geprueft';
+    return s||'neu';
+  }
+
+  // Statusmapping endgültig absichern.
+  window.dbStatusToUi=function(s){return ({new:'neu',in_review:'geprueft',forwarded:'gesendet',in_progress:'geprueft',resolved:'geprueft',rejected:'ausgeblendet'})[s]||s||'neu';};
+  window.uiStatusToDb=function(s){return ({neu:'new',geprueft:'in_review',gesendet:'forwarded',ausgeblendet:'rejected',bearbeitung:'in_review',erledigt:'in_review'})[s]||'new';};
+  if(window.ST){
+    ST.neu={cls:'sn',lbl:'🆕 Neu'};
+    ST.geprueft={cls:'ss',lbl:'✅ Geprüft'};
+    ST.gesendet={cls:'ss',lbl:'📧 Bereits an Behörde gemeldet'};
+    ST.ausgeblendet={cls:'sn',lbl:'❌ Abgelehnt'};
+  }
+
+  async function persistEntry(e,action){
+    try{
+      if(typeof updateEntryRemote==='function'){
+        const ok=await updateEntryRemote(e,action||'admin_update');
+        if(ok===false)return false;
+      }else if(window.supabaseClient && typeof entryToDb==='function'){
+        const payload=entryToDb(e); delete payload.id; delete payload.created_at;
+        const {error}=await supabaseClient.from('reports').update(payload).eq('id',String(e.id));
+        if(error)throw error;
+      }else if(typeof saveEntries==='function'){
+        await saveEntries();
+      }
+      return true;
+    }catch(err){
+      console.error('FIX37 persistEntry failed',err);
+      alert('Speichern fehlgeschlagen: '+(err&&err.message?err.message:'Unbekannter Fehler'));
+      return false;
+    }
+  }
+
+  function refreshAdminAndPublic(){
+    try{if(typeof updateStats==='function')updateStats();}catch(_){ }
+    try{if(typeof renderAdminList==='function')renderAdminList();}catch(_){ }
+    try{if(window.curPage==='liste'&&typeof renderList==='function')renderList();}catch(_){ }
+    try{if(window.map&&typeof refreshMarkers==='function')refreshMarkers();}catch(_){ }
+    try{if(typeof checkSupabaseStatus==='function')checkSupabaseStatus();}catch(_){ }
+    setBuild();
+  }
+
+  window.setStatus=async function(id,status,ev){
+    stop(ev); vibrate(15);
+    status=normalizeStatus(status);
+    const e=findEntry(id); if(!e){toastSafe('⚠️ Meldung nicht gefunden');return false;}
+    const btn=ev&&ev.currentTarget?ev.currentTarget:null;
+    if(btn){btn.disabled=true;btn.classList.add('busy','fix35-pressed');}
+    e.status=status;
+    if(status==='geprueft'){
+      try{ if(typeof setMeta==='function')setMeta(e,{photoApproved:true,photoDenied:false}); }catch(_){ }
+    }
+    if(status==='ausgeblendet'){
+      try{ if(typeof setMeta==='function')setMeta(e,{hidden:true,photoApproved:false}); }catch(_){ }
+    }
+    try{if(typeof addHistory==='function')addHistory(e,'Status gesetzt: '+((window.ST&&ST[status])?ST[status].lbl:status));}catch(_){ }
+    const ok=await persistEntry(e,'status_'+status);
+    if(btn){btn.disabled=false;btn.classList.remove('busy','fix35-pressed');btn.classList.add(status==='ausgeblendet'?'fix35-warn':'fix35-ok');setTimeout(()=>btn.classList.remove('fix35-warn','fix35-ok'),900);}
+    if(!ok)return false;
+    toastSafe(status==='ausgeblendet'?'❌ Meldung abgelehnt':'✅ Status gespeichert');
+    refreshAdminAndPublic();
+    return false;
+  };
+
+  function directPhotoUrls(e){
+    return (Array.isArray(e&&e.photoUrls)?e.photoUrls:[]).filter(Boolean).map(String).filter(u=>/^https?:\/\//i.test(u)&&!/\/storage\/v1\/object\/public\/report-photos\/?$/i.test(u));
+  }
+  window.buildEntryText=function(e){
+    const photos=directPhotoUrls(e);
+    const statusLabel=(window.ST&&ST[e.status||'neu'])?ST[e.status||'neu'].lbl:(e.status||'Neu');
+    const melder=(e.name&&String(e.name).trim()&&String(e.name).trim().toLowerCase()!=='anonym')?'Spitzname: '+e.name:'Anonyme Meldung';
+    return `Ort: ${e.street||''}\nGPS: ${e.lat?Number(e.lat).toFixed(6)+', '+Number(e.lon).toFixed(6):'nicht vorhanden'}\nArt: ${e.type||''}\nStatus: ${statusLabel}\nDatum: ${new Date(e.time||e.createdAt||Date.now()).toLocaleString('de-DE')}\n${melder}\nBeschreibung:\n${e.desc||''}\n${photos.length?'\nFoto-Link(s) zu genau dieser Meldung:\n'+photos.map((u,i)=>(i+1)+'. '+u).join('\n'):'\nFoto-Link(s): keine Fotos zu dieser Meldung gespeichert'}\n\nLink zur Meldungsübersicht: ${typeof publicUrl==='function'?publicUrl():location.origin+location.pathname}#liste`;
+  };
+
+  window.informAuthority=function(id,ev){
+    stop(ev); vibrate(14);
+    const e=findEntry(id); if(!e){toastSafe('⚠️ Meldung nicht gefunden');return false;}
+    const recipient=window.AUTHORITY_MAIL||'schaedlingsbekaempfung@hu.hamburg.de';
+    const subject=`Rattenmeldung Hamburg: ${e.street||'ohne Adresse'}`;
+    const body=`Sehr geehrte Damen und Herren,\n\nhiermit leite ich eine geprüfte Meldung aus dem privaten Rattenmelder Hamburg weiter.\n\n${window.buildEntryText(e)}\n\nHinweis: Diese Nachricht wurde manuell durch einen Admin geprüft und vorbereitet. Vorhandene Bilder sind als direkte Links zu genau dieser Meldung im Text aufgeführt.\n\nMit freundlichen Grüßen\n${typeof adminLabel==='function'?adminLabel():'Admin'}`;
+    const sheet=q('#email-sheet'); const pre=q('#email-pre'); const link=q('#email-link');
+    if(pre)pre.textContent=body;
+    if(link){
+      link.textContent='📧 Mail-App öffnen';
+      link.href=`mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      link.onclick=function(ev2){
+        // Mail-App darf öffnen, Status wird vorher lokal/remote gesetzt.
+        stop(ev2);
+        window.markAuthoritySentFix37(e,recipient).then(()=>{setTimeout(()=>{window.location.href=link.href;},80);});
+        return false;
+      };
+    }
+    const copyBtn=q('#email-sheet .s-btn.orange');
+    if(copyBtn){copyBtn.onclick=function(ev3){stop(ev3);navigator.clipboard?.writeText(body).finally(()=>{window.markAuthoritySentFix37(e,recipient);toastSafe('📋 Mailtext kopiert und Status gespeichert');});return false;};}
+    const closeBtn=q('#email-sheet .sheet-close'); if(closeBtn){closeBtn.onclick=function(ev4){stop(ev4); if(sheet)sheet.classList.remove('open'); return false;};}
+    if(sheet)sheet.classList.add('open');
+    toastSafe('📧 Behördenmail vorbereitet');
+    return false;
+  };
+
+  window.markAuthoritySentFix37=async function(e,recipient){
+    e.status='gesendet'; e.gesendet=true; e.authorityNotifiedAt=new Date().toISOString(); e.authorityRecipient=recipient; e.authorityBy=(typeof adminLabel==='function'?adminLabel():'Admin');
+    try{if(typeof addHistory==='function')addHistory(e,'Behörde informiert: '+recipient);}catch(_){ }
+    const ok=await persistEntry(e,'authority_sent');
+    const sheet=q('#email-sheet'); if(sheet)sheet.classList.remove('open');
+    if(ok){refreshAdminAndPublic();}
+    return ok;
+  };
+
+  // Stabile Admin-Session nach Reload: öffnet Admin wieder, wenn vorher offen und Supabase Session noch existiert.
+  const oldOpenAdmin=window.openAdmin;
+  window.openAdmin=function(){
+    localStorage.setItem(ADMIN_OPEN_KEY,'yes');
+    document.body.classList.add('admin-open');
+    const admin=q('#admin-page'); if(admin)admin.classList.add('open');
+    if(typeof oldOpenAdmin==='function')try{oldOpenAdmin.apply(this,arguments);}catch(_){ }
+    try{if(window.isHaupt&&typeof renderAdminList==='function')renderAdminList();}catch(_){ }
+    setBuild(); return false;
+  };
+  const oldCloseAdmin=window.closeAdmin;
+  window.closeAdmin=function(){
+    localStorage.removeItem(ADMIN_OPEN_KEY);
+    const admin=q('#admin-page'); if(admin)admin.classList.remove('open');
+    document.body.classList.remove('admin-open');
+    try{if(typeof oldCloseAdmin==='function')oldCloseAdmin.apply(this,arguments);}catch(_){ }
+    return false;
+  };
+  const oldShowPanel=window.showPanel;
+  window.showPanel=function(){
+    localStorage.setItem(ADMIN_OPEN_KEY,'yes');
+    if(typeof oldShowPanel==='function')oldShowPanel.apply(this,arguments);
+    const admin=q('#admin-page'); if(admin)admin.classList.add('open');
+    document.body.classList.add('admin-open');
+    setTimeout(()=>{setBuild();enhanceAdminSelection();},80);
+  };
+  const oldAdminLogout=window.adminLogout;
+  window.adminLogout=async function(){
+    localStorage.removeItem(ADMIN_OPEN_KEY);
+    try{if(typeof oldAdminLogout==='function')await oldAdminLogout.apply(this,arguments);else if(window.supabaseClient)await supabaseClient.auth.signOut();}catch(_){ }
+    const admin=q('#admin-page'); if(admin)admin.classList.remove('open');
+    document.body.classList.remove('admin-open');
+    return false;
+  };
+
+  async function restoreAdminAfterReload(){
+    setBuild();
+    if(localStorage.getItem(ADMIN_OPEN_KEY)!=='yes')return;
+    try{
+      if(window.supabaseClient){
+        const {data}=await supabaseClient.auth.getSession();
+        if(data&&data.session){
+          window.currentAdminEmail=data.session.user.email||window.currentAdminEmail||'';
+          if(typeof loadAdminDataIfAllowed==='function')await loadAdminDataIfAllowed();
+          const admin=q('#admin-page'); if(admin)admin.classList.add('open');
+          document.body.classList.add('admin-open');
+          if(window.isHaupt&&typeof showPanel==='function')showPanel(); else { if(q('#a-login'))q('#a-login').style.display='flex'; }
+          setTimeout(()=>{try{renderAdminList();}catch(_){ } enhanceAdminSelection();},200);
+        }else{
+          const admin=q('#admin-page'); if(admin)admin.classList.add('open');
+          document.body.classList.add('admin-open');
+        }
+      }
+    }catch(err){console.warn('FIX37 restore admin failed',err);}
+  }
+
+  function deleteIdsFinal(ids){
+    return (async()=>{
+      for(const id of ids){
+        if(window.supabaseClient){const {error}=await supabaseClient.from('reports').delete().eq('id',String(id)); if(error){alert('Löschen fehlgeschlagen: '+(error.message||'Unbekannt')); return false;}}
+        try{if(typeof delPhotosDB==='function')delPhotosDB(id);}catch(_){ }
+      }
+      window.entries=(window.entries||[]).filter(e=>!ids.includes(String(e.id)));
+      selectedIds.clear(); selectionMode=false; refreshAdminAndPublic(); return true;
+    })();
+  }
+  window.toggleAdminSelection=function(ev){stop(ev); selectionMode=!selectionMode; selectedIds.clear(); enhanceAdminSelection(true); return false;};
+  window.toggleReportSelect=function(id,ev){stop(ev); id=String(id); if(selectedIds.has(id))selectedIds.delete(id); else selectedIds.add(id); enhanceAdminSelection(false); return false;};
+  window.deleteSelectedReports=async function(ev){stop(ev); const ids=[...selectedIds]; if(!ids.length){toastSafe('Keine Meldungen ausgewählt');return false;} if(!confirm(`${ids.length} ausgewählte Meldung(en) löschen?`))return false; const ok=await deleteIdsFinal(ids); if(ok)toastSafe('Ausgewählte Meldungen gelöscht'); return false;};
+
+  function enhanceAdminSelection(rebuild){
+    const list=q('#a-rep-list'); if(!list)return;
+    qa('.admin-select-row').forEach(x=>x.remove());
+    const bar=document.createElement('div'); bar.className='admin-select-row fix37-select-row';
+    bar.innerHTML=`<button type="button" class="fix37-select-toggle">${selectionMode?'Auswahl beenden':'Mehrere auswählen'}</button>${selectionMode?`<button type="button" class="danger fix37-delete-selected">Ausgewählte löschen (<span id="selected-count">${selectedIds.size}</span>)</button>`:''}`;
+    list.parentNode.insertBefore(bar,list);
+    q('.fix37-select-toggle',bar).onclick=window.toggleAdminSelection;
+    const del=q('.fix37-delete-selected',bar); if(del)del.onclick=window.deleteSelectedReports;
+    qa('#a-rep-list .a-card').forEach(card=>{
+      const id=(card.id||'').replace(/^ac/,'');
+      card.classList.toggle('is-selected',selectedIds.has(id));
+      const old=card.querySelector('.a-select,.fix37-select'); if(old)old.remove();
+      if(selectionMode){
+        const cb=document.createElement('input'); cb.type='checkbox'; cb.className='a-select fix37-select'; cb.checked=selectedIds.has(id); cb.onclick=(ev)=>window.toggleReportSelect(id,ev);
+        const top=card.querySelector('.a-card-top'); if(top)top.insertBefore(cb,top.firstChild);
+      }
+      qa('button',card).forEach(btn=>{
+        const txt=(btn.textContent||'').trim();
+        if(txt.includes('Freigeben')||txt.includes('Geprüft')) btn.onclick=(ev)=>window.setStatus(id,'geprueft',ev);
+        else if(txt.includes('Ablehnen')||txt.includes('Abgelehnt')) btn.onclick=(ev)=>window.setStatus(id,'ausgeblendet',ev);
+        else if(txt.includes('Behörde informieren')||txt.includes('Behörden informieren')) btn.onclick=(ev)=>window.informAuthority(id,ev);
+        else if(btn.classList.contains('a-del')) btn.onclick=(ev)=>{stop(ev); if(confirm('Diese Meldung wirklich löschen?'))deleteIdsFinal([id]); return false;};
+      });
+    });
+  }
+
+  const oldRenderAdminList=window.renderAdminList;
+  window.renderAdminList=function(){
+    const r=oldRenderAdminList?oldRenderAdminList.apply(this,arguments):undefined;
+    setTimeout(()=>{enhanceAdminSelection(false); setBuild();},50);
+    return r;
+  };
+
+  // Delegierte Klicks als Sicherheitsnetz für Safari und alte Inline Handler.
+  document.addEventListener('click',function(ev){
+    const admin=q('#admin-page.open'); if(!admin)return;
+    const btn=ev.target&&ev.target.closest?ev.target.closest('button,a'):null; if(!btn||!admin.contains(btn))return;
+    const txt=(btn.textContent||'').trim();
+    if(txt.includes('Freigeben')||txt.includes('Geprüft')){const id=cardIdFromButton(btn); if(id){window.setStatus(id,'geprueft',ev);}}
+    else if(txt.includes('Ablehnen')||txt.includes('Abgelehnt')){const id=cardIdFromButton(btn); if(id){window.setStatus(id,'ausgeblendet',ev);}}
+    else if(txt.includes('Behörde informieren')||txt.includes('Behörden informieren')){const id=cardIdFromButton(btn); if(id){window.informAuthority(id,ev);}}
+  },true);
+
+  document.addEventListener('DOMContentLoaded',()=>{setBuild(); restoreAdminAfterReload(); setTimeout(enhanceAdminSelection,500);});
+  window.addEventListener('load',()=>{setBuild(); restoreAdminAfterReload(); setTimeout(enhanceAdminSelection,800);});
+  if(document.readyState!=='loading')setTimeout(()=>{setBuild(); restoreAdminAfterReload(); enhanceAdminSelection();},150);
+})();
+</script>
+
 </body>
 </html>
