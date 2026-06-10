@@ -1,17 +1,14 @@
 <!DOCTYPE html>
-<!-- BUILD: FINAL_RATTENMELDER_FIX24_ADMIN_DIRECT_ACTIONS_NOCACHE -->
+<!-- BUILD: FINAL_RATTENMELDER_FIX23_ADMIN_TOUCH_SAFE -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX24_ADMIN_DIRECT_ACTIONS_NOCACHE</title>
+<title>Rattenmelder Hamburg · FINAL_RATTENMELDER_FIX23_ADMIN_TOUCH_SAFE</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX24_ADMIN_DIRECT_ACTIONS_NOCACHE');
+console.log('Rattenmelder Version: FINAL_RATTENMELDER_FIX23_ADMIN_TOUCH_SAFE');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -1946,7 +1943,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
    Ziel: öffentliche Freigabe erst nach Admin Prüfung, einfache Admin-Statuslogik,
    Supabase Diagnose, Session Timeout, Papierkorb und Admin Benachrichtigungs-Hook. */
 (function(){
-  const RM_BUILD = 'FIX24_ADMIN_DIRECT_ACTIONS_NOCACHE_2026-06-10';
+  const RM_BUILD = 'FIX21_ADMIN_STABIL_MODERATION_2026-06-09';
   const RM_SESSION_MAX_MS = 8 * 60 * 60 * 1000;
   const RM_IDLE_MAX_MS = 30 * 60 * 1000;
   const RM_IDLE_WARN_MS = 28 * 60 * 1000;
@@ -2314,7 +2311,7 @@ body.admin-open .tab-bar{display:none!important;}
 <script>
 /* === FIX21: stabile Admin-Navigation, Reload-Verhalten, öffentliche Freigabe erst nach Prüfung === */
 (function(){
-  const RM_BUILD_21 = 'FIX24_ADMIN_DIRECT_ACTIONS_NOCACHE_2026-06-10';
+  const RM_BUILD_21 = 'FIX21_ADMIN_STABIL_MODERATION_2026-06-09';
   function metaOf(e){try{return (typeof getMeta==='function'?getMeta(e):((Array.isArray(e&&e.history)?e.history:[]).find(x=>x&&x.__meta==='rattenmelder')||{}));}catch(_){return {};}}
   function esc21(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function publicApproved21(e){const m=metaOf(e);return !!e && !m.trashed && !m.rejected && e.status!=='papierkorb' && e.status!=='abgelehnt' && (e.status==='geprueft'||e.status==='gesendet') && !!m.approved;}
@@ -2457,7 +2454,7 @@ body.admin-open .page:not(#admin-page){pointer-events:none!important;}
 <script>
 /* === FIX22: Admin Buttons funktionieren per Event Delegation, Statusanzeige nicht doppelt === */
 (function(){
-  const BUILD22='FIX24_ADMIN_DIRECT_ACTIONS_NOCACHE_2026-06-10';
+  const BUILD22='FIX22_ADMIN_CLICK_STABLE_2026-06-09';
   window.rmCurrentBuild=BUILD22;
   function esc22(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function safe22(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');}
@@ -2597,7 +2594,7 @@ body.admin-open #admin-page{pointer-events:auto!important;}
 <script>
 /* === FIX23: Admin Click/Touch Controller ohne widersprüchliche Alt-Handler === */
 (function(){
-  const BUILD23='FIX24_ADMIN_DIRECT_ACTIONS_NOCACHE_2026-06-10';
+  const BUILD23='FIX23_ADMIN_TOUCH_SAFE_2026-06-09';
   window.rmCurrentBuild=BUILD23;
   try{console.log('Rattenmelder Version:',BUILD23);}catch(_){ }
   function esc23(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -2659,161 +2656,6 @@ body.admin-open #admin-page{pointer-events:auto!important;}
   document.addEventListener('click',function(ev){const back=ev.target.closest&&ev.target.closest('#admin-page .nav-back');if(back)return window.rmAdminAction('closeAdmin',null,back,ev);},true);
   document.addEventListener('touchend',function(ev){const back=ev.target.closest&&ev.target.closest('#admin-page .nav-back');if(back)return window.rmAdminAction('closeAdmin',null,back,ev);},true);
   document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{const b=document.querySelector('#admin-page .nav-back'); if(b)b.setAttribute('onclick',"return rmAdminAction('closeAdmin',null,this,event)"); if(document.getElementById('admin-page')?.classList.contains('open')){ensurePanel23();try{renderAdminList();}catch(e){console.warn(e);}}},600));
-})();
-</script>
-
-
-<script>
-/* === FIX24: Admin Direct Actions + No Cache + Clean Panel ===
-   Dieser Block liegt ganz am Ende und überstimmt ältere Handler.
-   Ziel: Admin-Buttons per Event Delegation, Zurück sicher, keine doppelte Statusbox, klare Version. */
-(function(){
-  const BUILD24='FIX24_ADMIN_DIRECT_ACTIONS_NOCACHE_2026-06-10';
-  window.rmFix20Build=BUILD24;
-  window.rmFix24Build=BUILD24;
-
-  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-  function sid(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');}
-  function meta(e){try{return (Array.isArray(e.history)?e.history:[]).find(x=>x&&x.__meta==='rattenmelder')||{};}catch(_){return {};}}
-  function photos(e){return Array.isArray(e&&e.photoUrls)?e.photoUrls.filter(Boolean):[];}
-  function statusBadge(e){
-    const s=e&&e.status||'neu';
-    if(s==='geprueft') return '<span class="rm-badge rm-badge-ok">✅ FREIGEGEBEN</span>';
-    if(s==='gesendet') return '<span class="rm-badge rm-badge-forward">🏛 BEHÖRDE</span>';
-    if(s==='abgelehnt') return '<span class="rm-badge rm-badge-rejected">❌ ABGELEHNT</span>';
-    if(s==='papierkorb') return '<span class="rm-badge rm-badge-trash">🗑 PAPIERKORB</span>';
-    return '<span class="rm-badge rm-badge-new">🟠 NEU</span>';
-  }
-  function toast24(msg){try{toast(msg)}catch(_){alert(msg)}}
-
-  const css=document.createElement('style');
-  css.id='rm-fix24-style';
-  css.textContent=`
-    #admin-page.open{display:flex!important;position:fixed!important;inset:0!important;z-index:2147483600!important;pointer-events:auto!important;touch-action:auto!important;background:var(--bg)!important;}
-    body.admin-open > .page{pointer-events:none!important;}
-    body.admin-open #admin-page, body.admin-open #admin-page *{pointer-events:auto!important;touch-action:manipulation!important;}
-    #admin-page .nav-back,#admin-page button,#admin-page a,#admin-page input,#admin-page textarea{position:relative!important;z-index:2147483602!important;pointer-events:auto!important;}
-    #rm-system-panel,#rm-dashboard,.a-rep-list,.a-card,.rm-admin-actions{position:relative!important;z-index:2147483601!important;pointer-events:auto!important;}
-    .rm-fix24-mini{margin:0 18px 12px;padding:10px 12px;border:1px solid rgba(48,209,88,.35);border-radius:12px;background:rgba(48,209,88,.08);font-size:12px;color:var(--text2)}
-    .rm-admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0!important;}
-    .rm-admin-actions button,.rm-btn24{border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface2);color:var(--text);font-family:Inter,sans-serif;font-size:14px;font-weight:900;cursor:pointer;min-height:46px;}
-    .rm-btn24.ok{background:rgba(48,209,88,.10);border-color:rgba(48,209,88,.45);color:var(--green)}
-    .rm-btn24.red{background:rgba(255,59,59,.10);border-color:rgba(255,59,59,.45);color:var(--red)}
-    .rm-btn24.blue{background:rgba(10,132,255,.10);border-color:rgba(10,132,255,.45);color:var(--blue)}
-    .rm-btn24.orange{background:rgba(255,149,0,.10);border-color:rgba(255,149,0,.45);color:var(--orange)}
-    .rm-btn24:disabled{opacity:.55!important;}
-    .rm-admin-photo-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
-    .rm-admin-photo{width:84px;height:84px;border-radius:12px;object-fit:cover;border:1px solid var(--border);background:#222;}
-    #admin-page .sheets-bar,#admin-page .a-sec,#admin-page .a-hint,#admin-page .a-bar,#admin-page .a-filter-row{position:relative!important;z-index:2147483601!important;}
-  `;
-  document.head.appendChild(css);
-
-  function setAdminOpen(open){
-    const ap=document.getElementById('admin-page');
-    if(!ap) return;
-    ap.classList.toggle('open',!!open);
-    document.body.classList.toggle('admin-open',!!open);
-    try{localStorage.setItem('rattenAdminOpen',open?'yes':'no')}catch(_){ }
-  }
-  window.closeAdmin=function(){setAdminOpen(false);return false;};
-  const oldOpen=window.openAdmin;
-  window.openAdmin=function(){
-    setAdminOpen(true);
-    try{ if(oldOpen) oldOpen.apply(this,arguments); }catch(e){console.warn(e)}
-    setAdminOpen(true);
-    setTimeout(()=>{try{renderAdminList();}catch(e){console.warn(e)}},80);
-    return false;
-  };
-
-  function ensurePanel(){
-    const panel=document.getElementById('a-panel'); if(!panel) return;
-    // alte/doppelte Versionboxen entfernen
-    document.querySelectorAll('#rm-version-strip,.rm-version-strip,#rm-system-panel,#rm-dashboard').forEach(x=>x.remove());
-    const sys=document.createElement('div'); sys.id='rm-system-panel';
-    const count=Array.isArray(window.entries)?entries.length:0;
-    const admin=(window.currentAdminEmail||currentAdminEmail||'nicht angemeldet');
-    const online=(typeof hasSupabase==='function'&&hasSupabase());
-    sys.innerHTML=`<div><strong>Version:</strong> ${BUILD24}</div><div><strong>Status:</strong> ${online?'🟢 Supabase SDK geladen':'🔴 Supabase SDK nicht geladen'} · Meldungen: ${count}</div><div>Admin: ${esc(admin)}</div><div style="color:var(--text3);margin-top:5px">Neue Meldungen bleiben öffentlich unsichtbar, bis ein Admin sie freigibt.</div><div class="rm-settings-row"><input class="rm-small-input" id="rm-webhook-input" value="${esc(localStorage.getItem('rattenAdminNotifyWebhook')||'')}" placeholder="Webhook URL für Admin Mail/SMS/WhatsApp"><button class="rm-btn24 blue" data-rm-action="saveWebhook">Webhook speichern</button><button class="rm-btn24" data-rm-action="checkSupabase">Verbindung prüfen</button></div>`;
-    panel.insertBefore(sys,panel.firstChild);
-    const dash=document.createElement('div'); dash.id='rm-dashboard';
-    const arr=Array.isArray(window.entries)?entries:[];
-    const neu=arr.filter(e=>(e.status||'neu')==='neu').length;
-    const frei=arr.filter(e=>e.status==='geprueft').length;
-    const beh=arr.filter(e=>e.status==='gesendet').length;
-    const pap=arr.filter(e=>e.status==='papierkorb'||meta(e).trashed).length;
-    dash.innerHTML=`<div class="rm-dash-card"><span class="rm-dash-num">${neu}</span><div class="rm-dash-lbl">Neue Meldungen</div></div><div class="rm-dash-card"><span class="rm-dash-num">${frei}</span><div class="rm-dash-lbl">Freigegeben</div></div><div class="rm-dash-card"><span class="rm-dash-num">${beh}</span><div class="rm-dash-lbl">Behörde</div></div><div class="rm-dash-card"><span class="rm-dash-num">${pap}</span><div class="rm-dash-lbl">Papierkorb</div></div>`;
-    sys.insertAdjacentElement('afterend',dash);
-  }
-
-  window.renderAdminList=function(){
-    ensurePanel();
-    const el=document.getElementById('a-rep-list'); if(!el) return;
-    const list=(Array.isArray(window.entries)?entries:[]).filter(e=>e&&e.status!=='deleted').slice().sort((a,b)=>{
-      const pr={neu:0,geprueft:1,gesendet:2,abgelehnt:3,papierkorb:4};
-      return (pr[a.status||'neu']??9)-(pr[b.status||'neu']??9)||new Date(b.createdAt||b.time||0)-new Date(a.createdAt||a.time||0);
-    });
-    const cnt=document.getElementById('a-count'); if(cnt) cnt.textContent=`${list.length} Einträge`;
-    if(!list.length){el.innerHTML='<div class="empty-state" style="padding:20px 0"><div class="ei" style="font-size:30px">✅</div><div class="et">Keine Einträge</div></div>';return;}
-    el.innerHTML=list.map(r=>{
-      const id=sid(r.id); const d=new Date(r.time||r.createdAt||Date.now());
-      const ts=d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
-      const ph=photos(r);
-      const photoHtml=ph.length?`<div class="rm-admin-photo-row">${ph.map((u,i)=>`<img class="rm-admin-photo" src="${esc(u)}" data-rm-action="photo" data-rm-id="${id}" data-rm-index="${i}" onerror="imgErr&&imgErr(this)">`).join('')}</div><div class="a-meta">📷 Foto Status: ${meta(r).photoApproved?'freigegeben':'nur intern sichtbar'}</div>`:'<div class="a-meta">📷 Kein Foto vorhanden</div>';
-      let actions='';
-      if(r.status==='papierkorb'||meta(r).trashed){
-        actions=`<button class="rm-btn24 ok" data-rm-action="restore" data-rm-id="${id}">↩️ Wiederherstellen</button><button class="rm-btn24 red" data-rm-action="delete" data-rm-id="${id}">Endgültig löschen</button>`;
-      } else if(r.status==='abgelehnt'||meta(r).rejected){
-        actions=`<button class="rm-btn24 ok" data-rm-action="approve" data-rm-id="${id}">✅ Doch freigeben</button><button class="rm-btn24 red" data-rm-action="trash" data-rm-id="${id}">🗑 Papierkorb</button>`;
-      } else {
-        actions=`${(r.status||'neu')==='neu'?`<button class="rm-btn24 ok" data-rm-action="approve" data-rm-id="${id}">✅ Prüfen & freigeben</button><button class="rm-btn24 red" data-rm-action="reject" data-rm-id="${id}">❌ Ablehnen</button>`:''}<button class="rm-btn24 blue" data-rm-action="authority" data-rm-id="${id}">🏛 Behörde informiert</button><button class="rm-btn24 blue" data-rm-action="edit" data-rm-id="${id}">✏️ Bearbeiten</button><button class="rm-btn24 orange" data-rm-action="gps" data-rm-id="${id}">📍 Standort ändern</button><button class="rm-btn24 red" data-rm-action="trash" data-rm-id="${id}">🗑 Papierkorb</button><button class="rm-btn24 blue" data-rm-action="email" data-rm-id="${id}">📧 Update</button><button class="rm-btn24 blue" data-rm-action="whatsapp" data-rm-id="${id}">💬 WhatsApp</button>`;
-      }
-      return `<div class="a-card ${r.kind==='rat'?'':'action'}" id="ac${id}"><div class="a-card-top"><div class="a-card-body"><div class="a-loc">📍 ${esc(r.street)} ${statusBadge(r)}</div><div class="a-type ${r.kind==='rat'?'a-rat-type':'a-action-type'}">${r.kind==='rat'?'🐀 Sichtung':'🟢 Maßnahme'} · ${esc(r.type)}</div><div class="a-desc">${esc(r.desc)}</div>${photoHtml}<div class="a-meta">👤 ${esc(r.name||'Anonym')} · ⏰ ${ts}${r.lat?` · GPS ${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)}`:' · kein GPS'}</div><div class="rm-admin-actions">${actions}</div>${typeof formatHistory==='function'?formatHistory(r):''}${r.stadtAntwort?`<div class="city-reply" style="margin-top:8px"><div class="cr-label">📝 Interne Notiz / Rückmeldung</div><div class="cr-text">${esc(r.stadtAntwort)}</div></div>`:''}<div class="reply-wrap"><input class="reply-inp" id="reply-${id}" placeholder="Interne Notiz, Aktenzeichen oder Rückmeldung…" value="${esc(r.stadtAntwort||'')}"><button class="reply-save rm-btn24 ok" data-rm-action="saveReply" data-rm-id="${id}">💾</button></div></div></div></div>`;
-    }).join('');
-    ensurePanel();
-  };
-
-  async function callAction(action,id,btn){
-    if(btn&&btn.dataset.busy==='1') return;
-    if(btn){btn.dataset.busy='1';btn.disabled=true;}
-    try{
-      if(action==='closeAdmin') return closeAdmin();
-      if(action==='saveWebhook'){localStorage.setItem('rattenAdminNotifyWebhook',(document.getElementById('rm-webhook-input')?.value||'').trim());toast24('✅ Webhook gespeichert');return;}
-      if(action==='checkSupabase'){ if(window.checkSupabaseStatus) await window.checkSupabaseStatus(); else if(window.loadSupabaseData) await window.loadSupabaseData(); toast24('✅ Verbindung geprüft'); return;}
-      if(action==='approve'&&window.approveEntry) await approveEntry(id);
-      else if(action==='reject'&&window.rejectEntry) await rejectEntry(id);
-      else if(action==='trash'&&window.trashEntry) await trashEntry(id);
-      else if(action==='restore'&&window.restoreEntry) await restoreEntry(id);
-      else if(action==='delete'&&window.permanentDeleteEntry) await permanentDeleteEntry(id);
-      else if(action==='authority'&&window.informAuthority) await informAuthority(id);
-      else if(action==='edit'&&window.editEntry) await editEntry(id);
-      else if(action==='gps'&&window.editGps) await editGps(id);
-      else if(action==='email'&&window.notifyEntryEmail) await notifyEntryEmail(id);
-      else if(action==='whatsapp'&&window.notifyEntryWhatsApp) await notifyEntryWhatsApp(id);
-      else if(action==='saveReply'&&window.saveReply) await saveReply(id);
-      else if(action==='photo'&&window.openLightboxAdmin) await openLightboxAdmin(id,Number(btn&&btn.dataset.rmIndex||0));
-      else toast24('⚠️ Aktion nicht verfügbar: '+action);
-      if(action!=='photo') setTimeout(()=>{try{renderAdminList();updateStats&&updateStats();refreshMarkers&&refreshMarkers();}catch(e){}},150);
-    }catch(e){console.error(e); alert('Aktion fehlgeschlagen:\n\n'+(e&&e.message?e.message:String(e)));}
-    finally{if(btn){btn.disabled=false;btn.dataset.busy='0';}}
-  }
-
-  function handleAdminEvent(ev){
-    const ap=document.getElementById('admin-page');
-    if(!ap||!ap.classList.contains('open')) return;
-    const back=ev.target.closest&&ev.target.closest('#admin-page .nav-back');
-    const target=back || (ev.target.closest&&ev.target.closest('#admin-page [data-rm-action]'));
-    if(!target) return;
-    ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-    const action=back?'closeAdmin':target.dataset.rmAction;
-    const id=target.dataset.rmId||null;
-    callAction(action,id,target);
-    return false;
-  }
-  ['click','touchend','pointerup'].forEach(type=>document.addEventListener(type,handleAdminEvent,true));
-  document.addEventListener('DOMContentLoaded',()=>{
-    document.querySelectorAll('#admin-page .nav-back').forEach(b=>{b.removeAttribute('onclick');b.setAttribute('data-rm-action','closeAdmin');});
-    setTimeout(()=>{try{ if(document.getElementById('admin-page')?.classList.contains('open')){document.body.classList.add('admin-open');renderAdminList();} }catch(e){console.warn(e)}},300);
-  });
 })();
 </script>
 
