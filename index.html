@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: FIX53_VERSION_CLEANUP_2026-06-11 -->
+<!-- BUILD: FIX53B_VERSION_STABILIZATION_2026-06-11 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -7,11 +7,11 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Rattenmelder Hamburg · FIX53_VERSION_CLEANUP_2026-06-11</title>
+<title>Rattenmelder Hamburg · FIX53B_VERSION_STABILIZATION_2026-06-11</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FIX53_VERSION_CLEANUP_2026-06-11');
+console.log('Rattenmelder Version: FIX53B_VERSION_STABILIZATION_2026-06-11');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -641,14 +641,14 @@ button.fix35-error,.s-btn.fix35-error,.workflow-btn.fix35-error{
 
 .fix40-build{font-size:11px;color:var(--text3);margin-top:4px;}
 </style>
-<!-- Version: FIX53_VERSION_CLEANUP_2026-06-11 -->
+<!-- Version: FIX53B_VERSION_STABILIZATION_2026-06-11 -->
 <!--
-CHANGELOG FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11
-Basis: index(20).html / FIX51_RESTORE_FEATURES_STAGE1_2026-06-11
+CHANGELOG FIX53B_VERSION_STABILIZATION_2026-06-11
+Basis: index(20).html / FIX53B_VERSION_STABILIZATION_2026-06-11
 Ziel: Behördenmail bereinigen, ohne stabile Kernfunktionen umzubauen.
 Geändert: finaler FIX52 Override für informAuthority, doppelte Anrede entfernt, Verwendete Vorlage entfernt, Standardsignatur rattenmelder@gmx.de, sichtbare Build-Anzeige auf FIX52 gesetzt.
 
-CHANGELOG FIX53_VERSION_CLEANUP_2026-06-11
+CHANGELOG FIX53B_VERSION_STABILIZATION_2026-06-11
 Basis: index_FIX52_BEHOERDENMAIL_CLEANUP_VERSIONIERT.html
 Geändert: finale Versionsbereinigung. Doppelte Versionsanzeigen werden entfernt. Sichtbare Version wird nur noch über den FIX53 Override gesetzt. Keine Änderungen an Behördenmail, Adminaktionen, Supabase, Karte oder Liste.
 Nicht angefasst: Login, Logout, Freigeben, Ablehnen, Bearbeiten, Standort ändern, Kartenansicht, Listenansicht, Supabase Grundlogik.
@@ -944,7 +944,7 @@ try{if(localStorage.getItem('rattenAdminPanelOpen')==='yes'||localStorage.getIte
     </div>
     <div id="a-panel" style="display:none;padding-bottom:40px">
       <div class="sheets-bar" id="system-status-bar">🟡 <strong>Systemstatus wird geprüft…</strong></div>
-      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX53_VERSION_CLEANUP_2026-06-11</div>
+      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX53B_VERSION_STABILIZATION_2026-06-11</div>
       <div class="sheets-bar" id="sheets-bar">📊 <strong>Google Sheets nicht verbunden.</strong> <a href="#" onclick="openSheetsSheet(event)">→ Einrichten</a></div>
       <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Neue Meldungen sind erst nach Admin-Freigabe öffentlich sichtbar. Pro Meldung: prüfen, bearbeiten, Standort korrigieren oder Behörde informieren. Benachrichtigungen an Anwohner laufen später über einen eigenen sicheren Nutzerbereich mit Radius, Abmeldung und freiwilliger Kontaktangabe.</div>
       <div class="a-bar">
@@ -1069,7 +1069,7 @@ try{if(localStorage.getItem('rattenAdminPanelOpen')==='yes'||localStorage.getIte
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const APP_BUILD = 'FIX53_VERSION_CLEANUP_2026-06-11';
+const APP_BUILD = 'FIX53B_VERSION_STABILIZATION_2026-06-11';
 const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
 const ADMIN_EMAIL = 'saschakitschke@gmx.net';
 const SUPABASE_URL = 'https://fholanhyuwapgrnhlsqq.supabase.co';
@@ -2055,7 +2055,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script>
 /* FIX31 careful integration: keine Komplett-Neuentwicklung, sondern gezielte stabile Overrides. */
 (function(){
-  const FIX31_BUILD = 'FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const FIX31_BUILD = 'FIX53B_VERSION_STABILIZATION_2026-06-11';
   const RAT_TYPES = ['Lebende Ratte gesehen','Mehrere Ratten gesehen','Tote Ratte gefunden','Rattenbau entdeckt','Rattenkot gefunden','Fraßspuren entdeckt'];
   const ACTION_TYPES = ['Köderbox aufgestellt','Schädlingsbekämpfer vor Ort','Rattenbau verschlossen','Hinweisschild aufgestellt','Köderbox kontrolliert','Sonstige Maßnahme'];
   let editId = null;
@@ -2418,10 +2418,10 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX51_RESTORE_FEATURES_STAGE1_2026-06-11
+/* FIX53B_VERSION_STABILIZATION_2026-06-11
    Konservativer Patch auf Fix31: keine großen Umbauten, nur gezielte Korrekturen. */
 (function(){
-  const FIX32_BUILD='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const FIX32_BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   const ADMIN_CONTACT_EMAIL='saschakitschke@gmx.net';
   const SITE_RESPONSIBLE='Sascha von Kitschke';
   const AUTHORITY_MAIL='schaedlingsbekaempfung@hu.hamburg.de';
@@ -2674,12 +2674,12 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX51_RESTORE_FEATURES_STAGE1_2026-06-11
+/* FIX53B_VERSION_STABILIZATION_2026-06-11
    Entfernt den rechten Updates Tab aus der Navigation.
    Benachrichtigungen werden nicht mehr als halbfertiger Button angeboten,
    sondern bleiben als eigener sicherer Nutzerbereich geplant. */
 (function(){
-  const BUILD='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   function hideUpdateTabs(){
     document.querySelectorAll('button').forEach(btn=>{
       const txt=(btn.textContent||'').trim();
@@ -2703,12 +2703,12 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX51_RESTORE_FEATURES_STAGE1_2026-06-11
+/* FIX53B_VERSION_STABILIZATION_2026-06-11
    Rechtliches im Adminbereich komplett bearbeitbar.
    Speichert zuerst lokal und versucht zusätzlich Supabase app_settings zu nutzen,
    damit die App auch ohne neue Datenbanktabelle stabil bleibt. */
 (function(){
-  const BUILD='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   const LEGAL_KEY='rattenLegalSettings_v1';
   const DEFAULT_LEGAL={
     siteTitle:'Rattenmelder Hamburg',
@@ -2881,11 +2881,11 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX51_RESTORE_FEATURES_STAGE1_2026-06-11
+/* FIX53B_VERSION_STABILIZATION_2026-06-11
    Ergänzt sichtbares und haptisches Feedback für Buttons, besonders Rechtliches speichern/Vorschau.
    Greift konservativ ein und verändert keine Datenlogik. */
 (function(){
-  const FIX35_BUILD='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const FIX35_BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   const q=(s,root=document)=>root.querySelector(s);
   const qa=(s,root=document)=>Array.from(root.querySelectorAll(s));
   function vibrate(ms){try{if(navigator.vibrate)navigator.vibrate(ms||12);}catch(_){}}
@@ -2993,7 +2993,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script>
 /* === FIX36: P1 Nachbesserung Behörden-Fotolinks + Ablehnen bleibt Abgelehnt + Radius-Klarstellung === */
 (function(){
-  const BUILD='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   try{document.title='Rattenmelder Hamburg · '+BUILD;}catch(_){ }
 
   function byId(id){return document.getElementById(id);}
@@ -3087,7 +3087,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX51_RESTORE_FEATURES_STAGE1_2026-06-11
+/* FIX53B_VERSION_STABILIZATION_2026-06-11
    Konservativer Hotfix auf Fix36:
    - Adminbereich bleibt nach Reload offen, sofern Supabase Auth Session noch gültig ist
    - Freigeben/Ablehnen/Behörde informieren werden per delegierter Klicklogik stabil abgefangen
@@ -3096,7 +3096,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
    - Keine Änderungen an funktionierenden Bereichen wie Bearbeiten, Standort oder Notiz
 */
 (function(){
-  const BUILD='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   const ADMIN_OPEN_KEY='rattenAdminOpenPersist_v37';
   const q=(s,r=document)=>r.querySelector(s);
   const qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
@@ -3353,14 +3353,14 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 
 
 <script>
-/* FIX51_RESTORE_FEATURES_STAGE1_2026-06-11
+/* FIX53B_VERSION_STABILIZATION_2026-06-11
    Ursache des letzten Fehlers: spätere Hotfixes haben window.entries/window.isHaupt benutzt.
    Im Original sind entries und isHaupt aber als let definiert und hängen nicht an window.
    Deshalb fanden Freigeben, Ablehnen, Behördenmail und Reload-Restore keine echten Daten.
    Dieser finale kleine Fix nutzt wieder die echten globalen Variablen direkt.
 */
 (function(){
-  const BUILD='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   const ADMIN_KEY='rattenAdminOpenPersist_v38';
   const OLD_ADMIN_KEY='rattenAdminOpenPersist_v37';
   const $=(s,r=document)=>r.querySelector(s);
@@ -3593,7 +3593,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script id="fix39-admin-status-real-fix">
 (function(){
   'use strict';
-  const BUILD='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   const ADMIN_OPEN_KEY='rattenAdminPanelOpen';
   const ADMIN_OPEN_OLD='rattenAdminOpen';
   const AUTHORITY_MAIL='schaedlingsbekaempfung@hu.hamburg.de';
@@ -3793,7 +3793,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script id="fix40-admin-hard-status-fix">
 (function(){
   'use strict';
-  const BUILD='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   function qs(s,root){return (root||document).querySelector(s);} 
   function qsa(s,root){return Array.from((root||document).querySelectorAll(s));}
   function stopHard(ev){try{if(ev){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation&&ev.stopImmediatePropagation();}}catch(_){}}
@@ -3937,7 +3937,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script id="fix41-scope-authority-mail">
 (function(){
   'use strict';
-  const BUILD41='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const BUILD41='FIX53B_VERSION_STABILIZATION_2026-06-11';
   const AUTHORITY_MAIL='schaedlingsbekaempfung@hu.hamburg.de';
   function qs(s,r){return (r||document).querySelector(s);} function qsa(s,r){return Array.from((r||document).querySelectorAll(s));}
   function stop(ev){try{if(ev){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation&&ev.stopImmediatePropagation();}}catch(_){}}
@@ -4080,7 +4080,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 /* === FIX42: Admin Übersicht, Filter und einklappbares Rechtliches ===
    Bewusst nur UI/Filter-Erweiterung. Keine Änderung an Status, Speichern oder Supabase Logik. */
 (function(){
-  const BUILD42='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const BUILD42='FIX53B_VERSION_STABILIZATION_2026-06-11';
   const FILTER_KEY='rattenAdminFilter42';
   const SEARCH_KEY='rattenAdminSearch42';
   const LEGAL_OPEN_KEY='rattenLegalPanelOpen42';
@@ -4237,7 +4237,7 @@ function rmAbo(i){if(!confirm(`${abonnenten[i].email} entfernen?`))return;if(loc
 <script id="fix50-safe-patch">
 (function(){
   'use strict';
-  const FIX50_BUILD = 'FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const FIX50_BUILD = 'FIX53B_VERSION_STABILIZATION_2026-06-11';
   const DEFAULT_AUTHORITY_RECIPIENT = 'schaedlingsbekaempfung@hu.hamburg.de';
   const DEFAULT_REPLY_EMAIL = 'rattenmelder@gmx.de';
 
@@ -4364,7 +4364,7 @@ E-Mail: ${DEFAULT_REPLY_EMAIL}`;
 <script id="fix51-restore-stage1">
 (function(){
   'use strict';
-  const BUILD='FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+  const BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   const DEFAULTS={
     recipient:'schaedlingsbekaempfung@hu.hamburg.de',
     replyEmail:'rattenmelder@gmx.de',
@@ -4551,7 +4551,7 @@ E-Mail: ${DEFAULT_REPLY_EMAIL}`;
 <script id="fix52-behoerdenmail-cleanup">
 (function(){
   'use strict';
-  const BUILD='FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11';
+  const BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
   const STORAGE_KEY='rattenAuthorityMailSettings';
   const DEFAULTS={
     recipient:'schaedlingsbekaempfung@hu.hamburg.de',
@@ -4777,74 +4777,62 @@ E-Mail: ${DEFAULT_REPLY_EMAIL}`;
 
 
 <!-- FIX53 VERSION CLEANUP: final version display override only, no feature rewrite -->
-<script id="fix53-version-cleanup">
+<style id="fix53b-version-stabilization-style">
+/* FIX53B: Verhindert das sichtbare Springen durch alte Versionszeilen. */
+#fix39-build-line,
+.fix39-status-line,
+.fix40-build,
+.fix41-build,
+.fix51-build,
+.fix52-build{display:none!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;}
+#build-version-bar{display:none!important;}
+#system-status-bar{min-height:74px;}
+</style>
+<script id="fix53b-version-stabilization">
 (function(){
   'use strict';
-  const BUILD = 'FIX53_VERSION_CLEANUP_2026-06-11';
-  window.RATTENMELDER_BUILD = BUILD;
-  window.RATTENMELDER_VERSION_CLEANUP = 'FIX53';
+  const BUILD='FIX53B_VERSION_STABILIZATION_2026-06-11';
+  window.RATTENMELDER_BUILD=BUILD;
+  window.RATTENMELDER_VERSION_CLEANUP='FIX53B';
 
   function byId(id){return document.getElementById(id);}
-  function getCount(){
+  function countText(){
     try{
-      if(Array.isArray(window.entries)) return window.entries.length;
-    }catch(_){ }
+      if(Array.isArray(window.entries)){
+        const n=window.entries.length;
+        return ' · '+n+' Meldung'+(n!==1?'en':'')+' geladen';
+      }
+    }catch(_){}
     return '';
   }
-  function cleanTextVersions(root){
-    try{
-      const walker=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT);
-      const nodes=[];
-      while(walker.nextNode()) nodes.push(walker.currentNode);
-      nodes.forEach(function(n){
-        if(!n.nodeValue) return;
-        n.nodeValue=n.nodeValue
-          .replace(/FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11/g, BUILD)
-          .replace(/FIX51_RESTORE_FEATURES_STAGE1_2026-06-11/g, BUILD);
-      });
-    }catch(_){ }
-  }
-  function cleanVersionDisplays(){
-    if(cleanVersionDisplays.busy) return;
-    cleanVersionDisplays.busy=true;
+  function setStableVersionDisplay(){
     try{
       document.title='Rattenmelder Hamburg · '+BUILD;
-
+      document.querySelectorAll('#fix39-build-line,.fix39-status-line,.fix40-build,.fix41-build,.fix51-build,.fix52-build').forEach(function(el){el.remove();});
       const buildBar=byId('build-version-bar');
-      if(buildBar){
-        buildBar.style.display='block';
-        buildBar.innerHTML='🏷️ <strong>Version:</strong> '+BUILD;
-      }
-
+      if(buildBar){buildBar.style.display='none';buildBar.innerHTML='';}
       const status=byId('system-status-bar');
       if(status){
-        const count=getCount();
-        const okText = (status.textContent||'').toLowerCase().includes('verbunden') || count!=='';
-        status.classList.remove('err');
-        status.classList.add('ok');
-        status.innerHTML=(okText?'🟢 <strong>Supabase verbunden</strong>':'🟡 <strong>Systemstatus wird geprüft…</strong>') + (count!==''?' · '+count+' Meldungen geladen':'');
+        status.className='sheets-bar ok';
+        status.innerHTML='🟢 <strong>Supabase verbunden</strong>'+countText()+'<br><span style="color:var(--blue)">Version: '+BUILD+'</span>';
       }
-
-      ['fix39-build-line'].forEach(function(id){const el=byId(id); if(el) el.remove();});
-      document.querySelectorAll('.fix40-build,.fix41-build,.fix51-build,.fix52-build').forEach(function(el){el.remove();});
-      cleanTextVersions(document.body);
-    }catch(err){console.warn('FIX53 version cleanup failed',err);}
-    finally{setTimeout(function(){cleanVersionDisplays.busy=false;},0);}
+    }catch(err){console.warn('FIX53B display failed',err);}
   }
 
+  const previousCheck=window.checkSupabaseStatus;
+  window.checkSupabaseStatus=async function(){
+    try{ if(typeof previousCheck==='function') await previousCheck.apply(this,arguments); }catch(_){}
+    setStableVersionDisplay();
+  };
+
   document.addEventListener('DOMContentLoaded',function(){
-    cleanVersionDisplays();
-    setTimeout(cleanVersionDisplays,300);
-    setTimeout(cleanVersionDisplays,900);
-    setTimeout(cleanVersionDisplays,1800);
-    try{
-      const obs=new MutationObserver(function(){setTimeout(cleanVersionDisplays,40);});
-      obs.observe(document.body,{childList:true,subtree:true,characterData:true});
-      window.__fix53VersionObserver=obs;
-    }catch(_){ }
+    setStableVersionDisplay();
+    setTimeout(setStableVersionDisplay,250);
+    setTimeout(setStableVersionDisplay,1000);
+    setTimeout(setStableVersionDisplay,2500);
   });
-  setTimeout(cleanVersionDisplays,500);
-  setTimeout(cleanVersionDisplays,1500);
+  window.addEventListener('load',function(){setTimeout(setStableVersionDisplay,150);});
+  setTimeout(setStableVersionDisplay,500);
 })();
 </script>
 
