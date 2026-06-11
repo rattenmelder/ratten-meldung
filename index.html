@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: FIX51_RESTORE_FEATURES_STAGE1_2026-06-11 -->
+<!-- BUILD: FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -7,11 +7,11 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Rattenmelder Hamburg · FIX51_RESTORE_FEATURES_STAGE1_2026-06-11</title>
+<title>Rattenmelder Hamburg · FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
-console.log('Rattenmelder Version: FIX51_RESTORE_FEATURES_STAGE1_2026-06-11');
+console.log('Rattenmelder Version: FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11');
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -641,7 +641,14 @@ button.fix35-error,.s-btn.fix35-error,.workflow-btn.fix35-error{
 
 .fix40-build{font-size:11px;color:var(--text3);margin-top:4px;}
 </style>
-<!-- Version: FIX51_RESTORE_FEATURES_STAGE1_2026-06-11 -->
+<!-- Version: FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11 -->
+<!--
+CHANGELOG FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11
+Basis: index(20).html / FIX51_RESTORE_FEATURES_STAGE1_2026-06-11
+Ziel: Behördenmail bereinigen, ohne stabile Kernfunktionen umzubauen.
+Geändert: finaler FIX52 Override für informAuthority, doppelte Anrede entfernt, Verwendete Vorlage entfernt, Standardsignatur rattenmelder@gmx.de, sichtbare Build-Anzeige auf FIX52 gesetzt.
+Nicht angefasst: Login, Logout, Freigeben, Ablehnen, Bearbeiten, Standort ändern, Kartenansicht, Listenansicht, Supabase Grundlogik.
+-->
 
 <style id="fix39-admin-restore-style">
 html.fix39-admin-restore #admin-page{display:flex!important;}
@@ -933,7 +940,7 @@ try{if(localStorage.getItem('rattenAdminPanelOpen')==='yes'||localStorage.getIte
     </div>
     <div id="a-panel" style="display:none;padding-bottom:40px">
       <div class="sheets-bar" id="system-status-bar">🟡 <strong>Systemstatus wird geprüft…</strong></div>
-      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX51_RESTORE_FEATURES_STAGE1_2026-06-11</div>
+      <div class="sheets-bar" id="build-version-bar">🏷️ <strong>Version:</strong> FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11</div>
       <div class="sheets-bar" id="sheets-bar">📊 <strong>Google Sheets nicht verbunden.</strong> <a href="#" onclick="openSheetsSheet(event)">→ Einrichten</a></div>
       <div class="a-sec">📋 Meldungen, Prüfung & Behördenworkflow</div><div class="a-hint">Neue Meldungen sind erst nach Admin-Freigabe öffentlich sichtbar. Pro Meldung: prüfen, bearbeiten, Standort korrigieren oder Behörde informieren. Benachrichtigungen an Anwohner laufen später über einen eigenen sicheren Nutzerbereich mit Radius, Abmeldung und freiwilliger Kontaktangabe.</div>
       <div class="a-bar">
@@ -1058,7 +1065,7 @@ try{if(localStorage.getItem('rattenAdminPanelOpen')==='yes'||localStorage.getIte
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const APP_BUILD = 'FIX51_RESTORE_FEATURES_STAGE1_2026-06-11';
+const APP_BUILD = 'FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11';
 const GRUPPENNAME = 'Nachbarschaftshilfe Hamburg-Ratten';
 const ADMIN_EMAIL = 'saschakitschke@gmx.net';
 const SUPABASE_URL = 'https://fholanhyuwapgrnhlsqq.supabase.co';
@@ -4532,6 +4539,235 @@ E-Mail: ${DEFAULT_REPLY_EMAIL}`;
   patchShowPanel();
   document.addEventListener('DOMContentLoaded',()=>setTimeout(init,300));
   setTimeout(init,600);
+})();
+</script>
+
+
+<!-- FIX52 BEHOERDENMAIL CLEANUP: final override, no module rewrite -->
+<script id="fix52-behoerdenmail-cleanup">
+(function(){
+  'use strict';
+  const BUILD='FIX52_BEHOERDENMAIL_CLEANUP_2026-06-11';
+  const STORAGE_KEY='rattenAuthorityMailSettings';
+  const DEFAULTS={
+    recipient:'schaedlingsbekaempfung@hu.hamburg.de',
+    replyEmail:'rattenmelder@gmx.de',
+    senderName:'Rattenmelder Hamburg',
+    signature:'Mit freundlichen Grüßen\n\nRattenmelder Hamburg\nPrivate Meldeplattform für Rattenmeldungen in Hamburg\n\nE-Mail:\nrattenmelder@gmx.de\n\nHinweis:\nKeine Behörde.',
+    intro:'über die private Plattform „Rattenmelder Hamburg“ wurde eine geprüfte Meldung erfasst. Die Meldung wird Ihnen zur weiteren Prüfung und gegebenenfalls zur Einleitung geeigneter Maßnahmen weitergeleitet.',
+    templates:{
+      standard:'über die private Plattform „Rattenmelder Hamburg“ wurde eine geprüfte Meldung erfasst. Die Meldung wird Ihnen zur weiteren Prüfung und gegebenenfalls zur Einleitung geeigneter Maßnahmen weitergeleitet.',
+      alive:'über die private Plattform „Rattenmelder Hamburg“ wurde eine Sichtung einer lebenden Ratte gemeldet. Die Meldung wurde im Adminbereich geprüft und wird Ihnen zur weiteren Prüfung weitergeleitet.',
+      dead:'über die private Plattform „Rattenmelder Hamburg“ wurde der Fund einer toten Ratte gemeldet. Die Meldung wurde im Adminbereich geprüft und wird Ihnen zur weiteren Prüfung weitergeleitet.',
+      burrow:'über die private Plattform „Rattenmelder Hamburg“ wurde ein möglicher Rattenbau beziehungsweise ein Rattenloch gemeldet. Die Meldung wurde im Adminbereich geprüft und wird Ihnen zur weiteren Prüfung weitergeleitet.',
+      publicScope:'Die Meldung betrifft nach Angabe der meldenden Person einen öffentlichen Bereich.',
+      privateScope:'Die Meldung betrifft nach Angabe der meldenden Person einen privaten Bereich.'
+    }
+  };
+  function byId(id){return document.getElementById(id);}
+  function qs(sel,root){return (root||document).querySelector(sel);}
+  function stop(ev){if(ev){ev.preventDefault();ev.stopPropagation();if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();}}
+  function safe(v){return v==null?'':String(v);}
+  function toastSafe(msg){try{typeof window.toast==='function'?window.toast(msg):console.log(msg);}catch(_){console.log(msg);}}
+  function vibrate(){try{navigator.vibrate&&navigator.vibrate(12);}catch(_){}}
+  function cleanText(v){return safe(v).replace(/\r\n/g,'\n').replace(/[ \t]+\n/g,'\n').trim();}
+  function removeGreeting(v){return cleanText(v).replace(/^\s*(Sehr geehrte Damen und Herren,?\s*)+/i,'').trim();}
+  function removeTemplateLine(v){return cleanText(v).split('\n').filter(line=>!/^\s*Verwendete Vorlage\s*:?/i.test(line)).join('\n').trim();}
+  function sanitizeMailText(v){return removeTemplateLine(v).replace(/saschakitschke@gmx\.net/gi,DEFAULTS.replyEmail).replace(/\n{4,}/g,'\n\n\n').trim();}
+  function mergeSettings(raw){
+    const s=Object.assign({},DEFAULTS,raw||{});
+    s.templates=Object.assign({},DEFAULTS.templates,(raw&&raw.templates)||{});
+    s.recipient=cleanText(s.recipient)||DEFAULTS.recipient;
+    s.replyEmail=cleanText(s.replyEmail)||DEFAULTS.replyEmail;
+    s.senderName=cleanText(s.senderName)||DEFAULTS.senderName;
+    s.intro=sanitizeMailText(s.intro||DEFAULTS.intro);
+    s.signature=sanitizeMailText(s.signature||DEFAULTS.signature);
+    Object.keys(s.templates).forEach(k=>s.templates[k]=sanitizeMailText(s.templates[k]||DEFAULTS.templates[k]||''));
+    return s;
+  }
+  function getLocalSettings(){
+    try{return mergeSettings(JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'));}catch(_){return mergeSettings({});}
+  }
+  function saveLocalSettings(s){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(mergeSettings(s)));}catch(_){}}
+  function client(){try{return window.supabaseClient || (typeof supabaseClient!=='undefined'?supabaseClient:null);}catch(_){return null;}}
+  async function loadRemoteSettings(){
+    const c=client(); if(!c)return getLocalSettings();
+    try{
+      const res=await c.from('app_settings').select('value').eq('key','authority_mail').maybeSingle();
+      if(!res.error && res.data && res.data.value){const merged=mergeSettings(res.data.value); saveLocalSettings(merged); return merged;}
+    }catch(_){ }
+    return getLocalSettings();
+  }
+  async function saveSettings(settings){
+    const merged=mergeSettings(settings); saveLocalSettings(merged);
+    const c=client();
+    if(c){try{await c.from('app_settings').upsert({key:'authority_mail',value:merged,updated_at:new Date().toISOString()},{onConflict:'key'});}catch(_){ }}
+    return merged;
+  }
+  function entry(id){
+    try{if(Array.isArray(window.entries))return window.entries.find(x=>String(x.id)===String(id));}catch(_){ }
+    try{if(Array.isArray(entries))return entries.find(x=>String(x.id)===String(id));}catch(_){ }
+    return null;
+  }
+  function statusLabel(e){
+    const s=safe(e&&e.status).toLowerCase();
+    if(s==='gesendet')return 'An Behörde gemeldet';
+    if(s==='geprueft')return 'Freigegeben / geprüft';
+    if(s==='abgelehnt'||s==='ausgeblendet')return 'Abgelehnt';
+    return s?e.status:'Neu';
+  }
+  function scopeRaw(e){
+    try{if(typeof window.getScope==='function'){const s=window.getScope(e); if(s)return s;}}catch(_){ }
+    try{if(typeof getScope==='function'){const s=getScope(e); if(s)return s;}}catch(_){ }
+    const h=Array.isArray(e&&e.history)?e.history:[];
+    for(const item of h){if(item && (item.scope||item.locationScope||item.scopeLabel||item.locationScopeLabel))return item.scope||item.locationScope||item.scopeLabel||item.locationScopeLabel;}
+    return e&&e.locationScope?e.locationScope:'';
+  }
+  function scopeLabel(e){
+    const s=safe(scopeRaw(e)).toLowerCase();
+    if(s.includes('public')||s.includes('öffent')||s.includes('oeffent'))return 'Öffentlicher Bereich';
+    if(s.includes('private')||s.includes('privat'))return 'Privater Bereich';
+    return 'Nicht angegeben';
+  }
+  function photos(e){
+    try{if(typeof window.photoList==='function')return window.photoList(e).filter(Boolean);}catch(_){ }
+    const arr=Array.isArray(e&&e.photoUrls)?e.photoUrls:Array.isArray(e&&e.photo_urls)?e.photo_urls:[];
+    return arr.filter(Boolean);
+  }
+  function dateText(v){const d=new Date(v||'');return isNaN(d.getTime())?'Nicht angegeben':d.toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+  function coords(e){const lat=e&&((e.lat!=null?e.lat:e.latitude));const lon=e&&((e.lon!=null?e.lon:e.lng!=null?e.lng:e.longitude));return (lat!=null&&lon!=null&&lat!==''&&lon!=='')?Number(lat).toFixed(6)+', '+Number(lon).toFixed(6):'Nicht angegeben';}
+  function chooseTemplate(e,set){
+    const t=safe(e&&e.type).toLowerCase();
+    let base=set.templates.standard||set.intro||DEFAULTS.intro;
+    if(t.includes('lebende')||t.includes('mehrere'))base=set.templates.alive||base;
+    if(t.includes('tote')||t.includes('tot'))base=set.templates.dead||base;
+    if(t.includes('bau')||t.includes('loch'))base=set.templates.burrow||base;
+    const scope=scopeLabel(e);
+    const scopeText=scope==='Öffentlicher Bereich'?(set.templates.publicScope||''):scope==='Privater Bereich'?(set.templates.privateScope||''):'';
+    return [removeGreeting(base),scopeText].filter(Boolean).join('\n\n');
+  }
+  function buildMail(e,set){
+    const photoArr=photos(e);
+    const photoText=photoArr.length?photoArr.map((u,i)=>'Foto '+(i+1)+': '+u).join('\n'):'Zu dieser Meldung sind keine freigegebenen Fotos gespeichert.';
+    let sig=sanitizeMailText(set.signature||DEFAULTS.signature);
+    sig=sig.replace(/^\s*Mit freundlichen Grüßen\s*/i,'Mit freundlichen Grüßen').trim();
+    const body=[
+      'Sehr geehrte Damen und Herren,',
+      '',
+      chooseTemplate(e,set),
+      '',
+      'Meldungsdaten',
+      '------------',
+      'Meldungs-ID: '+(safe(e.id)||'Nicht angegeben'),
+      'Status im Portal: '+statusLabel(e),
+      'Standortart: '+scopeLabel(e),
+      'Adresse / Ort: '+(safe(e.street)||'Nicht angegeben'),
+      'GPS-Koordinaten: '+coords(e),
+      'Art der Meldung: '+(safe(e.type)||safe(e.category)||'Nicht angegeben'),
+      'Datum / Uhrzeit der Sichtung: '+dateText(e.time||e.createdAt||e.created_at),
+      'Gemeldet von: '+((safe(e.name).trim()&&safe(e.name).trim().toLowerCase()!=='anonym')?safe(e.name).trim():'anonym'),
+      '',
+      'Beschreibung:',
+      safe(e.desc||e.description)||'Keine Beschreibung angegeben',
+      '',
+      'Foto-Link(s):',
+      photoText,
+      '',
+      'Öffentliche Übersicht:',
+      'https://rattenmelder.github.io/ratten-meldung/#liste',
+      '',
+      'Hinweis: Diese Nachricht stammt aus einer privaten Meldeplattform und ersetzt keine behördliche Prüfung.',
+      '',
+      sig
+    ].join('\n');
+    return sanitizeMailText(body);
+  }
+  async function markAuthority(e,recipient){
+    try{
+      e.status='gesendet';
+      e.authorityNotifiedAt=new Date().toISOString();
+      e.authorityRecipient=recipient;
+      e.authorityBy=getLocalSettings().senderName;
+      if(typeof window.addHistory==='function')window.addHistory(e,'Behördenmail vorbereitet: '+recipient);
+      else if(typeof addHistory==='function')addHistory(e,'Behördenmail vorbereitet: '+recipient);
+      if(typeof window.updateEntryRemote==='function')await window.updateEntryRemote(e,'authority_mail_prepared');
+      else if(typeof updateEntryRemote==='function')await updateEntryRemote(e,'authority_mail_prepared');
+      else if(typeof window.saveEntries==='function')await window.saveEntries();
+      else if(typeof saveEntries==='function')await saveEntries();
+    }catch(err){console.warn('FIX52: authority mark failed',err);}
+    try{if(typeof window.updateStats==='function')window.updateStats();}catch(_){ }
+    try{if(typeof window.renderAdminList==='function')window.renderAdminList();}catch(_){ }
+    try{if(typeof window.renderList==='function' && window.curPage==='liste')window.renderList();}catch(_){ }
+    try{if(typeof window.refreshMarkers==='function')window.refreshMarkers();}catch(_){ }
+  }
+  window.informAuthority=async function(id,ev){
+    stop(ev); vibrate();
+    const e=entry(id); if(!e){toastSafe('⚠️ Meldung nicht gefunden');return false;}
+    const set=await loadRemoteSettings();
+    const recipient=set.recipient||DEFAULTS.recipient;
+    const subject='Rattenmeldung Hamburg: '+(safe(e.street)||'ohne Adresse')+' · '+(safe(e.type)||'Meldung');
+    const body=buildMail(e,set);
+    const href='mailto:'+encodeURIComponent(recipient)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    const sheet=byId('email-sheet'), pre=byId('email-pre'), link=byId('email-link');
+    if(pre)pre.textContent=body;
+    if(link){
+      link.textContent='📧 Mail-App öffnen';
+      link.href=href;
+      link.onclick=async function(ev2){stop(ev2); await markAuthority(e,recipient); setTimeout(function(){window.location.href=href;},80); return false;};
+    }
+    const copyBtn=qs('#email-sheet .s-btn.orange');
+    if(copyBtn){copyBtn.textContent='📋 Mailtext kopieren';copyBtn.onclick=async function(ev3){stop(ev3); try{await navigator.clipboard.writeText(body);}catch(_){ } await markAuthority(e,recipient); if(sheet)sheet.classList.remove('open'); toastSafe('📋 Behördenmail kopiert und Status gespeichert'); return false;};}
+    const closeBtn=qs('#email-sheet .sheet-close');
+    if(closeBtn){closeBtn.onclick=function(ev4){stop(ev4); if(sheet)sheet.classList.remove('open'); return false;};}
+    if(sheet)sheet.classList.add('open'); else window.location.href=href;
+    toastSafe('📧 Behördenmail vorbereitet');
+    return false;
+  };
+  function cleanVersion(){
+    try{document.title='Rattenmelder Hamburg · '+BUILD;}catch(_){ }
+    const status=byId('system-status-bar');
+    if(status){
+      const count=(typeof window.entries!=='undefined'&&Array.isArray(window.entries))?window.entries.length:'';
+      status.innerHTML='🟢 <strong>Supabase verbunden</strong>'+(count!==''?' · '+count+' Meldungen geladen':'')+'<br><span style="color:var(--blue)">Version: '+BUILD+'</span>';
+    }
+  }
+  function patchPanel(){
+    const panel=byId('fix51-mail-settings'); if(!panel || panel.__fix52Patched)return; panel.__fix52Patched=true;
+    const status=byId('fix51-mail-status'); if(status)status.textContent='FIX52 aktiv: Behördenmail wird nur einmal und ohne doppelte Anrede erzeugt.';
+    loadRemoteSettings().then(function(s){
+      if(byId('fix51-recipient'))byId('fix51-recipient').value=s.recipient;
+      if(byId('fix51-reply'))byId('fix51-reply').value=s.replyEmail;
+      if(byId('fix51-sender'))byId('fix51-sender').value=s.senderName;
+      if(byId('fix51-intro'))byId('fix51-intro').value=s.intro;
+      if(byId('fix51-signature'))byId('fix51-signature').value=s.signature;
+    });
+    const saveBtn=byId('fix51-save-mail');
+    if(saveBtn){saveBtn.onclick=async function(ev){
+      stop(ev); vibrate();
+      const current=getLocalSettings();
+      const next=mergeSettings(Object.assign({},current,{
+        recipient:byId('fix51-recipient')?byId('fix51-recipient').value:current.recipient,
+        replyEmail:byId('fix51-reply')?byId('fix51-reply').value:current.replyEmail,
+        senderName:byId('fix51-sender')?byId('fix51-sender').value:current.senderName,
+        intro:byId('fix51-intro')?byId('fix51-intro').value:current.intro,
+        signature:byId('fix51-signature')?byId('fix51-signature').value:current.signature
+      }));
+      await saveSettings(next);
+      if(status)status.textContent='✅ FIX52 gespeichert · '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+      toastSafe('✅ Behördenmail Einstellungen gespeichert');
+      return false;
+    };}
+    const prevBtn=byId('fix51-preview-mail');
+    if(prevBtn){prevBtn.onclick=function(ev){stop(ev); vibrate(); const e=(Array.isArray(window.entries)&&window.entries[0])?window.entries[0]:{id:'Beispiel',street:'Beispielstraße 1, Hamburg',type:'Lebende Ratte gesehen',desc:'Beispielbeschreibung',name:'anonym',locationScope:'Öffentlicher Bereich',time:new Date().toISOString()}; alert(buildMail(e,getLocalSettings()).slice(0,4000)); return false;};}
+  }
+  function init(){cleanVersion();patchPanel();}
+  const oldShow=window.showPanel;
+  if(typeof oldShow==='function' && !window.__fix52ShowPanelPatched){
+    window.__fix52ShowPanelPatched=true;
+    window.showPanel=function(){const r=oldShow.apply(this,arguments); setTimeout(init,120); return r;};
+  }
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(init,500);setTimeout(init,1500);});
+  setTimeout(init,800);
 })();
 </script>
 
